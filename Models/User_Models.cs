@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace RaceDay_2.Models
 {
     //start of namespace
-    [Table("Users")]
+   
     public class User
     {
         //start of class
