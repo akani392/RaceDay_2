@@ -2,11 +2,15 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
+using RaceDay_2.Models;
+
+using System.Data.SqlClient;
+
 namespace RaceDay_2.Models
 {
     //start of namespace
 
-    // code first de context for raceday project database
+    // code first de context for raceday 
     // should be simialr to table names and constratints in the sql script
 
     public class RaceDay_Context : DbContext
@@ -21,6 +25,7 @@ namespace RaceDay_2.Models
         public DbSet<Event> Events { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Result> Results { get; set; }
+        public DbSet<Enrolment> Enrolments { get; set; }
 
         //
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -50,15 +55,12 @@ namespace RaceDay_2.Models
             //start of category configuration
             modelBuilder.Entity<Category>(entity =>
             {
-                entity.ToTable("Category", table =>
-                {
-                    table.HasCheckConstraint("ck_category_distancekm", "DistanceKM > 0");
-                    table.HasCheckConstraint("ck_category_maxparticipants", "MaxParticipants > 0");
+                entity.ToTable("Category");
+                entity.HasCheckConstraint("ck_category_distancekm", "DistanceKM > 0");
+                entity.HasCheckConstraint("ck_category_maxparticipants", "MaxParticipants > 0");
 
+                entity.Property(c => c.DistanceKM).HasColumnType("decimal(5,2)");
 
-                });
-
-                entity.Property(c => c.DistanceKM).HasColumnType("decimal(5,2");
                 entity.HasOne(c => c.Event).WithMany(e => e.Categories).HasForeignKey(c => c.EventID);
             });
             //end of category configuration
@@ -66,13 +68,13 @@ namespace RaceDay_2.Models
             //start of enrolment Configuration
             modelBuilder.Entity<Enrolment>(entity =>
             {
-                entity.ToTable("Enrolment", table =>
-                table.HasCheckConstraint("ck_enrolment_status", "Status IN ('Confirmed', 'Cancelled')"));
+                entity.ToTable("Enrolment", table =>table.HasCheckConstraint("ck_enrolment_status","Status IN ('Confirmed', 'Cancelled')"));
 
                 //blocks the same person from siging up for the same category twice
                 entity.HasIndex(en => new { en.ParticipantID, en.CategoryID }).IsUnique();
 
                 entity.HasOne(en => en.Participant).WithMany().HasForeignKey(en => en.ParticipantID);
+
                 entity.HasOne(en => en.Category).WithMany(c => c.Enrolments).HasForeignKey(en => en.CategoryID);
 
             });
@@ -81,14 +83,19 @@ namespace RaceDay_2.Models
             //start of Result Configuration
             modelBuilder.Entity<Result>(entity =>
             {
-                entity.ToTable("Result", table => table.HasCheckConstraint("ck_result_position", "Position > 0"));
-                entity.HasOne(r => r.CapturedByID);
+                entity.ToTable("Result", table => table.HasCheckConstraint("ck_result_position","Position > 0"));
+
+                //one result per enrolmentt
+                entity.HasIndex(r => r.EnrolmentID).IsUnique();
+                entity.HasOne(r => r.Enrolment).WithOne(en => en.Result).HasForeignKey<Result>(r => r.EnrolmentID);
+                entity.HasOne(r => r.CapturedBy);
             });
             //end of result configuration
+        
 
-            //end of model configuration
+        //end of model configuration
 
-        }
+    }
         //end of class
     }
 

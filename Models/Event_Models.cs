@@ -8,8 +8,7 @@ namespace RaceDay_2.Models
     public class Event
     {
         //start of class
-        public class Event
-        {
+       
             public int EventID { get; set; }
            
             //foreifn key to user 
@@ -21,7 +20,7 @@ namespace RaceDay_2.Models
             public string Location { get; set; } = string.Empty;
             public string? Description { get; set; }
             public List<Category> Categories { get; set; } = new List<Category>();
-        }
+        
         //end of class
     }
 
