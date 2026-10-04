@@ -37,6 +37,45 @@ namespace RaceDay_2.Controllers
 
             //end of method
         }
+
+        //checks a plain text password againt the stored hash
+        public static bool verify_password (string password, string stored_hash)
+        {
+            //start of method
+
+            try
+            {
+                //start of try
+
+                //split the stored value into 3 parts
+                string[] parts = stored_hash.Split('.');
+                if (parts.Length != 3 )
+                {
+                    return false;
+                }
+
+                int hash_iterations = int.Parse(parts[0]);
+                byte[] salt = Convert.FromBase64String(parts[1]);
+                byte[] stored_key = Convert.FromBase64String(parts[2]);
+
+                //get a hash from the supplied password using the same salt
+                byte[] computed_key = Rfc2898DeriveBytes.Pbkdf2(password, salt, hash_iterations, HashAlgorithmName.SHA256, stored_key.Length);
+
+                //compare the 2 hashes
+                return CryptographicOperations.FixedTimeEquals(computed_key, stored_key);
+
+                //end of try
+            }
+
+            catch (Exception e)
+            {
+                //start of catch
+
+                return false;
+
+                //end of catch
+            }
+        }
         //end of class
     }
 
