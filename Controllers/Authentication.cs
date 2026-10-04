@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 using RaceDay_2.Models;
+using System.Security.Claims;
 
 namespace RaceDay_2.Controllers
 {
@@ -82,6 +85,75 @@ namespace RaceDay_2.Controllers
 
                 //end of catch
             }
+
+            //end of method
+        }
+
+        //log a user into the system and signs them into a cookie
+        //later request know and what roles they have
+        [HttpPost("login")]
+        public IActionResult Login (string email, string password)
+        {
+            //start of method
+
+            try
+            {
+                //start of try
+
+                //finds the user using their email
+                //so that the role name is there without a seconf query
+
+                var found_user = _context.Users.Where(u => u.Email == email).Select(u => new
+                {
+                    u.UserID,
+                    u.RoleID,
+                    RoleName = u.Role.RoleName,
+                    u.FirstName,
+                    u.LastName,
+                    u.Email,
+                    u.PasswordHash
+                }).SingleOrDefault();
+
+                //check if the user is there
+                if (found_user == null)
+                {
+                    return Unauthorized("Invalid email or password.");
+                }
+
+                //get the claims that identify the user in the future
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, found_user.Email),
+                    new Claim(ClaimTypes.Role, found_user.RoleName)
+                };
+
+                var claims_identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var claims_principal = new ClaimsPrincipal(claims_identity);
+
+                //sign the user into a cookie
+                HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claims_principal).GetAwaiter().GetResult();
+
+                //Login was succesful
+                return Ok(new
+                {
+                    message = "Login Successful 👍😊",
+                    UserID = found_user.UserID,
+                    FirstName = found_user.FirstName,
+                    LastName = found_user.LastName,
+                    Email = found_user.RoleID,
+                    RoleName = found_user.RoleName
+                });
+
+                //end of try
+            }
+
+            catch (Exception e)
+            {
+                //start of catch
+                return BadRequest(e.Message);
+                //end of catch
+            }
+            //end of method
         }
 
         //end of class
