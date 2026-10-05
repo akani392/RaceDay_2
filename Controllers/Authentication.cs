@@ -120,6 +120,8 @@ namespace RaceDay_2.Controllers
                     return Unauthorized("Invalid email or password.");
                 }
 
+                //check if password is correct
+                bool password_correct = Password_Helper.verify_password(password, found_user.PasswordHash);
                 //get the claims that identify the user in the future
                 var claims = new List<Claim>
                 {
@@ -140,7 +142,7 @@ namespace RaceDay_2.Controllers
                     UserID = found_user.UserID,
                     FirstName = found_user.FirstName,
                     LastName = found_user.LastName,
-                    Email = found_user.RoleID,
+                    Email = found_user.Email,
                     RoleName = found_user.RoleName
                 });
 
@@ -154,6 +156,30 @@ namespace RaceDay_2.Controllers
                 //end of catch
             }
             //end of method
+        }
+
+        //sign the user out and clears the authincation cookie
+        [HttpPost("logout")]
+        public IActionResult Logout ()
+        {
+            //start of method 
+
+            try
+            {
+                //start of try
+                HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme).GetAwaiter().GetResult();
+                return Ok(new { message = "Logged out successfully 😁✌️" });
+                //end of try
+            }
+
+            catch (Exception e)
+            {
+                //start of try
+
+                return BadRequest (e.Message);
+
+                //end of try
+            }
         }
 
         //end of class
