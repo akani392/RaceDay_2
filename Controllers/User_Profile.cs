@@ -21,62 +21,108 @@ namespace RaceDay_2.Controllers
             _context = context;
         }
 
+        //helper method to extract the user id
+        private int get_current_user_id()
+        {
+            var user_id_claim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+            if (user_id_claim != null && int.TryParse(user_id_claim.Value, out int user_id))
+            {
+                return user_id;
+            }
+
+            //if the claim ids missing
+            return 0;
+        }
+
         //get the current authenciated user profile
         [HttpGet("GetUser")]
-
-        public IActionResult GetUserProfile()
+        public IActionResult GetUserPprofile()
         {
-            //start of method
-
+            //start of metthod
             try
             {
                 //start of try
 
-
+                //get current User id
+                int current_user_id = get_current_user_id();
 
                 //find the user
-                var user_id_claim = User.FindFirst(ClaimTypes.NameIdentifier);
+                var user = _context.Users.Find(current_user_id);
 
-                //check if user is there
-                if (user_id_claim == null)
+                //check if user exists
+                if (user == null)
                 {
-                    return Unauthorized(new
-                    {
-                        message = "User can not be found 😒"
-                    });
+                    return NotFound(new { message = "User profile not found 😢" });
                 }
 
-                //convert user id from string intrger
-                if (!int.TryParse(user_id_claim.Value, out var user_id))
+                //return user data
+                return Ok(new
                 {
-                    return BadRequest(new
-                    {
-                        message = "User name is invalid🤒"
-                    });
+                    user.UserID,
+                    user.RoleID,
+                    user.FirstName,
+                    user.LastName,
+                    user.Email,
+                    user.DateRegistered
+                });
+                //end of try
+            }
+            catch (Exception e)
+            {
+                //start of catch
+                return BadRequest(e.Message);
+                //end of catch
+            }
+            //end of method
+        }
 
-                    //find the user in the database
-                    var user = _context.Users.Find(user_id);
+        //updates the current user profiles
+        [HttpPut("UpdateUser")]
+        public IActionResult update_user_profile([FromBody] UpdateProfileRequest request)
+        {
+            //start of method 
 
-                    //check is user exists
-                    if (user == null)
-                    {
-                        return NotFound(new
-                        {
-                            message = "User profile can not be found😢"
-                        });
-                    }
+            try
+            {
+                //start of try
+                //get the current user id
 
-                    //return user data
-                    return Ok(new
-                    {
-                        user.UserID,
-                        user.RoleID,
-                        user.FirstName,
-                        user.LastName,
-                        user.Email,
-                        user.DateRegistered
-                    });
+                int current_user_id = get_current_user_id();
+
+                //find the user to update
+                var user = _context.Users.Find(current_user_id);
+
+                if (user == null)
+                {
+                    return NotFound(new { message = "User profile not found" });
                 }
+
+                //check if another user has the same email
+                bool email_taken = _context.Users.Any(u => u.Email == request.Email && u.UserID != current_user_id);
+                if (email_taken)
+                {
+                    return BadRequest(new { message = "That email as already been taken🥲" });
+                }
+
+                //update the current user profile
+                user.FirstName = request.FirstName;
+                user.LastName = request.LastName;
+                user.Email = request.Email;
+
+                _context.SaveChanges();
+
+                //rreturn updates user password
+                return Ok(new
+                {
+                    user.UserID,
+                    user.RoleID,
+                    user.FirstName,
+                    user.LastName,
+                    user.Email,
+                    user.DateRegistered
+                });
+
                 //end of try
             }
 
@@ -88,13 +134,12 @@ namespace RaceDay_2.Controllers
 
                 //end of catch
             }
+
             //end of method
         }
-
-        //updates the current
 
         //end of class
     }
 
     //end of namespace
-}
+} 
