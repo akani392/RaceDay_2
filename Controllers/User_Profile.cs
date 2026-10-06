@@ -24,15 +24,20 @@ namespace RaceDay_2.Controllers
         //helper method to extract the user id
         private int get_current_user_id()
         {
-            var user_id_claim = User.FindFirst(ClaimTypes.NameIdentifier);
+            //start of method
 
-            if (user_id_claim != null && int.TryParse(user_id_claim.Value, out int user_id))
+            //get user id for authintication claim
+            var id_claim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            //check if UserId is found
+            if (id_claim == null || !int.TryParse(id_claim, out int user_id))
             {
-                return user_id;
+                throw new UnauthorizedAccessException("Could not get current user.");
             }
 
-            //if the claim ids missing
-            return 0;
+            return user_id;
+
+            //end of method
         }
 
         //get the current authenciated user profile
@@ -66,6 +71,7 @@ namespace RaceDay_2.Controllers
                     user.Email,
                     user.DateRegistered
                 });
+
                 //end of try
             }
             catch (Exception e)
@@ -74,6 +80,7 @@ namespace RaceDay_2.Controllers
                 return BadRequest(e.Message);
                 //end of catch
             }
+
             //end of method
         }
 
@@ -99,10 +106,14 @@ namespace RaceDay_2.Controllers
                 }
 
                 //check if another user has the same email
-                bool email_taken = _context.Users.Any(u => u.Email == request.Email && u.UserID != current_user_id);
+                bool email_taken = _context.Users.Any(
+                    u => u.Email == request.Email &&
+                    u.UserID != current_user_id);
+
                 if (email_taken)
                 {
-                    return BadRequest(new { message = "That email as already been taken🥲" });
+                    return BadRequest(
+                        new { message = "That email as already been taken🥲" });
                 }
 
                 //update the current user profile
@@ -142,4 +153,4 @@ namespace RaceDay_2.Controllers
     }
 
     //end of namespace
-} 
+}
