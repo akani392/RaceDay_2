@@ -231,6 +231,51 @@ namespace RaceDay_2.Controllers
             //end of mrthod
         }
 
+        //delete
+        //takes out a category that is restricted to a certain organiser that owns it
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Organizer")]
+        public IActionResult Delete (int id)
+        {
+            //start of method
+
+            try
+            {
+                //start of try
+
+                int current_user_id = get_current_user_id();
+
+                //find the category and the evnt it belongs to
+                var category = _context.Categories.Where(c => c.CategoryID == id).Include(c => c.Event).SingleOrDefault();
+
+                if (category == null || category.Event == null)
+                {
+                    return NotFound(new { message = "Category not found" });
+                }
+
+                //only the organiser who owns the event may delete its categories
+                if (category.Event.OrganiserID != current_user_id)
+                {
+                    return StatusCode(403, new { message = "You do not own this event" });
+                }
+
+                _context.Categories.Remove(category);
+                _context.SaveChanges();
+
+                return NoContent();
+
+                //end of try
+            }
+
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+
+            //end of method
+        }
+
         //end of class
     }
     //end of namesapce
