@@ -104,7 +104,46 @@ namespace RaceDay_2.Controllers
 
         }
 
-        //emd of class
+        //get
+        //gets all the enrolments belonging to the authenticated participant
+        [HttpGet("/api/enrolments/me")]
+        [Authorize(Roles = "Participant")]
+        public IActionResult GetMine()
+        {
+            //start of method
+
+            try
+            {
+                //start of try
+
+                int participant_id = get_current_user_id();
+
+                var enrolments = _context.Enrolments.Where(en => en.ParticipantID == participant_id).OrderByDescending(en => en.EnrolmentDate).Select(en => new
+                {
+                    en.EnrolmentID,
+                    en.CategoryID,
+                    en.EnrolmentDate,
+                    en.Status
+                }).ToList();
+
+                return Ok(enrolments);
+
+                //end of try
+            }
+
+            catch (Exception e)
+            {
+                //start of catch
+
+                return BadRequest(e.Message);
+
+                //end of catch
+            }
+
+            //end of method
+        }
+
+        //end of class
     }
 
     //end of namespace
