@@ -115,6 +115,22 @@ namespace RaceDay_2.Controllers
             //end of method
         }
 
+        //gets the user id of the current authicated organiser
+        private int get_current_user()
+        {
+            //start of method
+
+            var id_claim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (id_claim == null || !int.TryParse(id_claim, out int user_id))
+            {
+                throw new UnauthorizedAccessException("Could not get current user.");
+            }
+
+            return user_id;
+            //end of method
+        }
+
         //post
         //makes a new event so that logged organiser can strat managiing registrations for it
         [HttpPost]
@@ -135,7 +151,7 @@ namespace RaceDay_2.Controllers
 
                 //get the current logged in organiser user id
 
-                int organizer_id = get_current_user_id();
+                int organizer_id = get_current_user();
 
                 var new_event = new Event
                 {
@@ -175,21 +191,7 @@ namespace RaceDay_2.Controllers
             //end of method
         }
 
-        //gets the user id of the current authicated organiser
-        private int get_current_user()
-        {
-            //start of method
-
-            var id_claim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            if (id_claim == null || !int.TryParse(id_claim, out int user_id))
-            {
-                throw new UnauthorizedAccessException("Could not get current user.");
-            }
-
-            return user_id;
-            //end of method
-        }
+        
 
         //end of class
 
