@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using RaceDay_2.Models;
 using System.Security.Claims;
 
@@ -159,6 +160,75 @@ namespace RaceDay_2.Controllers
             }
 
             //end of method
+        }
+
+        //put
+        //updates the remaning categories detalis of the orgaizer that owns the main event
+        [HttpPut("{id}")]
+        public IActionResult Update(int id, string categoryName, decimal distanceKm, int maxParticipants)
+        {
+            //start of method
+
+            try
+            {
+                //start of try
+
+                if(distanceKm <= 0)
+                {
+                    return BadRequest("DistanceKM has to be greater than 0");
+                }
+
+                if (maxParticipants <=0)
+                {
+                    return BadRequest("MaxParticipants has to be more than 0");
+                }
+
+                int cureent_user_id = get_current_user_id();
+
+                //find the category and the event it belongs to
+                var category = _context.Categories.Where(c => c.CategoryID == id).Include(c => c.Event).SingleOrDefault();
+
+                if (category == null || category.Event == null)
+                {
+                    return NotFound(new { message = "Category not found" });
+                }
+
+                //onl the organiser who owns the event may update its categories
+                if (category.Event.OrganiserID != cureent_user_id)
+                {
+                    return StatusCode(403, new { message = "You do not own this event" });
+                }
+
+                //updte the category
+                category.CategoryName = categoryName;
+                category.DistanceKM = distanceKm;
+                category.MaxParticipants = maxParticipants;
+
+                _context.SaveChanges();
+
+                //return the updated category
+                return Ok(new
+                {
+                    category.CategoryID,
+                    category.EventID,
+                    category.CategoryName,
+                    category.DistanceKM,
+                    category.MaxParticipants
+                });
+
+                //end of try
+            }
+
+            catch (Exception e)
+            {
+                //stat of catch
+
+                return BadRequest(e.Message);
+
+                //end of catch
+            }
+
+            //end of mrthod
         }
 
         //end of class
