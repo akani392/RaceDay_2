@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RaceDay_2.Models;
+using System.Security.Claims;
 
 namespace RaceDay_2.Controllers
 {
@@ -111,6 +112,82 @@ namespace RaceDay_2.Controllers
                 //end of try
             }
 
+            //end of method
+        }
+
+        //post
+        //makes a new event so that logged organiser can strat managiing registrations for it
+        [HttpPost]
+        [Authorize(Roles = "Organizer")]
+        public IActionResult Create(string eventName, DateTime eventDate, string location, string description, string eventType)
+        {
+            //start  of method
+
+            try
+            {
+                //start of try
+                //running walikng cycling are allowed by the database
+                
+                if (!valid_event_types.Contains(eventType))
+                {
+                    return BadRequest("Event name has to be running walking or cycling");
+                }
+
+                //get the current logged in organiser user id
+
+                int organizer_id = get_current_user_id();
+
+                var new_event = new Event
+                {
+                    OrganiserID = organizer_id,
+                    EventName = eventName,
+                    EventType = eventType,
+                    Location = location,
+                    Description = description
+                };
+
+                _context.Events.Add(new_event);
+                _context.SaveChanges();
+
+                //return the new created event
+                return StatusCode(201, new
+                {
+                    new_event.EventID,
+                    new_event.OrganiserID,
+                    new_event.EventName,
+                    new_event.EventDate,
+                    new_event.EventType,
+                    new_event.Location,
+                    new_event.Description
+                });
+                //end of try
+            }
+
+            catch (Exception e)
+            {
+                //start of catch
+
+                return BadRequest(e.Message);
+
+                //end of catch
+            }
+
+            //end of method
+        }
+
+        //gets the user id of the current authicated organiser
+        private int get_current_user()
+        {
+            //start of method
+
+            var id_claim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (id_claim == null || !int.TryParse(id_claim, out int user_id))
+            {
+                throw new UnauthorizedAccessException("Could not get current user.");
+            }
+
+            return user_id;
             //end of method
         }
 
