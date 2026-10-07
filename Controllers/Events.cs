@@ -62,6 +62,58 @@ namespace RaceDay_2.Controllers
             //end of method
         }
 
+        //gets all the details for a single event
+        [HttpGet("{id}")]
+        [Authorize]
+        public IActionResult GetById(int id)
+        {
+            //start of method
+
+            try
+            {
+                //start of try
+
+                var found_event = _context.Events.Where(e => e.EventID == id).Select(e => new
+                {
+                    e.EventID,
+                    e.OrganiserID,
+                    e.EventName,
+                    e.EventDate,
+                    e.EventType,
+                    e.Location,
+                    e.Description,
+                    Categories = e.Categories.Select(c => new
+                    {
+                        c.CategoryID,
+                        c.CategoryName,
+                        c.DistanceKM,
+                        c.MaxParticipants
+                    })
+                }).SingleOrDefault();
+
+                //check if event is there
+                if (found_event == null)
+                {
+                    return NotFound(new { message = "Event is not found" });
+                }
+
+                return Ok(found_event);
+
+                //end of try
+            }
+
+            catch (Exception e)
+            {
+                //start of try
+
+                return BadRequest(e.Message);
+
+                //end of try
+            }
+
+            //end of method
+        }
+
         //end of class
 
     }
