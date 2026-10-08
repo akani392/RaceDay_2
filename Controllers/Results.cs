@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using RaceDay_2.Models;
 using System.Security.Claims;
 
@@ -39,6 +41,72 @@ namespace RaceDay_2.Controllers
 
         //post
         //gwts a finish time and position for a certain enrolmet when the race is done
+        [HttpPost("api/enrolments/{enrolmentId}/result")]
+        [Authorize (Roles = "Organizer")]
+        public IActionResult Create (int enrolmentId, TimeSpan finishTime, int position)
+        {
+            try
+            {
+                //start of try
+
+                if (position <= 0)
+                {
+                    return BadRequest("Position has to be greater than 0");
+                }
+
+                int current_user_id = get_current_user_id();
+
+                //find the enrollment and the organiser who owns the event
+                var enrolment = _context.Enrolments.Include(en => en.Category).ThenInclude(c => c!.Event).SingleOrDefault(en => en.EnrolmentID == enrolmentId);
+
+                if (enrolment == null || enrolment.Category == null || enrolment.Category.Event == null)
+                {
+                    return NotFound(new { message = "Enrolment not found" });
+                }
+
+                //check a result has not been already put in
+                bool already_captured = _context.Results.Any(r => r.EnrolmentID == enrolmentId);
+
+                if (already_captured)
+                {
+                    return Conflict(new { message = "A result already exists for this enrolment" });
+                }
+
+                var new_result = new Result
+                {
+                    EnrolmentID = enrolmentId,
+                    CapturedByID = current_user_id,
+                    FinishTime = finishTime,
+                    Position = position
+                };
+
+                _context.Results.Add(new_result);
+                _context.SaveChanges();
+
+                //return the new captured result
+                return StatusCode(201, new
+                {
+                    new_result.ResultID,
+                    new_result.EnrolmentID,
+                    new_result.CapturedByID,
+                    new_result.FinishTime,
+                    new_result.Position,
+                    new_result.DateCaptured
+                });
+
+
+                //end of try
+            }
+
+            catch (Exception e)
+            {
+                //start of catch
+
+                return BadRequest(e.Message);
+
+                //end of catch
+            }
+        }
 
         //end of class
 
