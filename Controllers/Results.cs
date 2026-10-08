@@ -45,6 +45,7 @@ namespace RaceDay_2.Controllers
         [Authorize (Roles = "Organizer")]
         public IActionResult Create (int enrolmentId, TimeSpan finishTime, int position)
         {
+            //start of meyhod
             try
             {
                 //start of try
@@ -106,6 +107,115 @@ namespace RaceDay_2.Controllers
 
                 //end of catch
             }
+            //end of method
+        }
+
+        //get
+        //gwt the reuslt for a certain enrolment
+        [HttpGet("/api/enrolments/{enrolmentId}/result")]
+        [Authorize]
+        public IActionResult GetByEnrolemt(int enrolmentId)
+        {
+            //start of method
+
+            try
+            {
+                //start of try
+
+                var result = _context.Results.Where(r => r.EnrolmentID == enrolmentId).Select(r => new
+                {
+                    r.ResultID,
+                    r.EnrolmentID,
+                    r.CapturedByID,
+                    r.FinishTime,
+                    r.Position,
+                    r.DateCaptured
+                }).SingleOrDefault();
+
+                // check if a result has been put in
+                if (result == null)
+                {
+                    return NotFound(new { message = "No result has been captured yet" });
+                }
+
+                return Ok(result);
+
+                //end of try
+            }
+
+            catch (Exception e)
+            {
+                //start of catch
+
+                return BadRequest(e.Message);
+
+                //end of catch
+            }
+
+            //end of method
+        }
+
+        //put
+        //corrects previosly captured result restricted to the organiser who got it
+
+        [HttpPut("/api/results/{id}")]
+        [Authorize(Roles = "Organizer")]
+        public IActionResult Update (int id, TimeSpan finishTime, int position)
+        {
+            //start of method
+
+            try
+            {
+                //start of try
+
+                if (position <= 0)
+                {
+                    return BadRequest("Position has to be greater than 0");
+                }
+
+                int current_user_id = get_current_user_id();
+
+                //fnd who got the result
+                var result = _context.Results.Find(id);
+
+                if(result == null)
+                {
+                    return NotFound(new { message = "Result not gound" });
+                }
+
+                //only the organiser who got the result can correct it
+                if (result.CapturedByID != current_user_id)
+                {
+                    return StatusCode(403, new { message = "You did not capture this result" });
+                }
+
+                result.FinishTime = finishTime;
+                result.Position = position;
+
+                _context.SaveChanges();
+
+                //return the updated result
+
+                return Ok(new
+                {
+                    result.ResultID,
+                    result.FinishTime,
+                    result.Position
+                });
+
+                //end of try
+            }
+
+            catch (Exception e)
+            {
+                //start of catch
+
+                return BadRequest(e.Message);
+
+                //end of catch
+            }
+
+            //end of method
         }
 
         //end of class
