@@ -143,6 +143,110 @@ namespace RaceDay_2.Controllers
             //end of method
         }
 
+        //get
+        //get all the enromlents for a certain event so that owning Orgainsers can manage particpationn
+        [HttpGet("api/events/{eventId}/enrolments")]
+        [Authorize (Roles = "Organiser")]
+        public IActionResult GetByEvent (int eventId)
+        {
+            //start of method
+
+            try
+            {
+                //start of try
+
+                int current_user_id = get_current_user_id();
+
+                //check the evenr is there and who owns it
+                var owning_event = _context.Events.Find(eventId);
+
+                if (owning_event == null)
+                {
+                    return NotFound(new { message = "Event not found" });
+                }
+
+                //only the organizer whoe oens the event may view its enrolment
+                if (owning_event.OrganiserID != current_user_id)
+                {
+                    return StatusCode(403, new { message = "You do not own this event" });
+                }
+
+                //get every enrolment through every actegory that belongs to this event
+                var enrolments = _context.Enrolments.Where(en => en.Category!.EventID == eventId).OrderBy(en => en.EnrolmentDate).Select(en => new
+                {
+                    en.EnrolmentID,
+                    en.ParticipantID,
+                    en.CategoryID,
+                    en.EnrolmentDate,
+                    en.Status
+                }).ToList();
+                return Ok(enrolments);
+
+                //end of try
+            }
+
+            catch (Exception e)
+            {
+                //start of catch
+
+                return BadRequest(e.Message);
+
+                //end of catch
+            }
+
+            //end of method
+        }
+
+
+        //delete
+        //cancels an enrolment, restricted to the participant who owns it
+        [HttpDelete("/api/enrolments/{id}")]
+        [Authorize(Roles = "Participant")]
+        public IActionResult Delete (int id)
+        {
+            //start of method
+
+            try
+            {
+                //start of try
+
+                int current_user_id = get_current_user_id();
+
+                //find who owns the enrolments
+                var enrolment = _context.Enrolments.Find(id);
+
+                if (enrolment == null)
+                {
+                    return NotFound(new { message = "Enrolment not found" });
+                }
+
+                //only the participant who owns the enrolemt is able to cancel
+                if (enrolment.ParticipantID != current_user_id)
+                {
+                    return StatusCode(403, new { message = "This is not your enrolment." });
+                }
+
+                _context.Enrolments.Remove(enrolment);
+                _context.SaveChanges();
+
+                return NoContent();
+
+
+                //end of try
+            }
+
+            catch (Exception e)
+            {
+                //start of catch
+
+                return BadRequest(e.Message);
+
+                //end of catch
+            }
+
+            //end of method
+        }
+
         //end of class
     }
 
