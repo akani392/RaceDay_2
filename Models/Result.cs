@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 namespace RaceDay_2.Models
 {
@@ -8,7 +9,7 @@ namespace RaceDay_2.Models
     public class Result
     {
         //start of class
-
+        [Key]
         public int ResultID { get; set; }
 
         //puts in a 1 to 1 relationship with enrolment

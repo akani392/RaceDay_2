@@ -229,24 +229,22 @@ namespace RaceDay_2.Controllers
 
             try
             {
-                //start of try
+                // start of try
 
                 int participant_id = get_current_user_id();
 
-                var results = _context.Results.Where(r => r.Enrolment!.ParticipantID == participant_id).OrderByDescending(r => r.DateCaptured).Select(r = new
-                {
-                    r.ResultID,
-                    r.Enrolment,
-                    EventName = r.Enrolment!.Category!.Event!.EventName,
-                    CategoryName = r.Enrolment.Category.CategoryName,
-                    r.FinishTime,
-                    r.Position,
-                    r.DateCaptured
-                }).ToList();
+                var results = _context.Results.Where(r => r.Enrolment!.ParticipantID == participant_id).OrderByDescending(r => r.DateCaptured).Select(r => new
+                    {
+                        r.ResultID,
+                        r.EnrolmentID,
+                        EventName = r.Enrolment!.Category!.Event!.EventName,
+                        CategoryName = r.Enrolment.Category.CategoryName,
+                        r.FinishTime,
+                        r.Position,
+                        r.DateCaptured
+                    }).ToList();
 
                 return Ok(results);
-
-
                 //end of try
             }
 

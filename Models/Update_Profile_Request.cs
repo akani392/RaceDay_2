@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 namespace RaceDay_2.Models
 {
@@ -11,9 +12,11 @@ namespace RaceDay_2.Models
     public class UpdateProfileRequest
     {
         //start of class
-
+        [Required]
         public string FirstName { get; set; } = string.Empty;
+        [Required]
         public string LastName { get; set; } = string.Empty;
+        [Required, EmailAddress]
         public string Email { get; set; } = string.Empty;
 
         //end of class

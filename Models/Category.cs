@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RaceDay_2.Models
@@ -10,7 +11,7 @@ namespace RaceDay_2.Models
     public class Category
     {
         //start of class
-
+        [Key]
         public int CategoryID { get; set; }
 
         //foregin key to the event this category belongs to

@@ -191,7 +191,79 @@ namespace RaceDay_2.Controllers
             //end of method
         }
 
+        //Put
+        //updates an event, restricted to the organiser who owns it
+        [HttpPut("{id}")]
+        [Authorize (Roles = "Organizer")]
+        public IActionResult Update(int id, string eventName, DateTime eventDate, string location, string description, string eventType)
+        {
+            //start  of method
+
+            try
+            {
+                //start of try
+                
+                //only running, walkking or cycling allowed here
+                if (!valid_event_types.Contains(eventType))
+                {
+                    return BadRequest("EventTpe has to be one of running, walking, cycling");
+                }
+
+                int current_user_id = get_current_user();
+
+                //find the event to update
+                var found_event = _context.Events.Find(id);
+
+                if (found_event == null)
+                {
+                    return NotFound(new { message = "Event not found" });
+                }
+
+                //only the organiser who owns the event may update it
+                if (found_event.OrganiserID != current_user_id)
+                {
+                    return StatusCode(403, new { message = "You do not own this event" });
+                }
+
+                found_event.EventName = eventName;
+                found_event.EventDate = eventDate;
+                found_event.Location = location;
+                found_event.Description = description;
+                found_event.EventType = eventType;
+
+                _context.SaveChanges();
+
+                //return the updated event
+                return Ok(new
+                {
+                    found_event.EventID,
+                    found_event.OrganiserID,
+                    found_event.EventName,
+                    found_event.EventDate,
+                    found_event.EventType,
+                    found_event.Location,
+                    found_event.Description
+                });
+
+                //end of try
+            }
+
+            catch (Exception e)
+            {
+                //start of catch
+
+                return BadRequest(e.Message);
+
+                //end of catch
+            }
+
+            //end of method
+        }
+
+        //delete
         
+
+
 
         //end of class
 

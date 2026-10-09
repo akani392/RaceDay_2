@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 namespace RaceDay_2.Models
 {
@@ -8,8 +9,8 @@ namespace RaceDay_2.Models
     public class Event
     {
         //start of class
-       
-            public int EventID { get; set; }
+        [Key]
+        public int EventID { get; set; }
            
             //foreifn key to user 
             public int OrganiserID { get; set; }

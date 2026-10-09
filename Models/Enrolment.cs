@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 namespace RaceDay_2.Models
 {
@@ -7,6 +8,7 @@ namespace RaceDay_2.Models
     public class Enrolment
     {
         //start of class
+        [Key]
         public int EnrolmentID { get; set; }
 
         //foreign key to user for participant
