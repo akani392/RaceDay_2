@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient.Internal;
 using RaceDay_2.Models;
 using System.Security.Claims;
 
@@ -261,7 +262,75 @@ namespace RaceDay_2.Controllers
         }
 
         //delete
-        
+        //delete an event resticted to the organiser who owns it
+        [HttpDelete("{id}")]
+        [Authorize (Roles = "Organzier")]
+        public IActionResult Delete (int id)
+        {
+            //start  of method
+
+            try
+            {
+                //start of try
+
+                int current_user_id = get_current_user_id();
+
+                //find the event to delete
+                var found_event = _context.Events.Find(id);
+
+                if (found_event == null)
+                {
+                    return NotFound(new { message = "Event not found" });
+                }
+
+                //only the organiser who iwns the event
+                if (found_event.OrganiserID != current_user_id)
+                {
+                    return StatusCode(403, new { message = "You do not own this event" });
+                }
+
+                //the database does not cascade so categories has to be removed first
+                bool has_categories = _context.Categories.Any(c => c.EventID == id);
+
+                if (has_categories)
+                {
+                    return Conflict(new { message = "Remove this events categories bedfore deleting it" });
+                }
+
+                _context.Events.Remove(found_event);
+                _context.SaveChanges();
+
+                return NoContent();
+
+                //end of try
+            }
+
+            catch (Exception e)
+            {
+                //start of catch
+
+                return BadRequest(e.Message);
+
+                //end of catch
+            }
+
+            //end of method
+        }
+
+        //gets the userID of the currently authenticated organiser
+        private int get_current_user_id()
+        {
+            //start of method
+            var id_claim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (id_claim == null || !int.TryParse(id_claim, out int user_id))
+            {
+                throw new UnauthorizedAccessException("Could not get current user.");
+            }
+
+            return user_id;
+            //end of method
+        }
 
 
 
