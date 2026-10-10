@@ -91,6 +91,13 @@ namespace RaceDay_2.Models
                 entity.HasOne(r => r.CapturedBy);
             });
             //end of result configuration
+
+            //start of event configuration
+            modelBuilder.Entity<Event>(entity =>
+            {
+
+                entity.ToTable("Event", table => table.HasCheckConstraint("ck_event_eventtype", "EventType IN ('Running', 'Walking', 'Cycling'"));
+            });
         
 
         //end of model configuration
