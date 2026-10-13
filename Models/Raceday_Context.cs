@@ -37,7 +37,7 @@ namespace RaceDay_2.Models
             //start of role configuration
             modelBuilder.Entity<Roles>(entity =>
             {
-                entity.ToTable("Role");
+                entity.ToTable("Roles");
                 entity.HasIndex(r => r.RoleName).IsUnique();
             });
             //end of role configuration
@@ -45,7 +45,7 @@ namespace RaceDay_2.Models
             //start of user configuraction
             modelBuilder.Entity<User>(entity =>
             {
-                entity.ToTable("User");
+                entity.ToTable("Users");
                 entity.HasIndex(u => u.Email).IsUnique();
 
                 entity.HasOne(u => u.Role).WithMany(r => r.Users).HasForeignKey(u => u.RoleID);

@@ -90,7 +90,7 @@ namespace RaceDay_2.Controllers
         //adds a new category to an event so that have to enrol into
 
         [HttpPost("/api/events/{eventId}/categories")]
-        [Authorize(Roles = "Organizer")]
+        [Authorize(Roles = "Organiser")]
         public IActionResult Create(int eventId, string categoryName, decimal distanceKm, int maxParticipants)
         {
             //start of method
@@ -165,7 +165,8 @@ namespace RaceDay_2.Controllers
         //put
         //updates the remaning categories detalis of the orgaizer that owns the main event
         [HttpPut("{id}")]
-        public IActionResult Update(int id, string categoryName, decimal distanceKm, int maxParticipants)
+		[Authorize(Roles = "Organiser")]  
+		public IActionResult Update(int id, string categoryName, decimal distanceKm, int maxParticipants)
         {
             //start of method
 
@@ -235,7 +236,7 @@ namespace RaceDay_2.Controllers
         //takes out a category that is restricted to a certain organiser that owns it
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Organizer")]
+        [Authorize(Roles = "Organiser")]
         public IActionResult Delete (int id)
         {
             //start of method

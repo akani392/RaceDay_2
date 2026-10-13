@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient.Internal;
 using RaceDay_2.Models;
 using System.Security.Claims;
 
@@ -135,7 +134,7 @@ namespace RaceDay_2.Controllers
         //post
         //makes a new event so that logged organiser can strat managiing registrations for it
         [HttpPost]
-        [Authorize(Roles = "Organizer")]
+        [Authorize(Roles = "Organiser")]
         public IActionResult Create(string eventName, DateTime eventDate, string location, string description, string eventType)
         {
             //start  of method
@@ -160,8 +159,9 @@ namespace RaceDay_2.Controllers
                     EventName = eventName,
                     EventType = eventType,
                     Location = location,
-                    Description = description
-                };
+                    Description = description,
+					EventDate = eventDate
+				};
 
                 _context.Events.Add(new_event);
                 _context.SaveChanges();
@@ -195,7 +195,7 @@ namespace RaceDay_2.Controllers
         //Put
         //updates an event, restricted to the organiser who owns it
         [HttpPut("{id}")]
-        [Authorize (Roles = "Organizer")]
+        [Authorize (Roles = "Organiser")]
         public IActionResult Update(int id, string eventName, DateTime eventDate, string location, string description, string eventType)
         {
             //start  of method
@@ -264,7 +264,7 @@ namespace RaceDay_2.Controllers
         //delete
         //delete an event resticted to the organiser who owns it
         [HttpDelete("{id}")]
-        [Authorize (Roles = "Organzier")]
+        [Authorize (Roles = "Organsier")]
         public IActionResult Delete (int id)
         {
             //start  of method

@@ -42,7 +42,7 @@ namespace RaceDay_2.Controllers
         //post
         //gwts a finish time and position for a certain enrolmet when the race is done
         [HttpPost("api/enrolments/{enrolmentId}/result")]
-        [Authorize (Roles = "Organizer")]
+        [Authorize (Roles = "Organiser")]
         public IActionResult Create (int enrolmentId, TimeSpan finishTime, int position)
         {
             //start of meyhod
@@ -159,7 +159,7 @@ namespace RaceDay_2.Controllers
         //corrects previosly captured result restricted to the organiser who got it
 
         [HttpPut("/api/results/{id}")]
-        [Authorize(Roles = "Organizer")]
+        [Authorize(Roles = "Organiser")]
         public IActionResult Update (int id, TimeSpan finishTime, int position)
         {
             //start of method

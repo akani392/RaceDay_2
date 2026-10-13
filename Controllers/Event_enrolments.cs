@@ -9,7 +9,7 @@ namespace RaceDay_2.Controllers
 {
 
     //start of namespace
-    [Route("api/[controller]")]
+    [Route("/api/[controller]")]
     [ApiController]
     public class Event_enrolments : ControllerBase
     {
@@ -145,7 +145,7 @@ namespace RaceDay_2.Controllers
 
         //get
         //get all the enromlents for a certain event so that owning Orgainsers can manage particpationn
-        [HttpGet("api/events/{eventId}/enrolments")]
+        [HttpGet("/api/events/{eventId}/enrolments")]
         [Authorize (Roles = "Organiser")]
         public IActionResult GetByEvent (int eventId)
         {

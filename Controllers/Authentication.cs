@@ -122,9 +122,16 @@ namespace RaceDay_2.Controllers
 
                 //check if password is correct
                 bool password_correct = Password_Helper.verify_password(password, found_user.PasswordHash);
+
+                if (!password_correct)
+                {
+                    return Unauthorized("Invalid email or password.");
+                }
+
                 //get the claims that identify the user in the future
                 var claims = new List<Claim>
                 {
+                    new Claim(ClaimTypes.NameIdentifier, found_user.UserID.ToString()),
                     new Claim(ClaimTypes.Name, found_user.Email),
                     new Claim(ClaimTypes.Role, found_user.RoleName)
                 };
