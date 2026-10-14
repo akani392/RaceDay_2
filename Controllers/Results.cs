@@ -9,7 +9,7 @@ namespace RaceDay_2.Controllers
 {
     //start of namespace
 
-    [Route("api/[controller]")]
+    [Route("/api/[controller]")]
     [ApiController]
     public class Results : ControllerBase
     {
@@ -41,7 +41,7 @@ namespace RaceDay_2.Controllers
 
         //post
         //gwts a finish time and position for a certain enrolmet when the race is done
-        [HttpPost("api/enrolments/{enrolmentId}/result")]
+        [HttpPost("/api/enrolments/{enrolmentId}/result")]
         [Authorize (Roles = "Organiser")]
         public IActionResult Create (int enrolmentId, TimeSpan finishTime, int position)
         {
@@ -63,6 +63,12 @@ namespace RaceDay_2.Controllers
                 if (enrolment == null || enrolment.Category == null || enrolment.Category.Event == null)
                 {
                     return NotFound(new { message = "Enrolment not found" });
+                }
+
+                // Check that the logged-in organiser owns the event
+                if (enrolment.Category.Event.OrganiserID != current_user_id)
+                {
+                    return StatusCode(403, new { message = "You do not own this event" });
                 }
 
                 //check a result has not been already put in
@@ -182,6 +188,7 @@ namespace RaceDay_2.Controllers
                 {
                     return NotFound(new { message = "Result not gound" });
                 }
+
 
                 //only the organiser who got the result can correct it
                 if (result.CapturedByID != current_user_id)
