@@ -96,7 +96,7 @@ namespace RaceDay_2.Models
             modelBuilder.Entity<Event>(entity =>
             {
 
-                entity.ToTable("Event", table => table.HasCheckConstraint("ck_event_eventtype", "EventType IN ('Running', 'Walking', 'Cycling'"));
+                entity.ToTable("Event", table => table.HasCheckConstraint("ck_event_eventtype", "EventType IN ('Running', 'Walking', 'Cycling')"));
             });
         
 

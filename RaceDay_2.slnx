@@ -1,4 +1,5 @@
 <Solution>
+  <Project Path="../RaceDay_MVC/RaceDay_MVC.csproj" Id="a02854eb-a767-4b1c-813b-6701bcd8c180" />
   <Project Path=".git/RaceDay_2_Test/RaceDay_2_Test.csproj" />
   <Project Path="RaceDay_2.csproj" />
 </Solution>

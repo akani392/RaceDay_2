@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using RaceDay_2.Models;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace RaceDay_2.Controllers
 {
@@ -9,6 +10,7 @@ namespace RaceDay_2.Controllers
 
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class User_Profile : ControllerBase
     {
         //start of class

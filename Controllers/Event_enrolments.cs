@@ -63,6 +63,14 @@ namespace RaceDay_2.Controllers
                 }
 
                 //check if this participant is already enrolled in the category
+                bool already_enrolled = _context.Enrolments.Any(en => en.ParticipantID == participant_id && en.CategoryID == categoryId);
+
+                if (already_enrolled)
+                {
+                    return Conflict(new { message = "You are already enrolled in this category" });
+                }
+
+                //check how many confirmed enrolments the category already has
                 int current_enrolments = _context.Enrolments.Count(en => en.CategoryID == categoryId && en.Status == "Confirmed");
 
                 if (current_enrolments >= category.MaxParticipants)

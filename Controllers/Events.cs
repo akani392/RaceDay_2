@@ -264,7 +264,7 @@ namespace RaceDay_2.Controllers
         //delete
         //delete an event resticted to the organiser who owns it
         [HttpDelete("{id}")]
-        [Authorize (Roles = "Organsier")]
+        [Authorize(Roles = "Organiser")]
         public IActionResult Delete (int id)
         {
             //start  of method
