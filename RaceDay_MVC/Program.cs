@@ -1,25 +1,77 @@
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+//add MVC controllers and views
 builder.Services.AddControllersWithViews();
 
+//add memory cache for session storage
+builder.Services.AddDistributedMemoryCache();
+
+//configure session management
+builder.Services.AddSession(options =>
+{
+    //start of session configuration
+
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+    options.Cookie.SameSite = SameSiteMode.Lax;
+
+    //session expires after 2 hours of inactivity
+    options.IdleTimeout = TimeSpan.FromHours(2);
+
+    //end of session configuration
+});
+
+//configure HTTP client to communicate with RaceDay API
+builder.Services.AddHttpClient<RaceDayApi>(client =>
+{
+    //start of HTTP client configuratio
+
+    string api_url =
+        builder.Configuration["RaceDayApi:BaseUrl"]
+        ?? "https://localhost:7001/";
+
+    client.BaseAddress = new Uri(api_url);
+
+    //end of HTTP client configuration
+})
+.ConfigurePrimaryHttpMessageHandler(() =>
+    new HttpClientHandler
+    {
+        //API cookies are handled by the MVC session
+        UseCookies = false
+    });
+
+//build the application
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+//configure error handling for production
 if (!app.Environment.IsDevelopment())
 {
+    //start of if statement
+
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
+
+    //end of if statement
 }
-000
+
+//configure the HTTP request pipeline
 app.UseHttpsRedirection();
+
 app.UseStaticFiles();
 
-//start of 
+app.UseRouting();
 
+//enable sessions before mapping controllers
+app.UseSession();
+
+//configure default MVC routes
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Home}/{action=Index}/{id?}"
+);
 
+//start the MVC application
 app.Run();
+
+
