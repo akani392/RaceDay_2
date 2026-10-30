@@ -13,7 +13,7 @@ namespace RaceDay_MVC.Controllers
         protected readonly RaceDayApi Api;
 
         //constructor for base controller
-        protected BaseController (RaceDayApi api)
+        protected HomeController (RaceDayApi api)
         {
             //start of constructor
 
@@ -50,6 +50,33 @@ namespace RaceDay_MVC.Controllers
             }
 
             return null;
+
+            //end of method
+        }
+
+        //shiw the sucess or error message
+        protected void Feedback((bool success, string message) result)
+        {
+            //start of method
+
+            if (result.success)
+            {
+                //start of if 
+
+                TempData["Successfull"] = result.message;
+
+                //end of if
+            }
+
+            else
+            {
+                //start of else 
+
+                TempData["Unsucessful"] = result.message;
+
+                //end oof else
+            }
+
 
             //end of method
         }
