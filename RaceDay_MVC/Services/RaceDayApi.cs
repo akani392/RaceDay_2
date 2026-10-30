@@ -1,4 +1,6 @@
-﻿using System.Text.Json;
+﻿using System.Net;
+using System.Text.Json;
+using System.Text.Json; 
 
 namespace RaceDay_MVC.Services
 {
@@ -27,7 +29,7 @@ namespace RaceDay_MVC.Services
 
 
         //send an http request to the api
-        public async Task<HttpRequestMessage> Send(HttpContext context,HttpMethod method,string route,object? body = null)
+        public async Task<HttpResponseMessage> Send(HttpContext context,HttpMethod method,string route,object? body = null)
         {
             //start of method
 
@@ -59,6 +61,83 @@ namespace RaceDay_MVC.Services
 
             //send request to the api
             return await _client.SendAsync(request);
+
+            //end of method
+        }
+
+        //get the information from the api
+        public async Task<T?> Get<T>(HttpContext context, string route)
+        {
+            //start of method
+
+            using var response = await Send(context, HttpMethod.Get, route);
+
+            //check if the api request was successful
+            if (!response.IsSuccessStatusCode)
+            {
+                //start of if
+
+                return default;
+
+                //end of if
+            }
+
+            //check if api responses have information
+            if (response.Content == null)
+            {
+                //start of if 
+
+                return default;
+
+                //end of if
+            }
+
+            //convert json response into a C# object
+            return await response.Content.ReadFromJsonAsync<T>(Json);
+
+            //end of method
+        }
+
+        //send create, update, delete requests to the api
+        public async Task<(bool success, string message)> Write(HttpContext context, HttpMethod method, string route, object? body = null)
+        {
+            //start of method
+
+            using var response = await Send(context, method, route, body);
+
+            //check if the resquest was successful
+            if (response.IsSuccessStatusCode)
+            {
+                //start of if
+
+                return (true, "Saved Successfuly");
+
+                //end of if
+            }
+
+            //if to check if user has permission
+            if (response.StatusCode == HttpStatusCode.Forbidden)
+            {
+                //start of if 
+
+                return (false, "You do not have permission for this action");
+
+                //end of if
+            }
+
+            return (false, "The request is not completed. Check your inputs and try again");
+
+
+
+            //end of method
+        }
+
+        //convert parameters into an encidede url query string
+        public static string Query(params (string key, string value)[] values)
+        {
+            //start of method
+
+            return string.Join("&", values.Select(parameter => Uri.UnescapeDataString(parameter.key) + "=" + Uri.EscapeDataString(parameter.value)));
 
             //end of method
         }
