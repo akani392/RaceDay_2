@@ -1,32 +1,61 @@
-using Microsoft.AspNetCore.Mvc;
-using RaceDay_MVC.Models;
-using System.Diagnostics;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Controllers;
+using RaceDay_MVC.Services;
 
 namespace RaceDay_MVC.Controllers
 {
-    public class HomeController : Controller
+    //start of namespace
+    public abstract class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        //start of class
 
-        public HomeController(ILogger<HomeController> logger)
+        //api service talikng with RaceDay 2
+        protected readonly RaceDayApi Api;
+
+        //constructor for base controller
+        protected BaseController (RaceDayApi api)
         {
-            _logger = logger;
+            //start of constructor
+
+            Api = api;
+
+            //end of constructor
         }
 
-        public IActionResult Index()
+        //check if logged user has the needed role
+        protected bool HasRole(string role)
         {
-            return View();
+            //start of method
+
+            string? user_role = HttpContext.Session.GetString("Role");
+            string? auth_cookie = HttpContext.Session.GetString("ApiCookie");
+
+            return user_role == role && !string.IsNullOrEmpty(auth_cookie); 
+
+            //enf of method
         }
 
-        public IActionResult Privacy()
+        //resend the user if they sont not the right password
+        protected IActionResult? RequireRole (string role)
         {
-            return View();
+            //start of method
+
+            if (!HasRole(role))
+            {
+                //start of if
+
+                return RedirectToAction("Login", "Account");
+
+                //end of if
+            }
+
+            return null;
+
+            //end of method
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
+        //end of class
     }
+
+    //end of namespace
 }
