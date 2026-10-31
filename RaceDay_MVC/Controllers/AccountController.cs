@@ -105,6 +105,97 @@ namespace RaceDay_MVC.Controllers
             return RedirectToAction("Index", "Particpant");
         }
 
+        //show registraion page
+        [HttpGet]
+        public IActionResult Register()
+        {
+            //start of method
+
+            return View(new RegisterForm());
+
+            //end of method
+        }
+
+        //process user registration
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Register(RegisterForm form)
+        {
+            //start of method
+
+            //validate the user input
+            if (!ModelState.IsValid)
+            {
+                //start of if
+
+                return View(form);
+
+                //end of if
+            }
+
+            //get the registration parameters
+            string route = "api/Authentication/register?" + RaceDayApi.Query(
+                ("firstName", form.FirstName),
+                ("lastName", form.LastName),
+                ("email", form.Email),
+                ("password", form.Password),
+                ("roleId", form.RoleID.ToString())
+                );
+
+            //send registraction request
+            var result = await Api.Write(HttpContext, HttpMethod.Post, route);
+            Feedback(result);
+
+            //send successful registration to login
+            if (result.success)
+            {
+                //syart of statment
+
+                return RedirectToAction(nameof(Login));
+
+                //end of statment
+            }
+
+            return View(form);
+
+            //end of method
+        }
+
+        //log the user out
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout()
+        {
+            //start f method
+
+            //tell api to logout the user
+            try
+            {
+                //start of try
+
+                await Api.Write(HttpContext, HttpMethod.Post, "api/Authrntication/logout");
+
+
+                //end of try
+            }
+
+            //finally, used to that the code runs regardless
+            finally
+            {
+                //start of finally
+
+                //clear the mvx session
+                HttpContext.Session.Clear();
+
+                //end of finallyy
+            }
+
+            //return to the homepage
+            return RedirectToAction("Index", "Home");
+
+            //end of method
+        }
+
         //end of class
     }
 
