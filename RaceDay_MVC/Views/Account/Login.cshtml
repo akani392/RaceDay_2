@@ -1,0 +1,80 @@
+﻿@model LoginForm
+
+@{
+    //start of view configuration
+
+    ViewData["Title"] = "Login";
+
+    //end of view configuration
+}
+
+<!-- start of login container-->
+<div class ="container py-5">
+    <div class="row justify-content-center">
+        <!-- start of login card-->
+        <div class="card shadow-lg border-0">
+            <div class="card-body p-4">
+                <h2 class="text-center mb-3">
+                    Welcome Back
+                </h2>
+
+                <p class=" text-center text-muted">
+                    Please Login into your RaceDay account
+
+                </p>
+
+                <!-- Start of login form-->
+                <form asp-controller="Account" asp-action="Login" method="post">
+
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3">
+
+                    </div>
+
+                    <!--email-->
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label">
+
+                        </label>
+
+                        <input asp-for="Email"class="form-control" placeholder="Can you please enter email"/>
+
+                        <span asp-validation-for="Email" class="text-danger">
+
+                        </span>
+                    </div>
+
+                    <!--password-->
+                    <div class="mb-3">
+                        <label asp-for="Password" class="form-check-label">
+
+                        </label>
+
+                        <input asp-for="Password" type="password" class="form-control" placeholder="Please enter your password"/>
+                        <span asp-validation-for="Password" class="text-danger">
+
+                        </span>
+
+
+                    </div>
+
+                    <!--login button-->
+                    <button type="submit" class="btn btn-primary w-100">
+                        Login
+                    </button>
+                </form>
+                <!-- end of login form-->
+
+                <p class="text-center mt-3">
+                    Do not have an account
+
+                    <a asp-controller="Account" asp-action="Register">
+                        Register
+                    </a>
+                </p>
+            </div>
+
+        </div>
+    </div>
+
+</div>
