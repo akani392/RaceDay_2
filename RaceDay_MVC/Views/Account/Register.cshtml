@@ -1,0 +1,126 @@
+﻿@model RegisterForm
+
+@{
+    //start of view
+
+    ViewData["Title"] = "Register";
+
+    //end of view
+}
+
+<!--start of registration container-->
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7 col-lg-6">
+
+            <!-- Start of registration-->
+            <div class="card shadow-lg border-0">
+                <h2 class="text-center mb-3">
+                    Join RaceDay
+                </h2>
+
+                <p class="text-center text-muted">
+                    You can create your racing account
+                </p>
+
+                <!--the start of the registration form-->
+
+                <form asp-controller="Account" asp-action="Register" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <div asp-validation-summary="All" class="text-danger mb-3">
+
+                    </div>
+
+                    <!--first name-->
+                    <div class="mb-3">
+
+                        <label asp-for="FirstName" class="form-control">
+
+                        </label>
+
+                        <input asp-for="FirstName" class="form-control"/>
+                        <span asp-validation-for="FirstName" class="text-danger">
+
+                        </span>
+                    </div>
+
+
+                    <!-- last name-->
+                    <div class="mb-3">
+                        <label asp-for="LastName" class="form-label">
+
+                        </label>
+
+                        <input asp-for="LastName" class="form-control"/>
+                        <span asp-validation-for="LastName" class="text-danger"></span>
+                    </div>
+
+                    <!--email-->
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label">
+
+                        </label>
+
+                        <input asp-for="Email" class="form-control"/>
+                        <span asp-validation-for="Email" class="text-danger">
+
+                        </span>
+                    </div>
+
+                    <!--password-->
+                    <div class="mb-3">
+
+                        <label asp-for="Password" class="form-label">
+
+                        </label>
+
+                        <input asp-for="Password" type="password" class="form-control"/>
+                        <span asp-validation-for="Password" class="text-danger">
+
+                        </span>
+                    </div>
+
+                    <!--role selection-->
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Account Type
+                        </label>
+
+                        <select asp-for="RoleID" class="form-select">
+                            <option value="1">
+                                Organizer
+                            </option>
+
+                            <option value="2">
+                                Participant
+                            </option>
+                        </select>
+                    </div>
+
+                    <!-- register button-->
+                    <button type="submit" class="btn btn-success w-100">
+                        Create an Account
+                    </button>
+
+                </form>
+
+                <!--end of registration form-->
+
+                <p class="text-center mt-3">
+                    You are already Registered?
+
+                    <a asp-controller="Account" asp-action="Login">
+                        Login
+                    </a>
+                </p>
+            </div>
+
+            <!--end of registration form-->
+        </div>
+    </div>
+</div>
+
+<!--end of regostration contaneir-->
