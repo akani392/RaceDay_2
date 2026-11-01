@@ -193,19 +193,29 @@
         <main class="container py-4">
             @if (TempData["Success"]!= null)
             {
+                //start of if
                 <div class="alert alert-success">
                     @TempData["Success"]
                 </div>
+                //end of if
             }
 
             @if(TempData["Error"] != null)
             {
+                //start of if
+
                 <div class="alert alert-danger">
                     @TempData["Error"]
                 </div>
 
-                @RenderBody()
+                //end of if
+
+                
             }
+
+        <!--display content of the current razor view-->
+         @RenderBody()
+
         </main>
         <!--end of main content-->
 
@@ -219,6 +229,7 @@
                     <!--date and time of the events-->
                     &copy;@DateTime.Now.Year RaceDay.
                     Made for racers and organisers
+                    ST10481917
                 </p>
             </div>
         </footer>
