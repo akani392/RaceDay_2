@@ -7,7 +7,7 @@ namespace RaceDay_MVC.Controllers
 {
     //start of namespace
 
-    public class AccountController : HomeController
+    public class AccountController : BaseController
     {
         //start of class
 

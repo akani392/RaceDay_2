@@ -1,3 +1,5 @@
+using RaceDay_MVC.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 //add MVC controllers and views
