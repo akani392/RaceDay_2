@@ -101,8 +101,8 @@ namespace RaceDay_MVC.Controllers
                 //end of if
             }
 
-            //redirect particpant to partcpant dashboard
-            return RedirectToAction("Index", "Particpant");
+            //redirect participant to participant dashboard
+            return RedirectToAction("Index", "Participant");
         }
 
         //show login page
@@ -184,7 +184,8 @@ namespace RaceDay_MVC.Controllers
             {
                 //start of try
 
-                await Api.Write(HttpContext, HttpMethod.Post, "api/Authrntication/logout");
+                //tell the api to logout the user
+                await Api.Write(HttpContext,HttpMethod.Post,"api/Authentication/logout");
 
 
                 //end of try
