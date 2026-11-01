@@ -1,22 +1,92 @@
+
+/* start of race day css */
+
+/* main website styling */
 html {
-  font-size: 14px;
-}
-
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
+    min-height: 100%;
 }
 
 body {
-  margin-bottom: 60px;
+    background-color: #432f2e !important;
+    color: #c4dae8;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
 }
+
+/* start of navigation styling */
+
+.navbar,
+.navbar.bg-dark {
+    background-color: #feefb8 !important;
+}
+
+.navbar-brand {
+    color: #432f2e !important;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.navbar .nav-link {
+    color: #432f2e !important;
+}
+
+    .navbar .nav-link:hover {
+        color: #9c563a !important;
+    }
+
+/* end of navigation styling */
+
+
+/* start of button styling */
+
+.btn-warning {
+    background-color: #c4dae8 !important;
+    border-color: #c4dae8 !important;
+    color: #432f2e !important;
+}
+
+    .btn-warning:hover {
+        background-color: #a5c8dd !important;
+    }
+
+.btn-outline-light {
+    color: #432f2e !important;
+    border-color: #432f2e !important;
+}
+
+    .btn-outline-light:hover {
+        background-color: #432f2e !important;
+        color: #ffffff !important;
+    }
+
+/* end of button styling */
+
+
+/* start of main content styling */
+
+main {
+    flex: 1;
+}
+
+.card {
+    border-radius: 12px;
+    background-color: #feefb8;
+    color: #432f2e;
+}
+
+/* end of main content styling */
+
+
+/* start of footer styling */
+
+footer,
+footer.bg-dark {
+    background-color: #c4dae8 !important;
+    color: #432f2e !important;
+}
+
+/* end of footer styling */
+
+/* end of race day css */

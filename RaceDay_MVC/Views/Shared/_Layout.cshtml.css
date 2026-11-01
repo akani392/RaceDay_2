@@ -21,8 +21,7 @@ body{
 }
 
 .nav-link:hover {
-    color: #432f2e;
-    !important;
+    color: #432f2e !important;
 }
 
 .btn-warning {

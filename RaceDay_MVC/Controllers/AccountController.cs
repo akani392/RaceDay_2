@@ -105,6 +105,17 @@ namespace RaceDay_MVC.Controllers
             return RedirectToAction("Index", "Particpant");
         }
 
+        //show login page
+        [HttpGet]
+        public IActionResult Login()
+        {
+            //start of method
+
+            return View(new LoginForm());
+
+            //end of method
+        }
+
         //show registraion page
         [HttpGet]
         public IActionResult Register()
