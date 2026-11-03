@@ -26,11 +26,11 @@ builder.Services.AddSession(options =>
 //configure HTTP client to communicate with RaceDay API
 builder.Services.AddHttpClient<RaceDayApi>(client =>
 {
-    //start of HTTP client configuratio
+    //start of HTTP client configuration
 
     string api_url =
         builder.Configuration["RaceDayApi:BaseUrl"]
-        ?? "https://localhost:7001/";
+        ?? "https://localhost:7016/";
 
     client.BaseAddress = new Uri(api_url);
 
@@ -39,7 +39,6 @@ builder.Services.AddHttpClient<RaceDayApi>(client =>
 .ConfigurePrimaryHttpMessageHandler(() =>
     new HttpClientHandler
     {
-        //API cookies are handled by the MVC session
         UseCookies = false
     });
 
