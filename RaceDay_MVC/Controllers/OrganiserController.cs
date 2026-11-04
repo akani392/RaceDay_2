@@ -85,6 +85,108 @@ namespace RaceDay_MVC.Controllers
             //end of method
         }
 
+
+        //show the create eevent page
+        [HttpGet]
+        public IActionResult CreateEvent()
+        {
+            //start of method
+            //check organiser permission
+
+            var check = RequireRole("Organiser");
+
+            if (check != null)
+            {
+                ///start of if
+
+                return check;
+
+                ///end of if
+            }
+
+            //show emppty event form
+            return View("EventForm", new EventForm());
+
+            //end of method
+        }
+
+        //show the edit event page
+        [HttpGet]
+        public async Task <IActionResult> EditEvent(int id)
+        {
+            //start of method
+
+            //check organiser permission
+            var check = RequireRole("Organiser");
+
+            if (check !=null)
+            {
+                //start of if
+
+                return check;
+
+                //end of if
+            }
+
+            try
+            {
+                //start of try
+
+                //get event from raceday 2 api
+                var found_event = await Api.Get<RaceEvent>(HttpContext, $"api/Events/{id}");
+
+                //get current organiser id
+                int? organiser_id = HttpContext.Session.GetInt32("UserID");
+
+                //check event exists
+                if (found_event == null)
+                {
+                    //start of if
+
+                    return NotFound();
+
+                    //end of if
+                }
+
+                //check evet ownership
+                if (found_event.OrganiserID != organiser_id)
+                {
+                    //start of if
+
+                    return Forbid();
+
+                    //emd of if
+                }
+
+                //populate form eith existing event information
+                var form = new EventForm
+                {
+                    EventID = found_event.EventID,
+                    EventName = found_event.EventName,
+                    EventType = found_event.EventType,
+                    Location = found_event.Location,
+                    Description = found_event.Description ?? ""
+                };
+
+                return View("EventForm", form);
+
+                //end of try
+            }
+
+            catch (Exception e)
+            {
+                //start of catch 
+
+                TempData["Error"] = "Unable to connect to the RaceDay API";
+
+                return RedirectToAction(nameof(Events));
+
+                //end of catch
+            }
+
+            //end of method
+        }
+
         //end of class
     }
 
