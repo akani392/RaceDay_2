@@ -311,6 +311,78 @@ namespace RaceDay_MVC.Controllers
             //end of method
         }
 
+
+        //delete an event
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteEvent(int id)
+        {
+            //start of method 
+
+            //check orgainser permission
+            var check = RequireRole("Organiser");
+
+            if (check != null)
+            {
+                //start of if
+
+                return check;
+
+                //of if
+            }
+
+            try
+            {
+                //start of try
+
+                //get event details
+                var found_event = await Api.Get<RaceEvent>(HttpContext, $"api/Events/{id}");
+
+                int? organiser_id = HttpContext.Session.GetInt32("UserID");
+
+                //check event exists
+                if (found_event == null)
+                {
+                    //start of if
+
+                    return NotFound();
+
+                    //end of if
+                }
+
+                if (found_event.OrganiserID != organiser_id)
+                {
+                    //start of if
+
+                    return Forbid();
+
+                    //end of if
+                }
+
+                //send delete requested to api
+                var result = await Api.Write(HttpContext, HttpMethod.Delete, $"api/Events/{id}");
+                Feedback(result);
+
+                return RedirectToAction(nameof(Events));
+
+
+                //end of try
+            }
+
+            catch (Exception e)
+            {
+                //start of catch
+
+                TempData["Error"] = "unable to connect to the raceday api";
+
+                return RedirectToAction(nameof(Events));
+
+                //end of catch
+            }
+
+            //end of method
+        }
+
         //end of class
     }
 
