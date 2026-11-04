@@ -187,6 +187,130 @@ namespace RaceDay_MVC.Controllers
             //end of method
         }
 
+        //create or update an event
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SaveEvent(EventForm form)
+        {
+            //start of method
+
+            //check organiser permission
+            var check = RequireRole("Organiser");
+
+            if (check != null)
+            {
+                //start of if
+
+                return check;
+
+                //end of if
+            }
+
+            //validate user input
+            if (!ModelState.IsValid)
+            {
+
+                //start of if
+
+                return View("EventForm", form);
+
+                
+                //end of if
+            }
+
+            try
+            {
+                //start of try
+                //check ownweship before editing an existing event
+                if (form.EventID > 0)
+                {
+                    //start of if
+
+                    var existing_event = await Api.Get<RaceEvent>(HttpContext, $"api/Events/{form.EventID}");
+                    int? organiser_id = HttpContext.Session.GetInt32("UserID");
+
+                    if (existing_event == null)
+                    {
+                        //start of if
+
+                        return NotFound();
+
+                        //end of if
+                    }
+
+                    if (existing_event.OrganiserID != organiser_id)
+                    {
+                        //start of if
+
+                        return Forbid();
+
+                        //end of if
+                    }
+
+                    //end of if
+                }
+
+
+                //get the right api route
+                string route = "api/Events";
+
+                //determine create or update operation
+                HttpMethod method = HttpMethod.Post;
+
+                if (form.EventID > 0)
+                {
+                    //start of if
+
+                    route += $"/{form.EventID}";
+                    method = HttpMethod.Put;
+
+                    //end of if
+                }
+
+                //add event information
+                route += "?" + RaceDayApi.Query(
+                    ("eventName", form.EventName),
+                    ("location", form.Location),
+                    ("description", form.Description),
+                    ("eventType", form.EventType));
+
+                //sebd rrequest to RaceDay 2 API
+                var result = await Api.Write(HttpContext, method, route);
+
+                //display success or error message
+                Feedback(result);
+
+                if (result.success)
+                {
+                    //start of if
+
+                    return RedirectToAction(nameof(Events));
+
+
+                    //end of if
+                }
+
+                return View("EventForm", form);
+
+
+
+                //end of try
+            }
+
+            catch
+            {
+                //start of catch
+
+                ModelState.AddModelError("", "Unable to connect to the RaceDay API");
+
+                return View("EventForm", form);
+
+                //end of catch
+            }
+
+            //end of method
+        }
+
         //end of class
     }
 
