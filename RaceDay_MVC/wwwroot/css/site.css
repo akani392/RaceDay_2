@@ -1,16 +1,16 @@
 
 /* start of race day css */
 
-/* start of main website styling */
 
+/* start of main website styling */
 
 html {
     min-height: 100%;
 }
 
 body {
-    background-color: #693822 !important;
-    color: #fff3e8;
+    background-color: #f0e5db !important;
+    color: #474329;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -23,12 +23,18 @@ main {
 }
 
 h1, h2, h3, h4, h5, h6 {
+    color: #474329;
     font-weight: 700;
 }
 
 a {
+    color: #474329;
     transition: color 0.2s ease;
 }
+
+    a:hover {
+        color: #a83f75;
+    }
 
 /* end of main website styling */
 
@@ -37,39 +43,44 @@ a {
 
 .navbar,
 .navbar.bg-dark {
-    background-color: #c48b67 !important;
-    border: 2px solid #a66c4d;
+    background-color: #474329 !important;
+    border: 2px solid #79745a;
     border-radius: 0 0 22px 22px;
     padding: 15px 20px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
 }
 
 .navbar-brand {
-    color: #693822 !important;
+    color: #f0e5db !important;
     font-size: 1.6rem;
     font-weight: bold;
 }
 
 .navbar .nav-link {
-    color: #693822 !important;
+    color: #f0e5db !important;
     padding: 10px 15px !important;
     border-radius: 14px;
     transition: 0.3s ease;
 }
 
-    .navbar .nav-link:hover {
-        background-color: #693822;
-        color: #fff3e8 !important;
+    .navbar .nav-link:hover,
+    .navbar .nav-link.active {
+        background-color: #fc75b4;
+        color: #474329 !important;
     }
 
 .navbar .navbar-text {
-    color: #693822 !important;
+    color: #f0e5db !important;
 }
 
 .navbar-toggler {
-    border: 2px solid #693822;
+    border: 2px solid #f0e5db;
     border-radius: 12px;
 }
+
+    .navbar-toggler:focus {
+        box-shadow: 0 0 0 3px rgba(252, 117, 180, 0.4);
+    }
 
 /* end of navigation styling */
 
@@ -77,7 +88,7 @@ a {
 /* start of button styling */
 
 .btn {
-    border-radius: 16px !important;
+    border-radius: 18px !important;
     padding: 10px 20px;
     font-weight: 600;
     border-width: 2px;
@@ -91,34 +102,42 @@ a {
 .btn-primary,
 .btn-warning,
 .btn-success {
-    background-color: #fe4d03 !important;
-    border-color: #fe4d03 !important;
-    color: #ffffff !important;
+    background-color: #fc75b4 !important;
+    border-color: #fc75b4 !important;
+    color: #2d2330 !important;
 }
 
     .btn-primary:hover,
     .btn-warning:hover,
     .btn-success:hover {
-        background-color: #db4000 !important;
-        border-color: #db4000 !important;
+        background-color: #e45699 !important;
+        border-color: #e45699 !important;
+        color: #2d2330 !important;
     }
 
 .btn-outline-light {
     background-color: transparent;
-    color: #693822 !important;
-    border-color: #693822 !important;
+    color: #f0e5db !important;
+    border-color: #f0e5db !important;
 }
 
     .btn-outline-light:hover {
-        background-color: #693822 !important;
-        color: #fff3e8 !important;
+        background-color: #fc75b4 !important;
+        color: #474329 !important;
+        border-color: #fc75b4 !important;
     }
 
 .btn-secondary {
-    background-color: #693822 !important;
-    border-color: #693822 !important;
-    color: #fff3e8 !important;
+    background-color: #474329 !important;
+    border-color: #474329 !important;
+    color: #f0e5db !important;
 }
+
+    .btn-secondary:hover {
+        background-color: #625c3b !important;
+        border-color: #625c3b !important;
+        color: #ffffff !important;
+    }
 
 /* end of button styling */
 
@@ -126,9 +145,9 @@ a {
 /* start of card styling */
 
 .card {
-    background-color: #c48b67;
-    color: #32180e;
-    border: 2px solid #a66c4d;
+    background-color: #474329;
+    color: #f0e5db;
+    border: 2px solid #79745a;
     border-radius: 24px !important;
     overflow: hidden;
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
@@ -144,8 +163,31 @@ a {
     padding: 25px;
 }
 
+.card h1,
+.card h2,
+.card h3,
+.card h4,
+.card h5,
+.card h6 {
+    color: #f0e5db;
+}
+
+.card a:not(.btn) {
+    color: #fc75b4;
+}
+
+    .card a:not(.btn):hover {
+        color: #ffc1de;
+    }
+
 .card .text-muted {
-    color: #503021 !important;
+    color: #d9cfc4 !important;
+}
+
+.card-header {
+    background-color: #474329;
+    color: #f0e5db;
+    border-bottom: 2px solid #fc75b4;
 }
 
 /* end of card styling */
@@ -155,24 +197,47 @@ a {
 
 .form-control,
 .form-select {
-    background-color: #fff3e8;
-    color: #693822;
-    border: 2px solid #a66c4d;
+    background-color: #fffaf6;
+    color: #474329;
+    border: 2px solid #79745a;
     border-radius: 14px;
     padding: 12px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
     .form-control:focus,
     .form-select:focus {
         background-color: #ffffff;
-        color: #693822;
-        border-color: #fe4d03;
-        box-shadow: 0 0 0 3px rgba(254, 77, 3, 0.2);
+        color: #474329;
+        border-color: #fc75b4;
+        box-shadow: 0 0 0 3px rgba(252, 117, 180, 0.25);
+    }
+
+    .form-control::placeholder {
+        color: #77705c;
     }
 
 .form-label {
     font-weight: 600;
 }
+
+.card .form-label {
+    color: #f0e5db;
+}
+
+.form-check-input {
+    border: 2px solid #79745a;
+}
+
+    .form-check-input:checked {
+        background-color: #fc75b4;
+        border-color: #fc75b4;
+    }
+
+    .form-check-input:focus {
+        border-color: #fc75b4;
+        box-shadow: 0 0 0 3px rgba(252, 117, 180, 0.25);
+    }
 
 /* end of form styling */
 
@@ -181,10 +246,12 @@ a {
 
 .table {
     --bs-table-bg: transparent;
-    --bs-table-color: #32180e;
-    --bs-table-striped-bg: rgba(255, 243, 232, 0.25);
-    --bs-table-striped-color: #32180e;
-    border-color: #a66c4d;
+    --bs-table-color: #f0e5db;
+    --bs-table-striped-bg: rgba(240, 229, 219, 0.12);
+    --bs-table-striped-color: #f0e5db;
+    --bs-table-hover-bg: rgba(252, 117, 180, 0.15);
+    --bs-table-hover-color: #f0e5db;
+    border-color: #79745a;
 }
 
     .table th,
@@ -192,6 +259,26 @@ a {
         padding: 14px;
         vertical-align: middle;
     }
+
+    .table thead th {
+        background-color: #35321f;
+        color: #f0e5db;
+        border-bottom: 2px solid #fc75b4;
+    }
+
+    .table tbody td {
+        border-bottom: 1px solid #79745a;
+    }
+
+    .table tbody tr:hover td {
+        background-color: rgba(252, 117, 180, 0.15);
+    }
+
+.table-responsive {
+    border: 2px solid #79745a;
+    border-radius: 18px;
+    overflow-x: auto;
+}
 
 /* end of table styling */
 
@@ -204,26 +291,97 @@ a {
     padding: 15px 20px;
 }
 
+.alert-success {
+    background-color: #e4f4e6;
+    color: #23502a;
+    border-color: #71a77a;
+}
+
+.alert-danger {
+    background-color: #fce2e8;
+    color: #842b42;
+    border-color: #d58a9e;
+}
+
 /* end of alert styling */
+
+
+/* start of dropdown styling */
+
+.dropdown-menu {
+    background-color: #474329;
+    border: 2px solid #79745a;
+    border-radius: 16px;
+    padding: 10px;
+}
+
+.dropdown-item {
+    color: #f0e5db;
+    border-radius: 10px;
+}
+
+    .dropdown-item:hover,
+    .dropdown-item:focus {
+        background-color: #fc75b4;
+        color: #474329;
+    }
+
+/* end of dropdown styling */
+
+
+/* start of image styling */
+
+img {
+    border-radius: 14px;
+    max-width: 100%;
+}
+
+/* end of image styling */
 
 
 /* start of footer styling */
 
 footer,
 footer.bg-dark {
-    background-color: #c48b67 !important;
-    color: #693822 !important;
-    border-top: 3px solid #fe4d03;
+    background-color: #474329 !important;
+    color: #f0e5db !important;
+    border-top: 3px solid #fc75b4;
     border-radius: 22px 22px 0 0;
     padding: 20px;
 }
 
     footer.text-white,
     footer .text-white {
-        color: #693822 !important;
+        color: #f0e5db !important;
     }
 
+    footer a {
+        color: #fc75b4;
+    }
+
+        footer a:hover {
+            color: #ffc1de;
+        }
+
 /* end of footer styling */
+
+
+/* start of accessibility styling */
+
+.btn:focus-visible,
+.nav-link:focus-visible,
+.navbar-brand:focus-visible {
+    outline: 3px solid #fc75b4;
+    outline-offset: 3px;
+}
+
+.form-control:focus-visible,
+.form-select:focus-visible {
+    outline: 2px solid #fc75b4;
+    outline-offset: 2px;
+}
+
+/* end of accessibility styling */
 
 
 /* start of responsive styling */
@@ -234,12 +392,24 @@ footer.bg-dark {
         padding: 12px;
     }
 
+        .navbar .nav-link {
+            padding: 10px !important;
+        }
+
     .card-body {
         padding: 18px;
     }
 
     .btn {
         padding: 9px 15px;
+    }
+
+    h1 {
+        font-size: 1.8rem;
+    }
+
+    h2 {
+        font-size: 1.5rem;
     }
 }
 
