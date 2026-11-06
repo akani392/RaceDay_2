@@ -1,92 +1,248 @@
 
 /* start of race day css */
 
-/* main website styling */
+/* start of main website styling */
+
+
 html {
     min-height: 100%;
 }
 
 body {
-    background-color: #432f2e !important;
-    color: #c4dae8;
+    background-color: #693822 !important;
+    color: #fff3e8;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     margin: 0;
+    font-family: Arial, sans-serif;
 }
+
+main {
+    flex: 1;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+}
+
+a {
+    transition: color 0.2s ease;
+}
+
+/* end of main website styling */
+
 
 /* start of navigation styling */
 
 .navbar,
 .navbar.bg-dark {
-    background-color: #feefb8 !important;
+    background-color: #c48b67 !important;
+    border: 2px solid #a66c4d;
+    border-radius: 0 0 22px 22px;
+    padding: 15px 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
 }
 
 .navbar-brand {
-    color: #432f2e !important;
-    font-size: 1.5rem;
+    color: #693822 !important;
+    font-size: 1.6rem;
     font-weight: bold;
 }
 
 .navbar .nav-link {
-    color: #432f2e !important;
+    color: #693822 !important;
+    padding: 10px 15px !important;
+    border-radius: 14px;
+    transition: 0.3s ease;
 }
 
     .navbar .nav-link:hover {
-        color: #9c563a !important;
+        background-color: #693822;
+        color: #fff3e8 !important;
     }
+
+.navbar .navbar-text {
+    color: #693822 !important;
+}
+
+.navbar-toggler {
+    border: 2px solid #693822;
+    border-radius: 12px;
+}
 
 /* end of navigation styling */
 
 
 /* start of button styling */
 
-.btn-warning {
-    background-color: #c4dae8 !important;
-    border-color: #c4dae8 !important;
-    color: #432f2e !important;
+.btn {
+    border-radius: 16px !important;
+    padding: 10px 20px;
+    font-weight: 600;
+    border-width: 2px;
+    transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
 }
 
-    .btn-warning:hover {
-        background-color: #a5c8dd !important;
+    .btn:hover {
+        transform: translateY(-2px);
+    }
+
+.btn-primary,
+.btn-warning,
+.btn-success {
+    background-color: #fe4d03 !important;
+    border-color: #fe4d03 !important;
+    color: #ffffff !important;
+}
+
+    .btn-primary:hover,
+    .btn-warning:hover,
+    .btn-success:hover {
+        background-color: #db4000 !important;
+        border-color: #db4000 !important;
     }
 
 .btn-outline-light {
-    color: #432f2e !important;
-    border-color: #432f2e !important;
+    background-color: transparent;
+    color: #693822 !important;
+    border-color: #693822 !important;
 }
 
     .btn-outline-light:hover {
-        background-color: #432f2e !important;
-        color: #ffffff !important;
+        background-color: #693822 !important;
+        color: #fff3e8 !important;
     }
+
+.btn-secondary {
+    background-color: #693822 !important;
+    border-color: #693822 !important;
+    color: #fff3e8 !important;
+}
 
 /* end of button styling */
 
 
-/* start of main content styling */
-
-main {
-    flex: 1;
-}
+/* start of card styling */
 
 .card {
-    border-radius: 12px;
-    background-color: #feefb8;
-    color: #432f2e;
+    background-color: #c48b67;
+    color: #32180e;
+    border: 2px solid #a66c4d;
+    border-radius: 24px !important;
+    overflow: hidden;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* end of main content styling */
+    .card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+
+.card-body {
+    padding: 25px;
+}
+
+.card .text-muted {
+    color: #503021 !important;
+}
+
+/* end of card styling */
+
+
+/* start of form styling */
+
+.form-control,
+.form-select {
+    background-color: #fff3e8;
+    color: #693822;
+    border: 2px solid #a66c4d;
+    border-radius: 14px;
+    padding: 12px;
+}
+
+    .form-control:focus,
+    .form-select:focus {
+        background-color: #ffffff;
+        color: #693822;
+        border-color: #fe4d03;
+        box-shadow: 0 0 0 3px rgba(254, 77, 3, 0.2);
+    }
+
+.form-label {
+    font-weight: 600;
+}
+
+/* end of form styling */
+
+
+/* start of table styling */
+
+.table {
+    --bs-table-bg: transparent;
+    --bs-table-color: #32180e;
+    --bs-table-striped-bg: rgba(255, 243, 232, 0.25);
+    --bs-table-striped-color: #32180e;
+    border-color: #a66c4d;
+}
+
+    .table th,
+    .table td {
+        padding: 14px;
+        vertical-align: middle;
+    }
+
+/* end of table styling */
+
+
+/* start of alert styling */
+
+.alert {
+    border-radius: 16px;
+    border-width: 2px;
+    padding: 15px 20px;
+}
+
+/* end of alert styling */
 
 
 /* start of footer styling */
 
 footer,
 footer.bg-dark {
-    background-color: #c4dae8 !important;
-    color: #432f2e !important;
+    background-color: #c48b67 !important;
+    color: #693822 !important;
+    border-top: 3px solid #fe4d03;
+    border-radius: 22px 22px 0 0;
+    padding: 20px;
 }
 
+    footer.text-white,
+    footer .text-white {
+        color: #693822 !important;
+    }
+
 /* end of footer styling */
+
+
+/* start of responsive styling */
+
+@media (max-width: 768px) {
+
+    .navbar {
+        padding: 12px;
+    }
+
+    .card-body {
+        padding: 18px;
+    }
+
+    .btn {
+        padding: 9px 15px;
+    }
+}
+
+/* end of responsive styling */
 
 /* end of race day css */
