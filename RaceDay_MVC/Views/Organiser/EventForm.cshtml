@@ -1,0 +1,123 @@
+﻿@model RaceDay_MVC.Models.EventForm
+
+@{
+    //start of view configuration
+    bool is_editing = Model.EventID > 0;
+
+    ViewData["Title"] = is_editing ? "Edit Event" : "Create Event";
+    //end of view configuration
+}
+
+<!-- start of event form page-->
+
+<div class="contanier py-4">
+    <div class="col lg-8">
+        <!--start of event form card-->
+
+        <div class="card shadow-lg">
+
+            <div class="card-body p-4">
+                <h2 class="mb-4">
+
+                    @(is_editing? "Edit Event" : "Create New Event")
+                </h2>
+
+                <!--start of event form-->
+                <form asp-controller="Organiser" asp-action="SaveEvent" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <!-- event id-->
+                    <input asp-for="EventID" type="hhidden"/>
+
+                    <!--validation summery-->
+                    <div asp-validation-summary="All" class="text-danger mb-3">
+
+                    </div>
+
+                    <!--event name-->
+                    <div class="mb-3">
+
+                        <label asp-for="EventName" class="form-label">
+                            Event Name🎨
+                        </label>
+
+                        <input asp-for="EventName" class="form-control" placeholder="Enter event name"/>
+
+                        <span asp-validation-for="EventName" class="text-danger">
+
+                        </span>
+                    </div>
+
+                    <!--event description-->
+                    <div class="mb-3">
+
+                        <label asp-for="Description" class="form-label">
+                            Description🤺
+                        </label>
+
+                        <textarea asp-for="Description" class="form-control" rows="4">
+
+                        </textarea>
+
+                        <span asp-validation-for="Description" class="text-danger">
+
+                        </span>
+                    </div>
+
+
+                    <!--event location-->
+
+                    <div class="mb-3">
+
+                        <label asp-for="Location" class="form-label">
+                            Location 📍
+                        </label>
+
+                        <input asp-for="Location" class="form-control" placeholder="Enter event location" />
+
+                        <span asp-validation-for="Location" class="text-danger">
+
+                        </span>
+                    </div>
+
+                    <!--event type-->
+                    <div class="mb-4">
+
+                        <label asp-for=" EventType" class="form-label">
+                            Event type🏃‍♀️‍➡️
+                        </label>
+
+                        <select asp-for="EventType" class="form-select">
+
+                            <option value="Running">Running🏃</option>
+                            <option value="Walking">Walking🚶</option>
+                            <option value="Cycling">Cycling🚴‍♂️</option>
+                        </select>
+
+                        <span asp-validation-for="EventType" class="text-danger">
+
+                        </span>
+                    </div>
+                    <!-- form buttons-->
+                    <div class="d-flex gap-2">
+
+                        <button type="submit" class="btn btn-warning">
+
+                            @(is_editing ? "Save Changes": "Create Event")
+
+                        </button>
+
+                        <a asp-controller="Organiser" asp-action="Events" class="btn btn-secondary">
+                            Cancel❌
+                        </a>
+                    </div>
+
+                </form>
+
+                <!--end of event form-->
+            </div>
+        </div>
+        <!--end of event form card-->
+    </div>
+</div>
+<!--end of event form page-->
