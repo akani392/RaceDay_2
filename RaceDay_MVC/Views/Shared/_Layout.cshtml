@@ -126,37 +126,47 @@
                         }
 
                         <!-- end of organiser navigation -->
-                          <!--Task bar for participant-->
-                            @if (is_participant)
-                            {
-                                //start of if
+                        <!-- start of participant navigation -->
+                        @if (is_participant)
+                        {
+                            @* start of if *@
 
-                                <li class="nav-item">
-                                    <a class="nav-link" asp-controller="Participant" asp-action="Index">
-                                        Events
-                                    </a>
-                                </li>
+                            <li class="nav-item">
+                                <a class="nav-link"
+                                   asp-controller="Events"
+                                   asp-action="Index">
+                                    Events 🏃
+                                </a>
+                            </li>
 
-                                <li class="nav-item">
-                                    <a class="nav-link" asp-controller="Participant" asp-action="MyEnrolments">
-                                        My Enrolments
-                                    </a>
-                                </li>
+                            <li class="nav-item">
+                                <a class="nav-link"
+                                   asp-controller="Participant"
+                                   asp-action="Enrolments">
+                                    My Enrolments 📋
+                                </a>
+                            </li>
 
-                                <li class="nav-item">
-                                    <a class="nav-link" asp-controller="Participant" asp-action="MyResults">
-                                        My Results
-                                    </a>
-                                </li>
+                            <li class="nav-item">
+                                <a class="nav-link"
+                                   asp-controller="Participant"
+                                   asp-action="Results">
+                                    My Results 🏆
+                                </a>
+                            </li>
 
-                                <li class="nav-item">
-                                    <a class="nav-link" asp-controller="Participant" asp-action="Profile">
-                                        Profile
-                                    </a>
-                                </li>
+                            <li class="nav-item">
+                                <a class="nav-link"
+                                   asp-controller="Participant"
+                                   asp-action="Profile">
+                                    Profile 👤
+                                </a>
+                            </li>
 
-                                //end of if
-                            }
+                            @* end of if *@
+                        }
+                        <!-- end of participant navigation -->
+
                         </ul>
 
                         <!--start of accont navigation-->

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 using RaceDay_2.Models;
 using System.Security.Claims;
+using Microsoft.EntityFrameworkCore;
 
 namespace RaceDay_2.Controllers
 {
@@ -41,8 +42,8 @@ namespace RaceDay_2.Controllers
         }
 
         //post
-        //puts the authincated participant into a choosen category so that they are registered to the race
 
+        //register a participant into a race category
         [HttpPost("/api/enrolments")]
         [Authorize(Roles = "Participant")]
         public IActionResult Create(int categoryId)
@@ -52,42 +53,90 @@ namespace RaceDay_2.Controllers
             try
             {
                 //start of try
+
+                //get the logged in participant
                 int participant_id = get_current_user_id();
 
-                //check the category exists
-                var category = _context.Categories.Find(categoryId);
+                //get category and event information
+                var category = _context.Categories
+                    .Include(c => c.Event)
+                    .SingleOrDefault(c => c.CategoryID == categoryId);
 
-                if (category == null)
+                //check if category exists
+                if (category == null || category.Event == null)
                 {
-                    return NotFound(new { message = "Category not found" });
+                    //start of if
+
+                    return NotFound(new
+                    {
+                        message = "Category not found"
+                    });
+
+                    //end of if
                 }
 
-                //check if this participant is already enrolled in the category
-                bool already_enrolled = _context.Enrolments.Any(en => en.ParticipantID == participant_id && en.CategoryID == categoryId);
+                //check if event is still open for registration
+                if (category.Event.EventDate < DateTime.Now)
+                {
+                    //start of if
+
+                    return BadRequest(new
+                    {
+                        message = "Registration for this event is closed"
+                    });
+
+                    //end of if
+                }
+
+                //prevent the same participant from registering twice
+                bool already_enrolled = _context.Enrolments.Any(en =>
+                    en.ParticipantID == participant_id &&
+                    en.CategoryID == categoryId);
 
                 if (already_enrolled)
                 {
-                    return Conflict(new { message = "You are already enrolled in this category" });
+                    //start of if
+
+                    return Conflict(new
+                    {
+                        message = "You are already registered for this category"
+                    });
+
+                    //end of if
                 }
 
-                //check how many confirmed enrolments the category already has
-                int current_enrolments = _context.Enrolments.Count(en => en.CategoryID == categoryId && en.Status == "Confirmed");
+                //count confirmed enrolments
+                int current_enrolments = _context.Enrolments
+                    .Count(en =>
+                        en.CategoryID == categoryId &&
+                        en.Status == "Confirmed");
 
+                //check if the category is full
                 if (current_enrolments >= category.MaxParticipants)
                 {
-                    return Conflict(new { message = "This category is full" });
+                    //start of if
+
+                    return Conflict(new
+                    {
+                        message = "This category is full"
+                    });
+
+                    //end of if
                 }
 
+                //create the enrolment
                 var new_enrolment = new Enrolment
                 {
                     ParticipantID = participant_id,
-                    CategoryID = categoryId
+                    CategoryID = categoryId,
+                    Status = "Confirmed"
                 };
 
+                //save registration to database
                 _context.Enrolments.Add(new_enrolment);
                 _context.SaveChanges();
 
-                //return the new created enrolment
+                //return successful registration
                 return StatusCode(201, new
                 {
                     new_enrolment.EnrolmentID,
@@ -96,21 +145,21 @@ namespace RaceDay_2.Controllers
                     new_enrolment.EnrolmentDate,
                     new_enrolment.Status
                 });
+
                 //end of try
             }
-
-            catch (Exception e)
+            catch (UnauthorizedAccessException)
             {
                 //start of catch
 
-                return BadRequest(e.Message);
+                return Unauthorized();
 
                 //end of catch
             }
 
             //end of method
-
         }
+
 
         //get
         //gets all the enrolments belonging to the authenticated participant

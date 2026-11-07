@@ -93,9 +93,9 @@ namespace RaceDay_MVC.Controllers
         {
             //start of method
 
-            //check participants permissions
-            var check = RequireRole("Paerticipant");
-            if(check != null)
+            //check participant permissions
+            var check = RequireRole("Participant");
+            if (check != null)
             {
                 //start of if
 

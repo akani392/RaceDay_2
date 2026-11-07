@@ -29,6 +29,8 @@
         //eveent description
         public string? Description { get; set; }
 
+        //categories belonging to this event
+        public List<RaceCategory> Categories { get; set; } = new List<RaceCategory>();
 
         //end of class
     }
