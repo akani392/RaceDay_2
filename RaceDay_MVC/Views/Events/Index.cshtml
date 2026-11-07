@@ -1,0 +1,132 @@
+﻿@model List<RaceDay_MVC.Models.RaceEvent>
+
+@{
+    //start of view configuration
+
+    ViewData["Title"] = "Explore Events";
+
+    //end of view configuration
+}
+
+<!-- start of events page -->
+<div class="container py-4">
+
+    <!-- start of heading -->
+    <div class="mb-4">
+
+        <h1>Explore Racing Events 🏃</h1>
+
+        <p>
+            Discover upcoming running, walking and cycling events.
+        </p>
+
+    </div>
+    <!-- end of heading -->
+    <!-- start of search form -->
+    <form method="get" asp-action="Index" class="row g-3 mb-4">
+
+        <div class="col-md-5">
+
+            <input type="text"
+                   name="search"
+                   value="@Context.Request.Query["search"]"
+                   placeholder="Search events or locations"
+                   class="form-control" />
+
+        </div>
+
+        <div class="col-md-4">
+
+            <select name="type" class="form-select">
+
+                <option value="">All Event Types</option>
+                <option value="Running">Running</option>
+                <option value="Walking">Walking</option>
+                <option value="Cycling">Cycling</option>
+
+            </select>
+
+        </div>
+
+        <div class="col-md-3">
+
+            <button type="submit"
+                    class="btn btn-primary w-100">
+
+                Search 🔎
+
+            </button>
+
+        </div>
+
+    </form>
+    <!-- end of search form -->
+    <!-- start of event cards -->
+    <div class="row g-4">
+
+        @foreach (var item in Model)
+        {
+            @* start of foreach *@
+
+            <div class="col-md-6 col-lg-4">
+
+                <div class="card shadow-sm h-100">
+
+                    <div class="card-body">
+
+                        <h3>@item.EventName</h3>
+
+                        <p>
+                            <strong>Type:</strong>
+                            @item.EventType
+                        </p>
+
+                        <p>
+                            <strong>Date:</strong>
+                            @item.EventDate.ToString("dd MMM yyyy")
+                        </p>
+
+                        <p>
+                            <strong>Location:</strong>
+                            @item.Location
+                        </p>
+
+                        <a asp-controller="Events"
+                           asp-action="Details"
+                           asp-route-id="@item.EventID"
+                           class="btn btn-primary">
+
+                            View Event 🏁
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            @* end of foreach *@
+        }
+
+    </div>
+    <!-- end of event cards -->
+    @if (Model.Count == 0)
+    {
+        @* start of if *@
+
+        <div class="text-center py-5">
+
+            <h3>No Events Found 😢</h3>
+
+            <p>
+                There are no events matching your search.
+            </p>
+
+        </div>
+
+        @* end of if *@
+    }
+
+</div>
+<!-- end of events page -->
