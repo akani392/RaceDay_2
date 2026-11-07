@@ -9,7 +9,7 @@
 
     bool logged_in = !string.IsNullOrEmpty(api_cookie);
     bool is_organiser = logged_in && user_role == "Organiser";
-    bool is_participant = logged_in && user_role == "Particpant";
+    bool is_participant = logged_in && string.Equals(user_role,"Participant",StringComparison.OrdinalIgnoreCase);
 
     //wnd of view configuration
 }

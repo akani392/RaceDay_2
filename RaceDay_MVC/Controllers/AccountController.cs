@@ -82,17 +82,36 @@ namespace RaceDay_MVC.Controllers
             //clear old session information
             HttpContext.Session.Clear();
 
-            //save authenticatioon information
+
+            //clear old session information
+            HttpContext.Session.Clear();
+
+            //get authentication information from API response
+            string role_name = login.GetProperty("roleName").GetString()?.Trim() ?? "";
+            string first_name = login.GetProperty("firstName").GetString() ?? "";
+            int user_id = login.GetProperty("userID").GetInt32();
+
+            //save authentication information
             HttpContext.Session.SetString("ApiCookie", cookie);
-            HttpContext.Session.SetString("Role", login.GetProperty("roleName").GetString() ?? "");
-            HttpContext.Session.SetString("Name", login.GetProperty("firstName").GetString() ?? "");
-            HttpContext.Session.SetInt32("UserID", login.GetProperty("userID").GetInt32());
+            HttpContext.Session.SetString("Role", role_name);
+            HttpContext.Session.SetString("Name", first_name);
+            HttpContext.Session.SetInt32("UserID", user_id);
+
+            //display debugging information
+            System.Diagnostics.Debug.WriteLine(
+                $"Login Role: [{role_name}], " +
+                $"User ID: {user_id}, " +
+                $"Cookie Stored: {!string.IsNullOrEmpty(cookie)}"
+            );
+
+
+
 
             //get the user's role
-            string? role = HttpContext.Session.GetString("Role");
+            string? role = HttpContext.Session.GetString("Role")?.Trim();
 
-            //send organiser to organiser dashbaord
-            if (role == "Organiser")
+            //check if the user is an organiser
+            if (string.Equals(role, "Organiser", StringComparison.OrdinalIgnoreCase))
             {
                 //start of if
 
@@ -101,8 +120,30 @@ namespace RaceDay_MVC.Controllers
                 //end of if
             }
 
-            //redirect participant to participant dashboard
-            return RedirectToAction("Index", "Participant");
+            //check if the user is a participant
+            if (string.Equals(role, "Participant", StringComparison.OrdinalIgnoreCase))
+            {
+                //start of if
+
+                return RedirectToAction("Index", "Participant");
+
+                //end of if
+            }
+
+            //clear the session if the role is invalid
+            HttpContext.Session.Clear();
+
+            //display an error instead of redirecting to the wrong dashboard
+            ModelState.AddModelError(
+                "",
+                "Your account role could not be recognised. Please try logging in again."
+            );
+
+            return View(form);
+
+            //end of method
+
+
         }
 
         //show login page
