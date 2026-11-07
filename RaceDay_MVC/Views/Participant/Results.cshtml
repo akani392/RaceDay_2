@@ -1,0 +1,244 @@
+﻿@model List<RaceDay_MVC.Models.RaceResult>
+
+@{
+    //start of view configuration
+
+    ViewData["Title"] = "My Race Results";
+
+    //calculate total completed races
+    int total_results = Model.Count;
+
+    //get best finishing position
+    int? best_position = Model.Count > 0
+        ? Model.Min(r => r.Position)
+        : null;
+
+    //end of view configuration
+}
+
+<!-- start of my results page -->
+<div class="container py-4">
+
+    <!-- start of page heading -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+
+        <div>
+
+            <h1>My Race Results 🏆</h1>
+
+            <p>
+                View your race history, finishing times
+                and positions.
+            </p>
+
+        </div>
+
+        <a asp-controller="Events"
+           asp-action="Index"
+           class="btn btn-primary">
+
+            Explore Events 🏃
+
+        </a>
+
+    </div>
+    <!-- end of page heading -->
+    <!-- start of results statistics -->
+    <div class="row g-4 mb-4">
+
+        <!-- completed races -->
+        <div class="col-md-6">
+
+            <div class="card shadow-sm h-100">
+
+                <div class="card-body text-center">
+
+                    <h4>Completed Races</h4>
+
+                    <h2>@total_results</h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- best position -->
+        <div class="col-md-6">
+
+            <div class="card shadow-sm h-100">
+
+                <div class="card-body text-center">
+
+                    <h4>Best Position</h4>
+
+                    <h2>
+                        @(best_position.HasValue
+                            ? best_position.Value.ToString()
+                            : "-")
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+    <!-- end of results statistics -->
+    <!-- start of race results -->
+    <div class="card shadow-sm">
+
+        <div class="card-body">
+
+            <h3 class="mb-3">
+                My Racing History
+            </h3>
+
+            @if (Model.Count == 0)
+            {
+                @* start of if *@
+
+                <div class="text-center py-5">
+
+                    <h4>
+                        No Results Yet 🏁
+                    </h4>
+
+                    <p>
+                        You don't have any recorded race
+                        results yet.
+                    </p>
+
+                    <p>
+                        Once an Organiser captures your
+                        race result, it will appear here.
+                    </p>
+
+                    <a asp-controller="Events"
+                       asp-action="Index"
+                       class="btn btn-primary">
+
+                        Browse Races
+
+                    </a>
+
+                </div>
+
+                @* end of if *@
+            }
+            else
+            {
+                @* start of else *@
+
+                <div class="table-responsive">
+
+                    <table class="table table-striped align-middle">
+
+                        <thead>
+                            <tr>
+                                <th>Event Name</th>
+                                <th>Category</th>
+                                <th>Finish Time</th>
+                                <th>Position</th>
+                                <th>Date Captured</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var item in Model)
+                            {
+                                @* start of foreach *@
+
+                                <tr>
+
+                                    <td>
+                                        @item.EventName
+                                    </td>
+
+                                    <td>
+                                        @item.CategoryName
+                                    </td>
+
+                                    <td>
+                                        @item.FinishTime.ToString(@"hh\:mm\:ss")
+                                    </td>
+
+                                    <td>
+
+                                        @if (item.Position == 1)
+                                        {
+                                            @* start of if *@
+
+                                            <span>
+                                                🥇 1st
+                                            </span>
+
+                                            @* end of if *@
+                                        }
+                                        else if (item.Position == 2)
+                                        {
+                                            @* start of else if *@
+
+                                            <span>
+                                                🥈 2nd
+                                            </span>
+
+                                            @* end of else if *@
+                                        }
+                                        else if (item.Position == 3)
+                                        {
+                                            @* start of else if *@
+
+                                            <span>
+                                                🥉 3rd
+                                            </span>
+
+                                            @* end of else if *@
+                                        }
+                                        else
+                                        {
+                                            @* start of else *@
+
+                                            @item.Position
+
+                                            @* end of else *@
+                                        }
+
+                                    </td>
+
+                                    <td>
+                                        @item.DateCaptured.ToString("dd MMM yyyy")
+                                    </td>
+
+                                    <td>
+
+                                        <span class="badge text-bg-success">
+                                            Completed
+                                        </span>
+
+                                    </td>
+
+                                </tr>
+
+                                @* end of foreach *@
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+                @* end of else *@
+            }
+
+        </div>
+
+    </div>
+    <!-- end of race results -->
+
+</div>
+<!-- end of my results page -->

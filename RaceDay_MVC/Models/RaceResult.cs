@@ -10,14 +10,23 @@ namespace RaceDay_MVC.Models
         //unique result identifier
         public int ResultID { get; set; }
 
-        //enrolment linked to the result
+        //enrolment linked to this result
         public int EnrolmentID { get; set; }
 
-        //participant's finishing time
+        //name of the event
+        public string EventName { get; set; } = "";
+
+        //category where the participant competed
+        public string CategoryName { get; set; } = "";
+
+        //time taken to finish the race
         public TimeSpan FinishTime { get; set; }
 
-        //participant's race position
+        //finishing position
         public int Position { get; set; }
+
+        //date when the result was captured
+        public DateTime DateCaptured { get; set; }
 
         //end of class
     }

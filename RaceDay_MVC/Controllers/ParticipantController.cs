@@ -513,6 +513,101 @@ namespace RaceDay_MVC.Controllers
         }
 
 
+        //display the participant's personal race results
+        [HttpGet]
+        public async Task<IActionResult> Results()
+        {
+            //start of method
+
+            //check participant permission
+            var check = RequireRole("Participant");
+
+            if (check != null)
+            {
+                //start of if
+
+                return check;
+
+                //end of if
+            }
+
+            try
+            {
+                //start of try
+
+                //request results belonging to the logged in participant
+                using var response = await Api.Send(
+                    HttpContext,
+                    HttpMethod.Get,
+                    "api/users/me/results"
+                );
+
+                //check whether the api authentication expired
+                if (response.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    //start of if
+
+                    HttpContext.Session.Clear();
+
+                    return RedirectToAction("Login", "Account");
+
+                    //end of if
+                }
+
+                //check participant permissions
+                if (response.StatusCode == HttpStatusCode.Forbidden)
+                {
+                    //start of if
+
+                    return Forbid();
+
+                    //end of if
+                }
+
+                //check if the api request failed
+                if (!response.IsSuccessStatusCode)
+                {
+                    //start of if
+
+                    TempData["Error"] =
+                        "Unable to retrieve your race results.";
+
+                    return View(new List<RaceResult>());
+
+                    //end of if
+                }
+
+                //convert api results into race result objects
+                var results = await response.Content
+                    .ReadFromJsonAsync<List<RaceResult>>();
+
+                //order results by date captured
+                var ordered_results = (results ?? new List<RaceResult>())
+                    .OrderByDescending(r => r.DateCaptured)
+                    .ToList();
+
+                //display race results page
+                return View(ordered_results);
+
+                //end of try
+            }
+            catch (HttpRequestException)
+            {
+                //start of catch
+
+                TempData["Error"] =
+                    "Unable to connect to the RaceDay API.";
+
+                return View(new List<RaceResult>());
+
+                //end of catch
+            }
+
+            //end of method
+        }
+
+
+
         //end of class
     }
 
