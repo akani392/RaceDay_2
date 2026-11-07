@@ -2,6 +2,7 @@
 using RaceDay_MVC.Services;
 using RaceDay_MVC.Models;
 using System.Globalization;
+using System.Net;
 
 namespace RaceDay_MVC.Controllers
 {
@@ -674,13 +675,9 @@ namespace RaceDay_MVC.Controllers
                 {
                     //start of if
 
-                    var categories = await Api.Get<List<RaceCategory>>(
-                        HttpContext,
-                        $"api/events/{form.EventID}/categories"
-                    );
+                    var categories = await Api.Get<List<RaceCategory>>(HttpContext,$"api/events/{form.EventID}/categories");
 
-                    bool category_exists = categories?.Any(c =>
-                        c.CategoryID == form.CategoryID) == true;
+                    bool category_exists = categories?.Any(c => c.CategoryID == form.CategoryID) == true;
 
                     if (!category_exists)
                     {
@@ -695,9 +692,7 @@ namespace RaceDay_MVC.Controllers
                 }
 
                 //choose create or update route
-                string route = form.CategoryID > 0
-                    ? $"api/Categories/{form.CategoryID}"
-                    : $"api/events/{form.EventID}/categories";
+                string route = form.CategoryID > 0? $"api/Categories/{form.CategoryID}": $"api/events/{form.EventID}/categories";
 
                 //add the category parameters
                 route += "?" + RaceDayApi.Query(
@@ -708,16 +703,10 @@ namespace RaceDay_MVC.Controllers
                 );
 
                 //choose the correct HTTP method
-                HttpMethod method = form.CategoryID > 0
-                    ? HttpMethod.Put
-                    : HttpMethod.Post;
+                HttpMethod method = form.CategoryID > 0? HttpMethod.Put: HttpMethod.Post;
 
                 //send request to the API
-                var result = await Api.Write(
-                    HttpContext,
-                    method,
-                    route
-                );
+                var result = await Api.Write(HttpContext,method,route);
 
                 //display feedback message
                 Feedback(result);
@@ -726,10 +715,7 @@ namespace RaceDay_MVC.Controllers
                 {
                     //start of if
 
-                    return RedirectToAction(
-                        "Categories",
-                        new { id = form.EventID }
-                    );
+                    return RedirectToAction("Categories",new { id = form.EventID });
 
                     //end of if
                 }
@@ -742,10 +728,7 @@ namespace RaceDay_MVC.Controllers
             {
                 //start of catch
 
-                ModelState.AddModelError(
-                    "",
-                    "Unable to connect to the RaceDay API."
-                );
+                ModelState.AddModelError("","Unable to connect to the RaceDay API.");
 
                 return View("CategoryForm", form);
 
@@ -780,9 +763,7 @@ namespace RaceDay_MVC.Controllers
                 //start of try
 
                 //get event details
-                var found_event = await Api.Get<RaceEvent>(
-                    HttpContext,
-                    $"api/Events/{eventId}"
+                var found_event = await Api.Get<RaceEvent>(HttpContext,$"api/Events/{eventId}"
                 );
 
                 if (found_event == null)
@@ -795,8 +776,7 @@ namespace RaceDay_MVC.Controllers
                 }
 
                 //check that organiser owns the event
-                int? organiser_id =
-                    HttpContext.Session.GetInt32("UserID");
+                int? organiser_id =HttpContext.Session.GetInt32("UserID");
 
                 if (found_event.OrganiserID != organiser_id)
                 {
@@ -808,10 +788,7 @@ namespace RaceDay_MVC.Controllers
                 }
 
                 //check that the category belongs to this event
-                var categories = await Api.Get<List<RaceCategory>>(
-                    HttpContext,
-                    $"api/events/{eventId}/categories"
-                );
+                var categories = await Api.Get<List<RaceCategory>>(HttpContext,$"api/events/{eventId}/categories");
 
                 if (categories?.Any(c => c.CategoryID == id) != true)
                 {
@@ -823,18 +800,11 @@ namespace RaceDay_MVC.Controllers
                 }
 
                 //delete category using the API
-                var result = await Api.Write(
-                    HttpContext,
-                    HttpMethod.Delete,
-                    $"api/Categories/{id}"
-                );
+                var result = await Api.Write(HttpContext,HttpMethod.Delete, $"api/Categories/{id}");
 
                 Feedback(result);
 
-                return RedirectToAction(
-                    "Categories",
-                    new { id = eventId }
-                );
+                return RedirectToAction("Categories",new { id = eventId });
 
                 //end of try
             }
@@ -842,19 +812,161 @@ namespace RaceDay_MVC.Controllers
             {
                 //start of catch
 
-                TempData["Error"] =
-                    "Unable to connect to the RaceDay API.";
+                TempData["Error"] ="Unable to connect to the RaceDay API.";
 
-                return RedirectToAction(
-                    "Categories",
-                    new { id = eventId }
-                );
+                return RedirectToAction("Categories",new { id = eventId });
 
                 //end of catch
             }
 
             //end of method
         }
+
+        //show enrolments belonging to an organiser event
+        [HttpGet]
+        public async Task<IActionResult> Enrolments (int id)
+        {
+            //start of method
+
+            //check oeganiser permissions
+            var check = RequireRole("Organiser");
+
+            if (check != null)
+            {
+                //start of if
+
+                return check;
+
+                //end of if
+            }
+
+            //check event id
+            if (id <= 0)
+            {
+                //start of if
+
+                return RedirectToAction("Events");
+
+                //end of if
+            }
+
+
+            try
+            {
+                //start of try
+
+                //get the selected event
+                var found_event = await Api.Get<RaceEvent>(HttpContext,$"api/Events/{id}");
+
+                //check if events exists
+                if (found_event == null)
+                {
+                    //start of if
+
+                    return NotFound();
+
+                    //end of if
+                }
+
+                //get the logged in organiser
+                int? organiser_id = HttpContext.Session.GetInt32("UserID");
+
+                //check event ownership
+                if (found_event.OrganiserID != organiser_id)
+                {
+                    //start of if
+
+
+                    return Forbid();
+
+                    //end of if
+                }
+
+                //request enrolments from the api
+                using var response = await Api.Send(HttpContext, HttpMethod.Get, $"api/events/{id}/enrolments");
+
+                //check if api rejected access
+                if (response.StatusCode == HttpStatusCode.Forbidden)
+                {
+                    //start of if
+
+                    return Forbid();
+
+                    //end of if
+                }
+
+                //check if session expired
+                if (response.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    //start of if
+
+                    HttpContext.Session.Clear();
+
+                    return RedirectToAction("Login", "Account");
+
+                    //end of if
+                }
+
+                //check if enrolment request failed
+                if (!response.IsSuccessStatusCode)
+                {
+                    //start of if
+
+                    TempData["Error"] = "Unable to load event enrolments";
+
+                    return RedirectToAction("Events");
+
+                    //end of if
+                }
+
+                //convert the api response to enrolment objects
+                var enrolments = await response.Content.ReadFromJsonAsync<List<RaceEnrolment>>();
+
+                //get all categories for the selected event
+                var categories = await Api.Get<List<RaceCategory>>(HttpContext, $"api/events/{id}/categories");
+
+                //check that category information loaded
+                if (categories == null)
+                {
+                    //start of if
+
+                    TempData["Error"] = "unable to load event categories";
+
+                    return RedirectToAction("Events");
+
+                    //end of if
+                }
+
+                //prepare information for the razor view
+                var model = new EnrolmentsPageViewModel
+                {
+                    EventID = found_event.EventID,
+                    EventName = found_event.EventName,
+                    Enrolments = enrolments ?? new List<RaceEnrolment>(),
+                    Categories = categories
+                };
+
+                //display event enrolments
+                return View(model);
+
+                //end of try
+            }
+
+            catch (Exception e)
+            {
+                //start of catch
+
+                TempData["Error"] = "unable to connect to the RaceDay API";
+
+                return RedirectToAction("Events");
+
+                //end of catch
+            }
+
+            //end of method
+        }
+
+
 
 
 
