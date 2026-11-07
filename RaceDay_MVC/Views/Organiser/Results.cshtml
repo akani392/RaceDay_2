@@ -1,0 +1,211 @@
+﻿@model RaceDay_MVC.Models.ResultsPageViewModel
+
+@{
+    //start of view configuration
+
+    ViewData["Title"] = "Race Results";
+
+    //end of view configuration
+}
+
+<!-- start of results page -->
+<div class="container py-4">
+
+    <!-- start of page heading -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+
+        <div>
+
+            <h1>Race Results 🏆</h1>
+
+            <p>
+                @Model.EventName
+            </p>
+
+        </div>
+
+        <a asp-controller="Organiser"
+           asp-action="Events"
+           class="btn btn-secondary">
+
+            Back to Events
+
+        </a>
+
+    </div>
+    <!-- end of page heading -->
+    <!-- start of results statistics -->
+    <div class="row g-4 mb-4">
+
+        <div class="col-md-6">
+
+            <div class="card shadow-sm">
+
+                <div class="card-body text-center">
+
+                    <h3>Confirmed Participants</h3>
+
+                    <h2>@Model.Rows.Count</h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-6">
+
+            <div class="card shadow-sm">
+
+                <div class="card-body text-center">
+
+                    <h3>Results Captured</h3>
+
+                    <h2>@Model.TotalCaptured</h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+    <!-- end of results statistics -->
+    <!-- start of results table -->
+    <div class="card shadow-sm">
+
+        <div class="card-body">
+
+            <h3 class="mb-3">
+                Participant Results
+            </h3>
+
+            @if (Model.Rows.Count == 0)
+            {
+                @* start of if *@
+
+                <div class="text-center py-4">
+
+                    <h4>No Confirmed Participants 😢</h4>
+
+                    <p>
+                        This event does not have any confirmed
+                        participants yet.
+                    </p>
+
+                </div>
+
+                @* end of if *@
+            }
+            else
+            {
+                @* start of else *@
+
+                <div class="table-responsive">
+
+                    <table class="table table-striped align-middle">
+
+                        <thead>
+                            <tr>
+                                <th>Participant</th>
+                                <th>Category</th>
+                                <th>Finish Time</th>
+                                <th>Position</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var item in Model.Rows)
+                            {
+                                @* start of foreach *@
+
+                                <tr>
+
+                                    <td>
+                                        @item.Enrolment.ParticipantName
+                                    </td>
+
+                                    <td>
+                                        @item.Enrolment.CategoryName
+                                    </td>
+
+                                    <td>
+
+                                        @if (item.Result != null)
+                                        {
+                                            @item.Result.FinishTime.ToString(@"hh\:mm\:ss")
+                                        }
+                                        else
+                                        {
+                                            <span>Not captured</span>
+                                        }
+
+                                    </td>
+
+                                    <td>
+
+                                        @if (item.Result != null)
+                                        {
+                                            @item.Result.Position
+                                        }
+                                        else
+                                        {
+                                            <span>-</span>
+                                        }
+
+                                    </td>
+
+                                    <td>
+
+                                        @if (item.Result == null)
+                                        {
+                                            @* start of if *@
+
+                                            <a asp-controller="Organiser"
+                                               asp-action="CaptureResult"
+                                               asp-route-eventId="@Model.EventID"
+                                               asp-route-enrolmentId="@item.Enrolment.EnrolmentID"
+                                               class="btn btn-primary btn-sm">
+
+                                                Capture Result 🏁
+
+                                            </a>
+
+                                            @* end of if *@
+                                        }
+                                        else
+                                        {
+                                            @* start of else *@
+
+                                            <span class="badge text-bg-success">
+                                                Captured
+                                            </span>
+
+                                            @* end of else *@
+                                        }
+
+                                    </td>
+
+                                </tr>
+
+                                @* end of foreach *@
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+                @* end of else *@
+            }
+
+        </div>
+
+    </div>
+    <!-- end of results table -->
+
+</div>
+<!-- end of results page -->
