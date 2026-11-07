@@ -27,7 +27,7 @@ namespace RaceDay_2.Controllers
         //get
         //list all the events so that users are abke to look at which event is avaliable
         [HttpGet]
-        [Authorize]
+        [AllowAnonymous]
         public IActionResult GetAll()
         {
             //start of method
@@ -65,7 +65,7 @@ namespace RaceDay_2.Controllers
 
         //gets all the details for a single event
         [HttpGet("{id}")]
-        [Authorize]
+        [AllowAnonymous]
         public IActionResult GetById(int id)
         {
             //start of method
@@ -74,23 +74,34 @@ namespace RaceDay_2.Controllers
             {
                 //start of try
 
-                var found_event = _context.Events.Where(e => e.EventID == id).Select(e => new
-                {
-                    e.EventID,
-                    e.OrganiserID,
-                    e.EventName,
-                    e.EventDate,
-                    e.EventType,
-                    e.Location,
-                    e.Description,
-                    Categories = e.Categories.Select(c => new
+
+                //get the selected event together with its race categories
+                var found_event = _context.Events
+                    .Where(e => e.EventID == id)
+                    .Select(e => new
                     {
-                        c.CategoryID,
-                        c.CategoryName,
-                        c.DistanceKM,
-                        c.MaxParticipants
+                        e.EventID,
+                        e.OrganiserID,
+                        e.EventName,
+                        e.EventDate,
+                        e.EventType,
+                        e.Location,
+                        e.Description,
+
+                        //get categories that belong to this event
+                        Categories = e.Categories.Select(c => new
+                        {
+                            c.CategoryID,
+                            c.EventID,
+                            c.CategoryName,
+                            c.DistanceKM,
+                            c.MaxParticipants
+
+                        }).ToList()
+
                     })
-                }).SingleOrDefault();
+                    .SingleOrDefault();
+
 
                 //check if event is there
                 if (found_event == null)

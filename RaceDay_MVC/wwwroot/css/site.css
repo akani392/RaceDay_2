@@ -177,4 +177,164 @@ a {
     }
 /* end of button styling */
 
-/* start of card styling */
+
+
+/* start of login and registration design */
+
+.raceday-auth-card {
+    background-color: #FFFFFF;
+    border: 2px solid #78C9EB !important;
+    border-radius: 28px !important;
+    box-shadow: 0 12px 35px rgba(36, 73, 93, 0.13) !important;
+    overflow: hidden;
+}
+
+    /* registration and login headings */
+    .raceday-auth-card h2 {
+        color: #24495D;
+        font-weight: 700;
+    }
+
+    /* input labels */
+    .raceday-auth-card .form-label {
+        color: #24495D;
+        font-weight: 600;
+    }
+
+    /* text boxes and dropdowns */
+    .raceday-auth-card .form-control,
+    .raceday-auth-card .form-select {
+        background-color: #F7FCFF;
+        border: 2px solid #D0E4EF;
+        border-radius: 14px;
+        padding: 12px 15px;
+        color: #24495D;
+    }
+
+        /* input focus effects */
+        .raceday-auth-card .form-control:focus,
+        .raceday-auth-card .form-select:focus {
+            background-color: #FFFFFF;
+            border-color: #78C9EB;
+            box-shadow: 0 0 0 4px rgba(120, 201, 235, 0.22);
+            outline: none;
+        }
+
+    /* button styling */
+    .raceday-auth-card .btn {
+        border-radius: 14px !important;
+        padding: 12px 20px;
+        font-weight: 600;
+    }
+
+    /* links inside authentication forms */
+    .raceday-auth-card a {
+        color: #226E95;
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+        .raceday-auth-card a:hover {
+            color: #24495D;
+            text-decoration: underline;
+        }
+
+/* end of login and registration design */
+
+
+/* start of organiser enrolment styling */
+
+/* rounded enrolment cards */
+.raceday-enrolment-card {
+    background-color: #FFFFFF;
+    border: 2px solid #D0E4EF !important;
+    border-radius: 22px !important;
+    box-shadow: 0 8px 24px rgba(36, 73, 93, 0.08);
+    overflow: hidden;
+}
+
+    /* enrolment card headings */
+    .raceday-enrolment-card h3 {
+        color: #24495D;
+        font-weight: 700;
+    }
+
+    /* filter labels */
+    .raceday-enrolment-card .form-label {
+        color: #24495D;
+        font-weight: 600;
+    }
+
+    /* filter dropdowns */
+    .raceday-enrolment-card .form-select {
+        border: 2px solid #D0E4EF;
+        border-radius: 12px;
+        background-color: #F7FCFF;
+        padding: 11px;
+    }
+
+        /* highlight selected filter */
+        .raceday-enrolment-card .form-select:focus {
+            border-color: #78C9EB;
+            box-shadow: 0 0 0 4px rgba(120, 201, 235, 0.20);
+        }
+
+    /* rounded buttons */
+    .raceday-enrolment-card .btn {
+        border-radius: 12px;
+    }
+
+/* end of organiser enrolment styling */
+
+
+/* start of race results design */
+
+/* results table and form cards */
+.raceday-result-card {
+    background-color: #FFFFFF;
+    border: 2px solid #78C9EB !important;
+    border-radius: 24px !important;
+    box-shadow: 0 10px 30px rgba(36, 73, 93, 0.10) !important;
+    overflow: hidden;
+}
+
+    /* card headings */
+    .raceday-result-card h2,
+    .raceday-result-card h3 {
+        color: #24495D;
+        font-weight: 700;
+    }
+
+    /* result field labels */
+    .raceday-result-card .form-label {
+        color: #24495D;
+        font-weight: 600;
+    }
+
+    /* finish time and position fields */
+    .raceday-result-card .form-control {
+        border: 2px solid #D0E4EF;
+        border-radius: 14px;
+        background-color: #F7FCFF;
+        padding: 12px 15px;
+    }
+
+        /* focused inputs */
+        .raceday-result-card .form-control:focus {
+            border-color: #78C9EB;
+            box-shadow: 0 0 0 4px rgba(120, 201, 235, 0.22);
+        }
+
+    /* results buttons */
+    .raceday-result-card .btn {
+        border-radius: 12px;
+        padding: 10px 18px;
+    }
+
+    /* table headings */
+    .raceday-result-card .table thead th {
+        background-color: #D9F1FB;
+        color: #24495D;
+    }
+
+/* end of race results design */

@@ -1005,7 +1005,10 @@ namespace RaceDay_MVC.Controllers
 
         //show enrolments belonging to an organiser event
         [HttpGet]
-        public async Task<IActionResult> Enrolments (int id)
+        public async Task<IActionResult> Enrolments(
+            int id,
+            int? categoryId,
+            string? status)
         {
             //start of method
 
@@ -1118,6 +1121,7 @@ namespace RaceDay_MVC.Controllers
                     //end of if
                 }
 
+
                 //prepare information for the razor view
                 var model = new EnrolmentsPageViewModel
                 {
@@ -1127,8 +1131,15 @@ namespace RaceDay_MVC.Controllers
                     Categories = categories
                 };
 
+                //store the selected category filter
+                ViewBag.SelectedCategoryID = categoryId;
+
+                //store the selected status filter
+                ViewBag.SelectedStatus = status ?? "";
+
                 //display event enrolments
                 return View(model);
+
 
                 //end of try
             }
@@ -1195,6 +1206,9 @@ namespace RaceDay_MVC.Controllers
 
                     //end of if
                 }
+
+                //store event date for results view
+                ViewBag.EventDate = found_event.EventDate;
 
                 //get current organiser id
                 int? organiser_id =

@@ -8,75 +8,114 @@
     //end of view configuration
 }
 
-<!-- start of login container-->
-<div class ="container py-5">
+<!-- start of login container -->
+<div class="container py-5">
+
     <div class="row justify-content-center">
-        <!-- start of login card-->
-        <div class="card shadow-lg border-0">
-            <div class="card-body p-4">
-                <h2 class="text-center mb-3">
-                    Welcome Back
-                </h2>
 
-                <p class=" text-center text-muted">
-                    Please Login into your RaceDay account
+        <!-- start of login column -->
+        <div class="col-md-8 col-lg-5">
 
-                </p>
+            <!-- start of login card -->
+            <div class="card shadow-lg raceday-auth-card">
 
-                <!-- Start of login form-->
-                <form asp-controller="Account" asp-action="Login" method="post">
+                <div class="card-body p-4">
 
-                    @Html.AntiForgeryToken()
-                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3">
+                    <h2 class="text-center mb-3">
+                        Welcome Back 🌤️
+                    </h2>
 
-                    </div>
+                    <p class="text-center text-muted mb-4">
+                        Please log in to your RaceDay account.
+                    </p>
 
-                    <!--email-->
-                    <div class="mb-3">
-                        <label asp-for="Email" class="form-label">
+                    <!-- start of login form -->
+                    <form asp-controller="Account"
+                          asp-action="Login"
+                          method="post">
 
-                        </label>
+                        @Html.AntiForgeryToken()
 
-                        <input asp-for="Email"class="form-control" placeholder="Can you please enter email"/>
+                        <!-- display validation errors -->
+                        <div asp-validation-summary="ModelOnly"
+                             class="text-danger mb-3">
+                        </div>
 
-                        <span asp-validation-for="Email" class="text-danger">
+                        <!-- start of email field -->
+                        <div class="mb-3">
 
-                        </span>
-                    </div>
+                            <label asp-for="Email"
+                                   class="form-label">
+                                Email Address
+                            </label>
 
-                    <!--password-->
-                    <div class="mb-3">
-                        <label asp-for="Password" class="form-check-label">
+                            <input asp-for="Email"
+                                   type="email"
+                                   class="form-control"
+                                   placeholder="Enter your email"
+                                   autocomplete="email" />
 
-                        </label>
+                            <span asp-validation-for="Email"
+                                  class="text-danger">
+                            </span>
 
-                        <input asp-for="Password" type="password" class="form-control" placeholder="Please enter your password"/>
-                        <span asp-validation-for="Password" class="text-danger">
+                        </div>
+                        <!-- end of email field -->
+                        <!-- start of password field -->
+                        <div class="mb-4">
 
-                        </span>
+                            <label asp-for="Password"
+                                   class="form-label">
+                                Password
+                            </label>
 
+                            <input asp-for="Password"
+                                   type="password"
+                                   class="form-control"
+                                   placeholder="Enter your password"
+                                   autocomplete="current-password" />
 
-                    </div>
+                            <span asp-validation-for="Password"
+                                  class="text-danger">
+                            </span>
 
-                    <!--login button-->
-                    <button type="submit" class="btn btn-primary w-100">
-                        Login
-                    </button>
-                </form>
-                <!-- end of login form-->
+                        </div>
+                        <!-- end of password field -->
+                        <!-- start of login button -->
+                        <button type="submit"
+                                class="btn btn-primary w-100">
 
-                <p class="text-center mt-3">
-                    Do not have an account
+                            Login 🏃
 
-                    <a asp-controller="Account" asp-action="Register">
-                        Register
-                    </a>
-                </p>
+                        </button>
+                        <!-- end of login button -->
+
+                    </form>
+                    <!-- end of login form -->
+
+                    <p class="text-center mt-4 mb-0">
+                        Don't have an account?
+
+                        <a asp-controller="Account"
+                           asp-action="Register">
+
+                            Register Here
+
+                        </a>
+                    </p>
+
+                </div>
+
             </div>
+            <!-- end of login card -->
 
         </div>
+        <!-- end of login column -->
+
     </div>
 
-    <!-- enf of login contaniner-->
-
 </div>
+<!-- end of login container -->
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

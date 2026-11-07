@@ -132,14 +132,22 @@
 
                         <tbody>
 
+                          
                             @foreach (var category in Model.Categories)
                             {
-                                <!-- start of foreach -->
+                                @* start of foreach *@
 
+                                //calculate confirmed registrations for this category
                                 var registered = Model.Enrolments.Count(e =>
-                                    e.CategoryID == category.CategoryID
-                                    && e.Status == "Confirmed");
+                                    e.CategoryID == category.CategoryID &&
+                                    string.Equals(
+                                        e.Status,
+                                        "Confirmed",
+                                        StringComparison.OrdinalIgnoreCase
+                                    )
+                                );
 
+                                //calculate the remaining spaces
                                 var available = Math.Max(
                                     0,
                                     category.MaxParticipants - registered
@@ -159,8 +167,9 @@
 
                                 </tr>
 
-                                <!-- end of foreach -->
+                                @* end of foreach *@
                             }
+  
 
                         </tbody>
 
@@ -176,15 +185,160 @@
     </div>
     <!-- end of category statistics -->
 
+    <!-- start of enrolment filters -->
+    <div class="card shadow-sm mb-4 raceday-enrolment-card">
+
+        <div class="card-body">
+
+            <h3 class="mb-3">
+                Filter Registrations 🔎
+            </h3>
+
+            <form asp-controller="Organiser"
+                  asp-action="Enrolments"
+                  method="get"
+                  class="row g-3">
+
+                <!-- keep selected event id -->
+                <input type="hidden"
+                       name="id"
+                       value="@Model.EventID" />
+
+                <!-- start of category filter -->
+                <div class="col-md-5">
+
+                    <label class="form-label">
+                        Race Category
+                    </label>
+
+                    <select name="categoryId"
+                            class="form-select">
+
+                        <option value="">
+                            All Categories
+                        </option>
+
+                        @foreach (var category in Model.Categories)
+                        {
+                            <option value="@category.CategoryID"
+                                    selected="@(ViewBag.SelectedCategoryID == category.CategoryID)">
+
+                                @category.CategoryName
+
+                            </option>
+                        }
+
+                    </select>
+
+                </div>
+                <!-- end of category filter -->
+                <!-- start of status filter -->
+                <div class="col-md-4">
+
+                    <label class="form-label">
+                        Registration Status
+                    </label>
+
+                    <select name="status"
+                            class="form-select">
+
+                        <option value="">
+                            All Statuses
+                        </option>
+
+                        <option value="Confirmed"
+                                selected="@(ViewBag.SelectedStatus == "Confirmed")">
+
+                            Confirmed
+
+                        </option>
+
+                        <option value="Cancelled"
+                                selected="@(ViewBag.SelectedStatus == "Cancelled")">
+
+                            Cancelled
+
+                        </option>
+
+                    </select>
+
+                </div>
+                <!-- end of status filter -->
+                <!-- start of filter button -->
+                <div class="col-md-3 d-flex align-items-end">
+
+                    <button type="submit"
+                            class="btn btn-primary w-100">
+
+                        Apply Filters
+
+                    </button>
+
+                </div>
+                <!-- end of filter button -->
+
+            </form>
+
+            <a asp-controller="Organiser"
+               asp-action="Enrolments"
+               asp-route-id="@Model.EventID"
+               class="btn btn-outline-secondary mt-3">
+
+                Clear Filters
+
+            </a>
+
+        </div>
+
+    </div>
+    <!-- end of enrolment filters -->
+    @{
+        //start of participant filtering
+
+        //get selected category
+        int? selected_category =
+            ViewBag.SelectedCategoryID;
+
+        //get selected registration status
+        string selected_status =
+            ViewBag.SelectedStatus ?? "";
+
+        //start with all enrolments for the event
+        var filtered_enrolments = Model.Enrolments.AsEnumerable();
+
+        //filter by selected category
+        if (selected_category.HasValue)
+        {
+            filtered_enrolments = filtered_enrolments.Where(e =>
+                e.CategoryID == selected_category.Value);
+        }
+
+        //filter by registration status
+        if (!string.IsNullOrWhiteSpace(selected_status))
+        {
+            filtered_enrolments = filtered_enrolments.Where(e =>
+                string.Equals(
+                    e.Status,
+                    selected_status,
+                    StringComparison.OrdinalIgnoreCase
+                ));
+        }
+
+        //convert filtered results into a list
+        var displayed_enrolments = filtered_enrolments.ToList();
+
+        //end of participant filtering
+    }
+
 
     <!-- start of participants table -->
-    <div class="card shadow-sm">
+    <div class="card shadow-sm raceday-enrolment-card">
 
         <div class="card-body">
 
             <h3 class="mb-3">Registered Participants</h3>
 
-            @if (Model.Enrolments.Count == 0)
+            @if (displayed_enrolments.Count == 0)
             {
                 <!-- start of if -->
 
@@ -221,7 +375,7 @@
 
                         <tbody>
 
-                            @foreach (var enrolment in Model.Enrolments)
+                            @foreach (var enrolment in displayed_enrolments)
                             {
                                 <!-- start of foreach -->
 

@@ -39,7 +39,7 @@
 
         <div class="col-md-6">
 
-            <div class="card shadow-sm">
+            <div class="card shadow-sm raceday-result-card">
 
                 <div class="card-body text-center">
 
@@ -55,7 +55,7 @@
 
         <div class="col-md-6">
 
-            <div class="card shadow-sm">
+            <div class="card shadow-sm raceday-result-card">
 
                 <div class="card-body text-center">
 
@@ -72,7 +72,7 @@
     </div>
     <!-- end of results statistics -->
     <!-- start of results table -->
-    <div class="card shadow-sm">
+    <div class="card shadow-sm raceday-result-card">
 
         <div class="card-body">
 
@@ -133,14 +133,48 @@
 
                                     <td>
 
+                                       
+                                        <!-- start of result actions -->
                                         @if (item.Result != null)
                                         {
-                                            @item.Result.FinishTime.ToString(@"hh\:mm\:ss")
+                                            @* start of if *@
+
+                                            <span class="badge text-bg-success">
+                                                Captured ✅
+                                            </span>
+
+                                            @* end of if *@
+                                        }
+                                        else if (ViewBag.EventDate != null &&
+                                                 (DateTime)ViewBag.EventDate <= DateTime.Now)
+                                        {
+                                            @* start of else if *@
+
+                                            <a asp-controller="Organiser"
+                                               asp-action="CaptureResult"
+                                               asp-route-eventId="@Model.EventID"
+                                               asp-route-enrolmentId="@item.Enrolment.EnrolmentID"
+                                               class="btn btn-primary btn-sm">
+
+                                                Capture Result 🏁
+
+                                            </a>
+
+                                            @* end of else if *@
                                         }
                                         else
                                         {
-                                            <span>Not captured</span>
+                                            @* start of else *@
+
+                                            <span class="badge text-bg-secondary">
+                                                Awaiting Race Date
+                                            </span>
+
+                                            @* end of else *@
                                         }
+
+                                        <!-- end of result actions -->
+
 
                                     </td>
 

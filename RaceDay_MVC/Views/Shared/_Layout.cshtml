@@ -53,26 +53,36 @@
                     <div class="collapse navbar-collapse" id="mainNavbar">
                         <ul class="navbar-nav me-auto">
 
+                        
+                        <!-- start of public navigation -->
                         @if (!logged_in)
-                            {
-                                //start of if
+                        {
+                            @* start of if *@
 
-                                <li class="nav-item">
-                                    <a class="nav-link" asp-controller="Home" asp-action="Index">
-                                        Home
-                                    </a>
-                                </li>
+                            <li class="nav-item">
+                                <a class="nav-link"
+                                   asp-controller="Home"
+                                   asp-action="Index">
 
-                                <li class="nav-item">
-                                    <a class="nav-link" asp-controller="Participant" asp-action="Index">
-                                        Events
-                                    </a>
-                                </li>
+                                    Home 🌤️
 
-                                //end of if
-                            }
+                                </a>
+                            </li>
 
-                           
+                            <li class="nav-item">
+                                <a class="nav-link"
+                                   asp-controller="Events"
+                                   asp-action="Index">
+
+                                    Explore Events 🏃
+
+                                </a>
+                            </li>
+
+                            @* end of if *@
+                        }
+                        <!-- end of public navigation -->
+                
                         <!-- start of organiser navigation -->
                         @if (is_organiser)
                         {

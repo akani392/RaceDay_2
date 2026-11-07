@@ -1,126 +1,190 @@
 ﻿@model RegisterForm
 
 @{
-    //start of view
+    //start of view configuration
 
     ViewData["Title"] = "Register";
 
-    //end of view
+    //end of view configuration
 }
 
-<!--start of registration container-->
-
+<!-- start of registration container -->
 <div class="container py-5">
+
     <div class="row justify-content-center">
-        <div class="col-md-7 col-lg-6">
 
-            <!-- Start of registration-->
-            <div class="card shadow-lg border-0">
-                <h2 class="text-center mb-3">
-                    Join RaceDay
-                </h2>
+        <div class="col-md-8 col-lg-6">
 
-                <p class="text-center text-muted">
-                    You can create your racing account
-                </p>
+            <!-- start of registration card -->
+            <div class="card shadow-lg raceday-auth-card">
 
-                <!--the start of the registration form-->
+                <div class="card-body p-4 p-md-5">
 
-                <form asp-controller="Account" asp-action="Register" method="post">
-                    @Html.AntiForgeryToken()
+                    <!-- start of heading -->
+                    <h2 class="text-center mb-3">
+                        Join RaceDay 🌿
+                    </h2>
 
-                    <div asp-validation-summary="All" class="text-danger mb-3">
+                    <p class="text-center text-muted mb-4">
+                        Your next outdoor adventure starts here.
+                        Create your RaceDay account.
+                    </p>
+                    <!-- end of heading -->
+                    <!-- start of registration form -->
+                    <form asp-controller="Account"
+                          asp-action="Register"
+                          method="post">
 
-                    </div>
+                        @Html.AntiForgeryToken()
 
-                    <!--first name-->
-                    <div class="mb-3">
-
-                        <label asp-for="FirstName" class="form-control">
-
-                        </label>
-
-                        <input asp-for="FirstName" class="form-control"/>
-                        <span asp-validation-for="FirstName" class="text-danger">
-
-                        </span>
-                    </div>
+                        <!-- display validation errors -->
+                        <div asp-validation-summary="All"
+                             class="text-danger mb-3">
+                        </div>
 
 
-                    <!-- last name-->
-                    <div class="mb-3">
-                        <label asp-for="LastName" class="form-label">
+                        <!-- start of first name -->
+                        <div class="mb-3">
 
-                        </label>
+                            <label asp-for="FirstName"
+                                   class="form-label">
+                                First Name
+                            </label>
 
-                        <input asp-for="LastName" class="form-control"/>
-                        <span asp-validation-for="LastName" class="text-danger"></span>
-                    </div>
+                            <input asp-for="FirstName"
+                                   class="form-control"
+                                   placeholder="Enter your first name"
+                                   autocomplete="given-name" />
 
-                    <!--email-->
-                    <div class="mb-3">
-                        <label asp-for="Email" class="form-label">
+                            <span asp-validation-for="FirstName"
+                                  class="text-danger">
+                            </span>
 
-                        </label>
+                        </div>
+                        <!-- end of first name -->
+                        <!-- start of last name -->
+                        <div class="mb-3">
 
-                        <input asp-for="Email" class="form-control"/>
-                        <span asp-validation-for="Email" class="text-danger">
+                            <label asp-for="LastName"
+                                   class="form-label">
+                                Last Name
+                            </label>
 
-                        </span>
-                    </div>
+                            <input asp-for="LastName"
+                                   class="form-control"
+                                   placeholder="Enter your last name"
+                                   autocomplete="family-name" />
 
-                    <!--password-->
-                    <div class="mb-3">
+                            <span asp-validation-for="LastName"
+                                  class="text-danger">
+                            </span>
 
-                        <label asp-for="Password" class="form-label">
+                        </div>
+                        <!-- end of last name -->
+                        <!-- start of email -->
+                        <div class="mb-3">
 
-                        </label>
+                            <label asp-for="Email"
+                                   class="form-label">
+                                Email Address
+                            </label>
 
-                        <input asp-for="Password" type="password" class="form-control"/>
-                        <span asp-validation-for="Password" class="text-danger">
+                            <input asp-for="Email"
+                                   type="email"
+                                   class="form-control"
+                                   placeholder="Enter your email"
+                                   autocomplete="email" />
 
-                        </span>
-                    </div>
+                            <span asp-validation-for="Email"
+                                  class="text-danger">
+                            </span>
 
-                    <!--role selection-->
-                    <div class="mb-3">
+                        </div>
+                        <!-- end of email -->
+                        <!-- start of password -->
+                        <div class="mb-3">
 
-                        <label class="form-label">
-                            Account Type
-                        </label>
+                            <label asp-for="Password"
+                                   class="form-label">
+                                Password
+                            </label>
 
-                        <select asp-for="RoleID" class="form-select">
-                            <option value="1">
-                                Organizer
-                            </option>
+                            <input asp-for="Password"
+                                   type="password"
+                                   class="form-control"
+                                   placeholder="Create a password"
+                                   autocomplete="new-password" />
 
-                            <option value="2">
-                                Participant
-                            </option>
-                        </select>
-                    </div>
+                            <span asp-validation-for="Password"
+                                  class="text-danger">
+                            </span>
 
-                    <!-- register button-->
-                    <button type="submit" class="btn btn-success w-100">
-                        Create an Account
-                    </button>
+                        </div>
+                        <!-- end of password -->
+                        <!-- start of account type -->
+                        <div class="mb-4">
 
-                </form>
+                            <label asp-for="RoleID"
+                                   class="form-label">
+                                Account Type
+                            </label>
 
-                <!--end of registration form-->
+                            <select asp-for="RoleID"
+                                    class="form-select">
 
-                <p class="text-center mt-3">
-                    You are already Registered?
+                                <option value="1">
+                                    Organiser
+                                </option>
 
-                    <a asp-controller="Account" asp-action="Login">
-                        Login
-                    </a>
-                </p>
+                                <option value="2">
+                                    Participant
+                                </option>
+
+                            </select>
+
+                            <span asp-validation-for="RoleID"
+                                  class="text-danger">
+                            </span>
+
+                        </div>
+                        <!-- end of account type -->
+                        <!-- start of register button -->
+                        <button type="submit"
+                                class="btn btn-primary w-100">
+
+                            Create Account 🏃
+
+                        </button>
+                        <!-- end of register button -->
+
+                    </form>
+                    <!-- end of registration form -->
+                    <!-- start of login link -->
+                    <p class="text-center mt-4 mb-0">
+
+                        Already have an account?
+
+                        <a asp-controller="Account"
+                           asp-action="Login">
+
+                            Login Here
+
+                        </a>
+
+                    </p>
+                    <!-- end of login link -->
+
+                </div>
+
             </div>
+            <!-- end of registration card -->
 
-            <!--end of registration form-->
         </div>
-    </div>
-</div>
 
-<!--end of regostration contaneir-->
+    </div>
+
+</div>
+<!-- end of registration container -->
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

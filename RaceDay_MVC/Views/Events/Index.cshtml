@@ -22,33 +22,84 @@
 
     </div>
     <!-- end of heading -->
-    <!-- start of search form -->
-    <form method="get" asp-action="Index" class="row g-3 mb-4">
+    <!-- start of event search and filters -->
+    <form asp-controller="Events"
+          asp-action="Index"
+          method="get"
+          class="row g-3 mb-4">
 
-        <div class="col-md-5">
+        <!-- search event name or location -->
+        <div class="col-md-4">
+
+            <label class="form-label">
+                Search Events
+            </label>
 
             <input type="text"
                    name="search"
-                   value="@Context.Request.Query["search"]"
-                   placeholder="Search events or locations"
+                   value="@ViewBag.Search"
+                   placeholder="Event name or location"
                    class="form-control" />
 
         </div>
 
-        <div class="col-md-4">
+        <!-- event type filter -->
+        <div class="col-md-3">
+
+            <label class="form-label">
+                Event Type
+            </label>
 
             <select name="type" class="form-select">
 
-                <option value="">All Event Types</option>
-                <option value="Running">Running</option>
-                <option value="Walking">Walking</option>
-                <option value="Cycling">Cycling</option>
+                <option value="">All Types</option>
+
+                <option value="Running"
+                        selected="@(ViewBag.Type == "Running")">
+                    Running
+                </option>
+
+                <option value="Walking"
+                        selected="@(ViewBag.Type == "Walking")">
+                    Walking
+                </option>
+
+                <option value="Cycling"
+                        selected="@(ViewBag.Type == "Cycling")">
+                    Cycling
+                </option>
 
             </select>
 
         </div>
 
+        <!-- event date filter -->
         <div class="col-md-3">
+
+            <label class="form-label">
+                Event Date
+            </label>
+
+            <select name="period" class="form-select">
+
+                <option value="">All Events</option>
+
+                <option value="upcoming"
+                        selected="@(ViewBag.Period == "upcoming")">
+                    Upcoming
+                </option>
+
+                <option value="previous"
+                        selected="@(ViewBag.Period == "previous")">
+                    Previous
+                </option>
+
+            </select>
+
+        </div>
+
+        <!-- event search button -->
+        <div class="col-md-2 d-flex align-items-end">
 
             <button type="submit"
                     class="btn btn-primary w-100">
@@ -59,8 +110,48 @@
 
         </div>
 
+        <!-- event sorting -->
+        <div class="col-md-4">
+
+            <label class="form-label">
+                Sort By
+            </label>
+
+            <select name="sort" class="form-select">
+
+                <option value="earliest"
+                        selected="@(ViewBag.Sort == null || ViewBag.Sort == "earliest")">
+                    Date: Earliest First
+                </option>
+
+                <option value="latest"
+                        selected="@(ViewBag.Sort == "latest")">
+                    Date: Latest First
+                </option>
+
+                <option value="name"
+                        selected="@(ViewBag.Sort == "name")">
+                    Event Name: A-Z
+                </option>
+
+            </select>
+
+        </div>
+
+        <div class="col-md-3 d-flex align-items-end">
+
+            <a asp-controller="Events"
+               asp-action="Index"
+               class="btn btn-secondary w-100">
+
+                Clear Filters
+
+            </a>
+
+        </div>
+
     </form>
-    <!-- end of search form -->
+    <!-- end of event search and filters -->
     <!-- start of event cards -->
     <div class="row g-4">
 

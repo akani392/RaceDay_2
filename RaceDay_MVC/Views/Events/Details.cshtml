@@ -1,15 +1,22 @@
 ﻿@model RaceDay_MVC.Models.RaceEvent
 @using Microsoft.AspNetCore.Http
 
+
 @{
     //start of view configuration
 
     ViewData["Title"] = "Event Details";
 
+    //check whether the user is a participant
     bool is_participant = string.Equals(
         Context.Session.GetString("Role"),
         "Participant",
         StringComparison.OrdinalIgnoreCase
+    );
+
+    //check if the user is logged in
+    bool logged_in = !string.IsNullOrWhiteSpace(
+        Context.Session.GetString("ApiCookie")
     );
 
     //end of view configuration
@@ -49,6 +56,7 @@
 
     <h2 class="mb-3">Available Race Categories</h2>
 
+    
     <!-- start of categories -->
     <div class="row g-4">
 
@@ -58,27 +66,44 @@
 
             <div class="col-md-6">
 
+                <!-- start of category card -->
                 <div class="card shadow-sm h-100">
 
                     <div class="card-body">
 
-                        <h3>@category.CategoryName</h3>
+                        <!-- category name -->
+                        <h3>
+                            @category.CategoryName
+                        </h3>
 
+                        <!-- category distance -->
                         <p>
                             <strong>Distance:</strong>
                             @category.DistanceKM km
                         </p>
 
+                        <!-- maximum participants -->
                         <p>
                             <strong>Maximum Participants:</strong>
                             @category.MaxParticipants
                         </p>
 
-                        @if (is_participant &&
-                            Model.EventDate > DateTime.Now)
+                        <!-- start of category registration -->
+                        @if (Model.EventDate <= DateTime.Now)
                         {
                             @* start of if *@
 
+                            <p class="text-muted">
+                                Registration for this event has closed. 🏁
+                            </p>
+
+                            @* end of if *@
+                        }
+                        else if (is_participant && logged_in)
+                        {
+                            @* start of else if *@
+
+                            <!-- start of participant enrolment form -->
                             <form asp-controller="Participant"
                                   asp-action="Enrol"
                                   method="post"
@@ -102,24 +127,54 @@
                                 </button>
 
                             </form>
+                            <!-- end of participant enrolment form -->
+                            @* end of else if *@
+                        }
+                        else if (!logged_in)
+                        {
+                            @* start of else if *@
 
-                            @* end of if *@
+                            <!-- invite visitors to register -->
+                            <a asp-controller="Account"
+                               asp-action="Register"
+                               class="btn btn-primary">
+
+                                Join This Event 🏃
+
+                            </a>
+
+                            <p class="small text-muted mt-2">
+                                Create a Participant account to register.
+                            </p>
+
+                            @* end of else if *@
                         }
                         else
                         {
+                            @* start of else *@
+
                             <p class="text-muted">
-                                Registration is unavailable.
+                                Only Participant accounts can register for races.
                             </p>
+
+                            @* end of else *@
                         }
+                        <!-- end of category registration -->
 
                     </div>
 
                 </div>
+                <!-- end of category card -->
 
             </div>
 
             @* end of foreach *@
         }
+
+    </div>
+    <!-- end of categories -->
+
+
 
     </div>
     <!-- end of categories -->

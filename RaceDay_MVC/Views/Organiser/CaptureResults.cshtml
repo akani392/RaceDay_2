@@ -16,7 +16,7 @@
         <div class="col-lg-7">
 
             <!-- start of result form card -->
-            <div class="card shadow-lg">
+            <div class="card shadow-lg raceday-result-card">
 
                 <div class="card-body p-4">
 
@@ -59,23 +59,24 @@
 
                         </div>
 
-                        <!-- finish time -->
+                        
+                        <!-- start of finish time field -->
                         <div class="mb-3">
 
                             <label asp-for="FinishTime"
                                    class="form-label">
-
-                                Finish Time
-
+                                Finish Time ⏱️
                             </label>
 
                             <input asp-for="FinishTime"
                                    type="text"
                                    class="form-control"
-                                   placeholder="01:25:30" />
+                                   placeholder="01:25:30"
+                                   autocomplete="off" />
 
-                            <small>
-                                Enter time as hours:minutes:seconds.
+                            <small class="text-muted">
+                                Enter the finishing time as hours:minutes:seconds.
+                                Example: 01:25:30.
                             </small>
 
                             <span asp-validation-for="FinishTime"
@@ -83,6 +84,7 @@
                             </span>
 
                         </div>
+                        <!-- end of finish time field -->
 
                         <!-- finishing position -->
                         <div class="mb-4">

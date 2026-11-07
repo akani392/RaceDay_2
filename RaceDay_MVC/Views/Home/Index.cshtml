@@ -1,8 +1,329 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model RaceDay_MVC.Models.HomePageViewModel
+@using Microsoft.AspNetCore.Http
+
+@{
+    //start of view configuration
+
+    ViewData["Title"] = "Welcome to RaceDay";
+
+    string? role = Context.Session.GetString("Role");
+
+    bool is_organiser = string.Equals(
+        role, "Organiser",
+        StringComparison.OrdinalIgnoreCase);
+
+    bool is_participant = string.Equals(
+        role, "Participant",
+        StringComparison.OrdinalIgnoreCase);
+
+    //end of view configuration
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<!-- start of homepage -->
+<div class="container py-4">
+
+    <!-- start of hero section -->
+    <section class="p-4 p-md-5 rounded-4 mb-5"
+             style="background: linear-gradient(120deg, #D9F1FB, #B8E6CB);">
+
+        <div class="row align-items-center g-4">
+
+            <div class="col-lg-8">
+
+                <p class="fw-bold mb-2"
+                   style="color: #397289;">
+                    FRESH AIR • NEW ADVENTURES • RACEDAY
+                </p>
+
+                <h1 class="display-4 fw-bold mb-3"
+                    style="color: #24495D;">
+                    Your next adventure starts outside.
+                </h1>
+
+                <p class="lead mb-4"
+                   style="color: #24495D;">
+                    Discover exciting races, explore the outdoors,
+                    challenge yourself and make every kilometre count.
+                </p>
+
+                <div class="d-flex gap-3 flex-wrap">
+
+                    <a asp-controller="Events"
+                       asp-action="Index"
+                       class="btn btn-primary btn-lg">
+                        Explore Events 🏃
+                    </a>
+
+                    @if (is_organiser)
+                    {
+                        <a asp-controller="Organiser"
+                           asp-action="CreateEvent"
+                           class="btn btn-warning btn-lg">
+                            Create an Event 🌿
+                        </a>
+                    }
+                    else if (is_participant)
+                    {
+                        <a asp-controller="Participant"
+                           asp-action="Dashboard"
+                           class="btn btn-warning btn-lg">
+                            My Dashboard
+                        </a>
+                    }
+                    else
+                    {
+                        <a asp-controller="Account"
+                           asp-action="Register"
+                           class="btn btn-warning btn-lg">
+                            Join RaceDay ✨
+                        </a>
+                    }
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-4 text-center">
+
+                <div class="p-4 rounded-4 shadow-sm"
+                     style="background-color: #FFFFFF;">
+
+                    <div class="display-1">🌳🏃</div>
+
+                    <h4 style="color: #24495D;">
+                        Move. Explore. Enjoy.
+                    </h4>
+
+                    <p class="mb-0">
+                        Every race is a new adventure.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+    <!-- end of hero section -->
+    <!-- start of next event -->
+    @if (Model.NextEvent != null)
+    {
+        <section class="mb-5">
+
+            <h2 class="mb-3">Next Race Coming Up 📅</h2>
+
+            <div class="card shadow-sm">
+
+                <div class="card-body p-4">
+
+                    <h3>@Model.NextEvent.EventName</h3>
+
+                    <p>
+                        <strong>Date:</strong>
+                        @Model.NextEvent.EventDate.ToString("dd MMM yyyy")
+                    </p>
+
+                    <p>
+                        <strong>Location:</strong>
+                        @Model.NextEvent.Location
+                    </p>
+
+                    <p>
+                        <strong>Type:</strong>
+                        @Model.NextEvent.EventType
+                    </p>
+
+                    <a asp-controller="Events"
+                       asp-action="Details"
+                       asp-route-id="@Model.NextEvent.EventID"
+                       class="btn btn-primary">
+                        View Race Details
+                    </a>
+
+                </div>
+
+            </div>
+
+        </section>
+    }
+    <!-- end of next event -->
+    <!-- start of upcoming events -->
+    <section class="mb-5">
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+
+            <h2>Upcoming Events 🌿</h2>
+
+            <a asp-controller="Events"
+               asp-action="Index"
+               class="btn btn-outline-primary">
+                View All
+            </a>
+
+        </div>
+
+        <div class="row g-4">
+
+            @foreach (var item in Model.UpcomingEvents)
+            {
+                <div class="col-md-6 col-lg-4">
+
+                    <div class="card h-100 shadow-sm">
+
+                        <div class="card-body">
+
+                            <h4>@item.EventName</h4>
+
+                            <p>@item.EventType</p>
+
+                            <p>
+                                📅 @item.EventDate.ToString("dd MMM yyyy")
+                            </p>
+
+                            <p>📍 @item.Location</p>
+
+                            <a asp-controller="Events"
+                               asp-action="Details"
+                               asp-route-id="@item.EventID"
+                               class="btn btn-primary">
+                                Explore Race
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+
+        @if (Model.UpcomingEvents.Count == 0)
+        {
+            <p>No upcoming races have been announced yet.</p>
+        }
+
+    </section>
+    <!-- end of upcoming events -->
+    <!-- start of previous events -->
+    <section class="mb-5">
+
+        <h2 class="mb-3">Previous Events 🏆</h2>
+
+        <div class="row g-3">
+
+            @foreach (var item in Model.PreviousEvents)
+            {
+                <div class="col-md-4">
+
+                    <div class="card h-100 shadow-sm">
+
+                        <div class="card-body">
+
+                            <h5>@item.EventName</h5>
+
+                            <p>
+                                @item.EventDate.ToString("dd MMM yyyy")
+                            </p>
+
+                            <p>📍 @item.Location</p>
+
+                            <a asp-controller="Events"
+                               asp-action="Details"
+                               asp-route-id="@item.EventID"
+                               class="btn btn-secondary">
+                                Event Details
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+
+        @if (Model.PreviousEvents.Count == 0)
+        {
+            <p>No previous events to display yet.</p>
+        }
+
+    </section>
+    <!-- end of previous events -->
+    <!-- start of call to action -->
+    <section class="rounded-4 p-4 p-md-5 text-center"
+             style="background-color: #B9ACDF;">
+
+        <h2 style="color: #24495D;">
+            Ready to take the next step?
+        </h2>
+
+        <p style="color: #24495D;">
+            Whether you're planning a community race
+            or searching for your next challenge,
+            RaceDay is here to help.
+        </p>
+
+        <div class="d-flex justify-content-center gap-3 flex-wrap">
+
+            <a asp-controller="Events"
+               asp-action="Index"
+               class="btn btn-primary">
+                Find an Event
+            </a>
+
+            <a asp-controller="Organiser"
+               asp-action="CreateEvent"
+               class="btn btn-warning">
+                Create an Event
+            </a>
+
+        </div>
+
+        @if (!is_organiser && !is_participant)
+        {
+            <p class="small mt-3 mb-0">
+                Create a free RaceDay account to register or organise races.
+            </p>
+        }
+
+    </section>
+    <!-- end of call to action -->
+    @if (Model.LoadingFailed)
+    {
+        <div class="alert alert-warning mt-4">
+            Event information is temporarily unavailable.
+            Please check that the RaceDay API is running.
+        </div>
+    }
+
+    
+    <!-- start of create event button -->
+    @if (is_organiser)
+    {
+        <a asp-controller="Organiser"
+           asp-action="CreateEvent"
+           class="btn btn-warning">
+
+            Create an Event 🌿
+
+        </a>
+    }
+    else if (!is_participant)
+    {
+        <a asp-controller="Account"
+           asp-action="Register"
+           class="btn btn-warning">
+
+            Become an Organiser 🌿
+
+        </a>
+    }
+
+    <!-- end of create event button -->
+
+
 </div>
+<!-- end of homepage -->
