@@ -1,0 +1,232 @@
+﻿@model RaceDay_MVC.Models.RaceEvent
+
+@{
+    //start of view configuration
+
+    ViewData["Title"] = "Event Details";
+
+    //get the categories that the participant has joined
+    var enrolled_category_ids =
+        ViewBag.EnrolledCategoryIDs as List<int>
+        ?? new List<int>();
+
+    //check if the event is still upcoming
+    bool registration_open = Model.EventDate >= DateTime.Now;
+
+    //end of view configuration
+}
+
+<!-- start of event details page -->
+<div class="container py-4">
+
+    <!-- start of event heading -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+
+        <div>
+
+            <h1>
+                @Model.EventName 🏁
+            </h1>
+
+            <p>
+                Discover the event details and select
+                your preferred racing category.
+            </p>
+
+        </div>
+
+        <a asp-controller="Participant"
+           asp-action="Index"
+           class="btn btn-secondary">
+
+            Back to Events
+
+        </a>
+
+    </div>
+    <!-- end of event heading -->
+    <!-- start of event information -->
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-body">
+
+            <h3 class="mb-3">
+                Event Information
+            </h3>
+
+            <p>
+                <strong>Event Type:</strong>
+                @Model.EventType
+            </p>
+
+            <p>
+                <strong>Location:</strong>
+                @Model.Location
+            </p>
+
+            <p>
+                <strong>Date:</strong>
+                @Model.EventDate.ToString("dd MMM yyyy")
+            </p>
+
+            <p>
+                <strong>Description:</strong>
+                @Model.Description
+            </p>
+
+            @if (!registration_open)
+            {
+                @* start of if *@
+
+                <div class="alert alert-warning">
+                    Registration is closed because
+                    this event has already started.
+                </div>
+
+                @* end of if *@
+            }
+
+        </div>
+
+    </div>
+    <!-- end of event information -->
+    <!-- start of racing categories -->
+    <h3 class="mb-3">
+        Available Racing Categories 🏃
+    </h3>
+
+    @if (Model.Categories.Count == 0)
+    {
+        @* start of if *@
+
+        <div class="card shadow-sm">
+
+            <div class="card-body text-center py-4">
+
+                <h4>No Categories Available 😢</h4>
+
+                <p>
+                    The Organiser has not added
+                    any racing categories yet.
+                </p>
+
+            </div>
+
+        </div>
+
+        @* end of if *@
+    }
+    else
+    {
+        @* start of else *@
+
+        <div class="row g-4">
+
+            @foreach (var category in Model.Categories)
+            {
+                @* start of foreach *@
+
+                bool already_enrolled =
+                    enrolled_category_ids.Contains(
+                        category.CategoryID
+                    );
+
+                <div class="col-md-6 col-lg-4">
+
+                    <div class="card shadow-sm h-100">
+
+                        <div class="card-body d-flex flex-column">
+
+                            <h4>
+                                @category.CategoryName
+                            </h4>
+
+                            <p>
+                                <strong>Distance:</strong>
+                                @category.DistanceKM km
+                            </p>
+
+                            <p>
+                                <strong>Maximum Participants:</strong>
+                                @category.MaxParticipants
+                            </p>
+
+                            <div class="mt-auto">
+
+                                @if (already_enrolled)
+                                {
+                                    @* start of if *@
+
+                                    <button class="btn btn-success w-100"
+                                            disabled>
+
+                                        Already Registered ✅
+
+                                    </button>
+
+                                    @* end of if *@
+                                }
+                                else if (!registration_open)
+                                {
+                                    @* start of else if *@
+
+                                    <button class="btn btn-secondary w-100"
+                                            disabled>
+
+                                        Registration Closed
+
+                                    </button>
+
+                                    @* end of else if *@
+                                }
+                                else
+                                {
+                                    @* start of else *@
+
+                                    <!-- start of enrolment form -->
+                                    <form asp-controller="Participant"
+                                          asp-action="Enrol"
+                                          method="post">
+
+                                        @Html.AntiForgeryToken()
+
+                                        <input type="hidden"
+                                               name="categoryId"
+                                               value="@category.CategoryID" />
+
+                                        <input type="hidden"
+                                               name="eventId"
+                                               value="@Model.EventID" />
+
+                                        <button type="submit"
+                                                class="btn btn-primary w-100">
+
+                                            Register for Race 🏁
+
+                                        </button>
+
+                                    </form>
+                                    <!-- end of enrolment form -->
+                                    @* end of else *@
+                                }
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                @* end of foreach *@
+            }
+
+        </div>
+
+        @* end of else *@
+    }
+
+    <!-- end of racing categories -->
+
+</div>
+<!-- end of event details page -->
