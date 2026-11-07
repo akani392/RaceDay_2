@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿
+using System.ComponentModel.DataAnnotations;
 
 namespace RaceDay_MVC.Models
 {
@@ -6,28 +7,35 @@ namespace RaceDay_MVC.Models
 
     public class EventForm
     {
-
         //start of class
 
-        //event id for editing existing evets
+        //event identifier used when editing
         public int EventID { get; set; }
 
-        //name of the event
+        //event name
         [Required(ErrorMessage = "Event name is required")]
         public string EventName { get; set; } = "";
 
-        //date of the event
-        [Required(ErrorMessage = "Event date is needed")]
-        public string Location { get; set; } = "";
-
-        //description of the event
-        [Required(ErrorMessage = "Description is needed")]
+        //event description
+        [Required(ErrorMessage = "Description is required")]
         public string Description { get; set; } = "";
 
-        //type of event
-        [Required(ErrorMessage = "Event type is needed")]
-        [RegularExpression("^(Running|Walking|Cycling)$", ErrorMessage = "Select a valid event type")]
-        public string EventType { get; set; } = "Running";
+        //event date
+        [Required(ErrorMessage = "Event date is required")]
+        [DataType(DataType.Date)]
+        public DateTime EventDate { get; set; } = DateTime.Today;
+
+        //event location
+        [Required(ErrorMessage = "Location is required")]
+        public string Location { get; set; } = "";
+
+        //event distance
+        [Range(0.1, 1000, ErrorMessage = "Enter a valid distance")]
+        public double DistanceKm { get; set; }
+
+        //event type
+        [Required(ErrorMessage = "Event type is required")]
+        public string EventType { get; set; } = "";
 
         //end of class
     }
