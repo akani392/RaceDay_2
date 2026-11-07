@@ -152,10 +152,11 @@ namespace RaceDay_2.Controllers
         }
 
         //get
-        //get all the enromlents for a certain event so that owning Orgainsers can manage particpationn
+
+        //get all enrolments for an event owned by the organiser
         [HttpGet("/api/events/{eventId}/enrolments")]
-        [Authorize (Roles = "Organiser")]
-        public IActionResult GetByEvent (int eventId)
+        [Authorize(Roles = "Organiser")]
+        public IActionResult GetByEvent(int eventId)
         {
             //start of method
 
@@ -163,47 +164,80 @@ namespace RaceDay_2.Controllers
             {
                 //start of try
 
+                //get the currently logged in organiser
                 int current_user_id = get_current_user_id();
 
-                //check the evenr is there and who owns it
+                //find the event
                 var owning_event = _context.Events.Find(eventId);
 
+                //check if the event exists
                 if (owning_event == null)
                 {
-                    return NotFound(new { message = "Event not found" });
+                    //start of if
+
+                    return NotFound(new
+                    {
+                        message = "Event not found"
+                    });
+
+                    //end of if
                 }
 
-                //only the organizer whoe oens the event may view its enrolment
+                //check that organiser owns the event
                 if (owning_event.OrganiserID != current_user_id)
                 {
-                    return StatusCode(403, new { message = "You do not own this event" });
+                    //start of if
+
+                    return StatusCode(403, new
+                    {
+                        message = "You do not own this event"
+                    });
+
+                    //end of if
                 }
 
-                //get every enrolment through every actegory that belongs to this event
-                var enrolments = _context.Enrolments.Where(en => en.Category!.EventID == eventId).OrderBy(en => en.EnrolmentDate).Select(en => new
-                {
-                    en.EnrolmentID,
-                    en.ParticipantID,
-                    en.CategoryID,
-                    en.EnrolmentDate,
-                    en.Status
-                }).ToList();
+                //get enrolments together with participant and category details
+                var enrolments = _context.Enrolments
+                    .Where(en => en.Category!.EventID == eventId)
+                    .OrderBy(en => en.EnrolmentDate)
+                    .Select(en => new
+                    {
+                        en.EnrolmentID,
+                        en.ParticipantID,
+                        en.CategoryID,
+                        en.EnrolmentDate,
+                        en.Status,
+
+                        ParticipantName = en.Participant != null
+                            ? en.Participant.FirstName + " " + en.Participant.LastName
+                            : "Unknown Participant",
+
+                        CategoryName = en.Category != null
+                            ? en.Category.CategoryName
+                            : "Unknown Category"
+                    })
+                    .ToList();
+
+                //return the enrolment list
                 return Ok(enrolments);
 
                 //end of try
             }
-
             catch (Exception e)
             {
                 //start of catch
 
-                return BadRequest(e.Message);
+                return BadRequest(new
+                {
+                    message = e.Message
+                });
 
                 //end of catch
             }
 
             //end of method
         }
+
 
 
         //delete

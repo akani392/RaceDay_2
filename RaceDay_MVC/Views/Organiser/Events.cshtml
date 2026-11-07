@@ -105,6 +105,10 @@
                                                 Edit⚙️
                                             </a>
 
+                                            <a asp-controller="Organiser" asp-action="Categories" asp-route-id="@item.EventID" class="btn btn-primary btn-5m">
+                                                Categories 🪧
+                                            </a>
+
                                             <form asp-action="DeleteEvent" asp-route-id ="@item.EventID" method="post" onsubmit="return confirm("Are you sure you want too delete this event?");">
 
                                                 @Html.AntiForgeryToken()
