@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RaceDay_MVC.Services;
 using RaceDay_MVC.Models;
+using System.Globalization;
 
 namespace RaceDay_MVC.Controllers
 {
@@ -382,6 +383,485 @@ namespace RaceDay_MVC.Controllers
 
             //end of method
         }
+
+
+        //show categories for a selected event
+        [HttpGet]
+        public async Task<IActionResult> Categories(int id)
+        {
+            //start of method
+
+            //check if the user is an organiser
+            var check = RequireRole("Organiser");
+
+            if (check != null)
+            {
+                //start of if
+
+                return check;
+
+                //end of if
+            }
+
+            try
+            {
+                //start of try
+
+                //get the selected event
+                var found_event = await Api.Get<RaceEvent>(
+                    HttpContext,
+                    $"api/Events/{id}"
+                );
+
+                //check if event exists
+                if (found_event == null)
+                {
+                    //start of if
+
+                    return NotFound();
+
+                    //end of if
+                }
+
+                //get current organiser id
+                int? organiser_id =
+                    HttpContext.Session.GetInt32("UserID");
+
+                //check if organiser owns the event
+                if (found_event.OrganiserID != organiser_id)
+                {
+                    //start of if
+
+                    return Forbid();
+
+                    //end of if
+                }
+
+                //get categories belonging to the event
+                var categories = await Api.Get<List<RaceCategory>>(
+                    HttpContext,
+                    $"api/events/{id}/categories"
+                );
+
+                //save the event details for the view
+                ViewBag.EventID = id;
+                ViewBag.EventName = found_event.EventName;
+
+                //display categories
+                return View(categories ?? new List<RaceCategory>());
+
+                //end of try
+            }
+            catch (HttpRequestException)
+            {
+                //start of catch
+
+                TempData["Error"] =
+                    "Unable to connect to the RaceDay API.";
+
+                return RedirectToAction("Events");
+
+                //end of catch
+            }
+
+            //end of method
+        }
+
+
+        //show the create category form
+        [HttpGet]
+        public async Task<IActionResult> CreateCategory(int eventId)
+        {
+            //start of method
+
+            //check organiser permission
+            var check = RequireRole("Organiser");
+
+            if (check != null)
+            {
+                //start of if
+
+                return check;
+
+                //end of if
+            }
+
+            //get the selected event
+            var found_event = await Api.Get<RaceEvent>(
+                HttpContext,
+                $"api/Events/{eventId}"
+            );
+
+            //check if event exists
+            if (found_event == null)
+            {
+                //start of if
+
+                return NotFound();
+
+                //end of if
+            }
+
+            //check event ownership
+            int? organiser_id =
+                HttpContext.Session.GetInt32("UserID");
+
+            if (found_event.OrganiserID != organiser_id)
+            {
+                //start of if
+
+                return Forbid();
+
+                //end of if
+            }
+
+            //create category form
+            var form = new CategoryForm
+            {
+                EventID = eventId
+            };
+
+            return View("CategoryForm", form);
+
+            //end of method
+        }
+
+
+        //show the edit category form
+        [HttpGet]
+        public async Task<IActionResult> EditCategory(int eventId, int id)
+        {
+            //start of method
+
+            //check organiser permission
+            var check = RequireRole("Organiser");
+
+            if (check != null)
+            {
+                //start of if
+
+                return check;
+
+                //end of if
+            }
+
+            //get the selected event
+            var found_event = await Api.Get<RaceEvent>(
+                HttpContext,
+                $"api/Events/{eventId}"
+            );
+
+            if (found_event == null)
+            {
+                //start of if
+
+                return NotFound();
+
+                //end of if
+            }
+
+            //check event ownership
+            int? organiser_id =
+                HttpContext.Session.GetInt32("UserID");
+
+            if (found_event.OrganiserID != organiser_id)
+            {
+                //start of if
+
+                return Forbid();
+
+                //end of if
+            }
+
+            //get categories for this event
+            var categories = await Api.Get<List<RaceCategory>>(
+                HttpContext,
+                $"api/events/{eventId}/categories"
+            );
+
+            //find the selected category
+            var category = categories?
+                .FirstOrDefault(c => c.CategoryID == id);
+
+            if (category == null)
+            {
+                //start of if
+
+                return NotFound();
+
+                //end of if
+            }
+
+            //populate the category form
+            var form = new CategoryForm
+            {
+                EventID = category.EventID,
+                CategoryID = category.CategoryID,
+                CategoryName = category.CategoryName,
+                DistanceKM = category.DistanceKM,
+                MaxParticipants = category.MaxParticipants
+            };
+
+            return View("CategoryForm", form);
+
+            //end of method
+        }
+
+
+        //create or update a racing category
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SaveCategory(CategoryForm form)
+        {
+            //start of method
+
+            //check organiser permission
+            var check = RequireRole("Organiser");
+
+            if (check != null)
+            {
+                //start of if
+
+                return check;
+
+                //end of if
+            }
+
+            //validate category information
+            if (!ModelState.IsValid)
+            {
+                //start of if
+
+                return View("CategoryForm", form);
+
+                //end of if
+            }
+
+            try
+            {
+                //start of try
+
+                //get the event that owns the category
+                var found_event = await Api.Get<RaceEvent>(
+                    HttpContext,
+                    $"api/Events/{form.EventID}"
+                );
+
+                if (found_event == null)
+                {
+                    //start of if
+
+                    return NotFound();
+
+                    //end of if
+                }
+
+                //check organiser ownership
+                int? organiser_id =
+                    HttpContext.Session.GetInt32("UserID");
+
+                if (found_event.OrganiserID != organiser_id)
+                {
+                    //start of if
+
+                    return Forbid();
+
+                    //end of if
+                }
+
+                //check that the category belongs to this event
+                if (form.CategoryID > 0)
+                {
+                    //start of if
+
+                    var categories = await Api.Get<List<RaceCategory>>(
+                        HttpContext,
+                        $"api/events/{form.EventID}/categories"
+                    );
+
+                    bool category_exists = categories?.Any(c =>
+                        c.CategoryID == form.CategoryID) == true;
+
+                    if (!category_exists)
+                    {
+                        //start of if
+
+                        return NotFound();
+
+                        //end of if
+                    }
+
+                    //end of if
+                }
+
+                //choose create or update route
+                string route = form.CategoryID > 0
+                    ? $"api/Categories/{form.CategoryID}"
+                    : $"api/events/{form.EventID}/categories";
+
+                //add the category parameters
+                route += "?" + RaceDayApi.Query(
+                    ("categoryName", form.CategoryName),
+                    ("distanceKm", form.DistanceKM.ToString(
+                        CultureInfo.InvariantCulture)),
+                    ("maxParticipants", form.MaxParticipants.ToString())
+                );
+
+                //choose the correct HTTP method
+                HttpMethod method = form.CategoryID > 0
+                    ? HttpMethod.Put
+                    : HttpMethod.Post;
+
+                //send request to the API
+                var result = await Api.Write(
+                    HttpContext,
+                    method,
+                    route
+                );
+
+                //display feedback message
+                Feedback(result);
+
+                if (result.success)
+                {
+                    //start of if
+
+                    return RedirectToAction(
+                        "Categories",
+                        new { id = form.EventID }
+                    );
+
+                    //end of if
+                }
+
+                return View("CategoryForm", form);
+
+                //end of try
+            }
+            catch (HttpRequestException)
+            {
+                //start of catch
+
+                ModelState.AddModelError(
+                    "",
+                    "Unable to connect to the RaceDay API."
+                );
+
+                return View("CategoryForm", form);
+
+                //end of catch
+            }
+
+            //end of method
+        }
+
+
+        //delete a racing category
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteCategory(int id, int eventId)
+        {
+            //start of method
+
+            //check organiser permission
+            var check = RequireRole("Organiser");
+
+            if (check != null)
+            {
+                //start of if
+
+                return check;
+
+                //end of if
+            }
+
+            try
+            {
+                //start of try
+
+                //get event details
+                var found_event = await Api.Get<RaceEvent>(
+                    HttpContext,
+                    $"api/Events/{eventId}"
+                );
+
+                if (found_event == null)
+                {
+                    //start of if
+
+                    return NotFound();
+
+                    //end of if
+                }
+
+                //check that organiser owns the event
+                int? organiser_id =
+                    HttpContext.Session.GetInt32("UserID");
+
+                if (found_event.OrganiserID != organiser_id)
+                {
+                    //start of if
+
+                    return Forbid();
+
+                    //end of if
+                }
+
+                //check that the category belongs to this event
+                var categories = await Api.Get<List<RaceCategory>>(
+                    HttpContext,
+                    $"api/events/{eventId}/categories"
+                );
+
+                if (categories?.Any(c => c.CategoryID == id) != true)
+                {
+                    //start of if
+
+                    return NotFound();
+
+                    //end of if
+                }
+
+                //delete category using the API
+                var result = await Api.Write(
+                    HttpContext,
+                    HttpMethod.Delete,
+                    $"api/Categories/{id}"
+                );
+
+                Feedback(result);
+
+                return RedirectToAction(
+                    "Categories",
+                    new { id = eventId }
+                );
+
+                //end of try
+            }
+            catch (HttpRequestException)
+            {
+                //start of catch
+
+                TempData["Error"] =
+                    "Unable to connect to the RaceDay API.";
+
+                return RedirectToAction(
+                    "Categories",
+                    new { id = eventId }
+                );
+
+                //end of catch
+            }
+
+            //end of method
+        }
+
+
+
+
+
+
+
 
         //end of class
     }
