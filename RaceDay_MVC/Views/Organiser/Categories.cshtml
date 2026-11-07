@@ -1,0 +1,151 @@
+﻿@model List<RaceDay_MVC.Models.RaceCategory>
+
+@{
+    //start of view configuration
+
+    ViewData["Title"] = "Manage Categories";
+
+    int event_id = (int)ViewBag.EventID;
+    string event_name = (string)ViewBag.EventName;
+
+    //end of view configuration
+}
+
+<!-- start of categories page -->
+<div class="container py-4">
+
+    <!-- start of heading -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+
+        <div>
+            <h1>Manage Categories</h1>
+            <p>Event: @event_name</p>
+        </div>
+
+        <a asp-controller="Organiser"
+           asp-action="CreateCategory"
+           asp-route-eventId="@event_id"
+           class="btn btn-primary">
+
+            + Add Category
+        </a>
+
+    </div>
+    <!-- end of heading -->
+    <!-- start of categories card -->
+    <div class="card shadow-sm">
+
+        <div class="card-body">
+
+            @if (Model.Count == 0)
+            {
+                <!-- start of if -->
+
+                <div class="text-center py-4">
+
+                    <h4>No Categories Found</h4>
+
+                    <p>
+                        Create a category for participants
+                        to enrol in.
+                    </p>
+
+                    <a asp-action="CreateCategory"
+                       asp-route-eventId="@event_id"
+                       class="btn btn-primary">
+                        Add First Category
+                    </a>
+
+                </div>
+
+                <!-- end of if -->
+            }
+            else
+            {
+                <!-- start of else -->
+
+                <div class="table-responsive">
+
+                    <table class="table table-striped">
+
+                        <thead>
+                            <tr>
+                                <th>Category Name</th>
+                                <th>Distance</th>
+                                <th>Max Participants</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var category in Model)
+                            {
+                                <!-- start of foreach -->
+
+                                <tr>
+                                    <td>@category.CategoryName</td>
+
+                                    <td>@category.DistanceKM km</td>
+
+                                    <td>@category.MaxParticipants</td>
+
+                                    <td>
+                                        <div class="d-flex gap-2">
+
+                                            <a asp-action="EditCategory"
+                                               asp-route-id="@category.CategoryID"
+                                               asp-route-eventId="@event_id"
+                                               class="btn btn-primary btn-sm">
+                                                Edit
+                                            </a>
+
+                                            <form asp-action="DeleteCategory"
+                                                  method="post"
+                                                  onsubmit="return confirm('Delete this category?');">
+
+                                                @Html.AntiForgeryToken()
+
+                                                <input type="hidden"
+                                                       name="id"
+                                                       value="@category.CategoryID" />
+
+                                                <input type="hidden"
+                                                       name="eventId"
+                                                       value="@event_id" />
+
+                                                <button type="submit"
+                                                        class="btn btn-danger btn-sm">
+                                                    Delete
+                                                </button>
+
+                                            </form>
+
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <!-- end of foreach -->
+                            }
+
+                        </tbody>
+                    </table>
+
+                </div>
+
+                <!-- end of else -->
+            }
+
+        </div>
+
+    </div>
+    <!-- end of categories card -->
+
+    <a asp-controller="Organiser"
+       asp-action="Events"
+       class="btn btn-secondary mt-4">
+        Back to My Events
+    </a>
+
+</div>
+<!-- end of categories page -->
