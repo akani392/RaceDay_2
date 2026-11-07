@@ -9,31 +9,26 @@ namespace RaceDay_MVC.Models
     {
         //start of class
 
-        //event identifier used when editing
+        //event id for editing an existing event
         public int EventID { get; set; }
 
-        //event name
+        //name of the racing event
         [Required(ErrorMessage = "Event name is required")]
         public string EventName { get; set; } = "";
 
-        //event description
-        [Required(ErrorMessage = "Description is required")]
-        public string Description { get; set; } = "";
-
-        //event date
+        //date of the event
         [Required(ErrorMessage = "Event date is required")]
-        [DataType(DataType.Date)]
-        public DateTime EventDate { get; set; } = DateTime.Today;
+        public DateTime EventDate { get; set; } =
+            DateTime.Today.AddDays(7);
 
-        //event location
+        //location of the event
         [Required(ErrorMessage = "Location is required")]
         public string Location { get; set; } = "";
 
-        //event distance
-        [Range(0.1, 1000, ErrorMessage = "Enter a valid distance")]
-        public double DistanceKm { get; set; }
+        //description of the event
+        public string Description { get; set; } = "";
 
-        //event type
+        //type of event
         [Required(ErrorMessage = "Event type is required")]
         public string EventType { get; set; } = "";
 

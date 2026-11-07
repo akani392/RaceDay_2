@@ -27,12 +27,31 @@
                     @Html.AntiForgeryToken()
 
                     <!-- event id-->
-                    <input asp-for="EventID" type="hhidden"/>
+                    <input asp-for="EventID" type="hidden"/>
 
                     <!--validation summery-->
                     <div asp-validation-summary="All" class="text-danger mb-3">
 
                     </div>
+
+                    
+                    <!-- start of event date -->
+                    <div class="mb-3">
+
+                        <label asp-for="EventDate" class="form-label">
+                            Event Date 📅
+                        </label>
+
+                        <input asp-for="EventDate"
+                               type="date"
+                               class="form-control" />
+
+                        <span asp-validation-for="EventDate"
+                              class="text-danger">
+                        </span>
+
+                    </div>
+                    <!-- end of event date -->
 
                     <!--event name-->
                     <div class="mb-3">

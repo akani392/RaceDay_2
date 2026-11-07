@@ -16,9 +16,205 @@ namespace RaceDay_MVC.Controllers
         //constructor for organiser controller
         public OrganiserController(RaceDayApi api) : base(api) { }
 
+
         //show the organiser dashboard
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
+        {
+            //start of method
+
+            //check organiser permission
+            var check = RequireRole("Organiser");
+
+            if (check != null)
+            {
+                //start of if
+
+                return check;
+
+                //end of if
+            }
+
+            //create the dashboard model
+            var model = new OrganiserDashboardViewModel();
+
+            //get the logged in organiser id
+            int? organiser_id =
+                HttpContext.Session.GetInt32("UserID");
+
+            //check organiser id
+            if (organiser_id == null)
+            {
+                //start of if
+
+                return RedirectToAction("Login", "Account");
+
+                //end of if
+            }
+
+            try
+            {
+                //start of try
+
+                //get all racing events from the API
+                var all_events = await Api.Get<List<RaceEvent>>(
+                    HttpContext,
+                    "api/Events"
+                );
+
+                //check if events loaded
+                if (all_events == null)
+                {
+                    //start of if
+
+                    throw new HttpRequestException(
+                        "Unable to load events."
+                    );
+
+                    //end of if
+                }
+
+                //only get events owned by this organiser
+                var my_events = all_events
+                    .Where(e => e.OrganiserID == organiser_id.Value)
+                    .ToList();
+
+                //count the organiser's events
+                model.TotalEvents = my_events.Count;
+
+                //get upcoming events
+                model.UpcomingEvents = my_events
+                    .Where(e => e.EventDate >= DateTime.Now)
+                    .OrderBy(e => e.EventDate)
+                    .Take(5)
+                    .ToList();
+
+                //get categories and enrolments for each event
+                foreach (var race_event in my_events)
+                {
+                    //start of foreach
+
+                    //get categories belonging to this event
+                    var categories = await Api.Get<List<RaceCategory>>(
+                        HttpContext,
+                        $"api/events/{race_event.EventID}/categories"
+                    );
+
+                    //check categories loaded
+                    if (categories == null)
+                    {
+                        //start of if
+
+                        throw new HttpRequestException(
+                            "Unable to load categories."
+                        );
+
+                        //end of if
+                    }
+
+                    //add event categories to total
+                    model.TotalCategories += categories.Count;
+
+                    //get the event's enrolments
+                    using var enrolment_response = await Api.Send(
+                        HttpContext,
+                        HttpMethod.Get,
+                        $"api/events/{race_event.EventID}/enrolments"
+                    );
+
+                    //check whether the request succeeded
+                    enrolment_response.EnsureSuccessStatusCode();
+
+                    //convert response to enrolments
+                    var enrolments = await enrolment_response.Content
+                        .ReadFromJsonAsync<List<RaceEnrolment>>()
+                        ?? new List<RaceEnrolment>();
+
+                    //only count confirmed registrations
+                    var confirmed_enrolments = enrolments
+                        .Where(e => string.Equals(
+                            e.Status,
+                            "Confirmed",
+                            StringComparison.OrdinalIgnoreCase
+                        ))
+                        .ToList();
+
+                    //add confirmed registrations to total
+                    model.TotalEnrolments += confirmed_enrolments.Count;
+
+                    //check captured results for each enrolment
+                    foreach (var enrolment in confirmed_enrolments)
+                    {
+                        //start of foreach
+
+                        //request the participant's result
+                        using var result_response = await Api.Send(
+                            HttpContext,
+                            HttpMethod.Get,
+                            $"api/enrolments/{enrolment.EnrolmentID}/result"
+                        );
+
+                        //count captured result
+                        if (result_response.IsSuccessStatusCode)
+                        {
+                            //start of if
+
+                            model.TotalResults++;
+
+                            //end of if
+                        }
+                        else if (result_response.StatusCode != HttpStatusCode.NotFound)
+                        {
+                            //start of else if
+
+                            result_response.EnsureSuccessStatusCode();
+
+                            //end of else if
+                        }
+
+                        //end of foreach
+                    }
+
+                    //end of foreach
+                }
+
+                //display the dashboard
+                return View(model);
+
+                //end of try
+            }
+            catch (HttpRequestException)
+            {
+                //start of catch
+
+                TempData["Error"] =
+                    "Unable to load dashboard statistics from the RaceDay API.";
+
+                //do not display incomplete totals as accurate statistics
+                return RedirectToAction("Events");
+
+                //end of catch
+            }
+            catch (System.Text.Json.JsonException)
+            {
+                //start of catch
+
+                TempData["Error"] =
+                    "The RaceDay API returned invalid dashboard data.";
+
+                return RedirectToAction("Events");
+
+                //end of catch
+            }
+
+            //end of method
+        }
+
+
+
+        //show all events by the organiser
+        [HttpGet]
+        public async Task<IActionResult> Events()
         {
             //start of method
 
@@ -34,30 +230,6 @@ namespace RaceDay_MVC.Controllers
                 //end of if
             }
 
-            //show the organiser info
-            return View();
-
-            //end of method
-        }
-
-        //show all events by thecorganiser
-        [HttpGet]
-        public async Task<IActionResult> Events()
-        {
-            //start of method
-
-            //check if the user is a orgainser
-            var check = RequireRole("Organizer");
-
-            if (check != null)
-            {
-                //start of if
-
-                return check;
-
-
-                //end of id
-            }
 
             try
             {
@@ -162,14 +334,18 @@ namespace RaceDay_MVC.Controllers
                 }
 
                 //populate form eith existing event information
+
+                //populate form with existing event information
                 var form = new EventForm
                 {
                     EventID = found_event.EventID,
                     EventName = found_event.EventName,
+                    EventDate = found_event.EventDate,
                     EventType = found_event.EventType,
                     Location = found_event.Location,
                     Description = found_event.Description ?? ""
                 };
+
 
                 return View("EventForm", form);
 
@@ -270,12 +446,16 @@ namespace RaceDay_MVC.Controllers
                     //end of if
                 }
 
-                //add event information
+
+                //add event information to the api request
                 route += "?" + RaceDayApi.Query(
                     ("eventName", form.EventName),
+                    ("eventDate", form.EventDate.ToString("yyyy-MM-dd")),
                     ("location", form.Location),
                     ("description", form.Description),
-                    ("eventType", form.EventType));
+                    ("eventType", form.EventType)
+                );
+
 
                 //sebd rrequest to RaceDay 2 API
                 var result = await Api.Write(HttpContext, method, route);

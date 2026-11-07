@@ -248,6 +248,33 @@ namespace RaceDay_MVC.Controllers
                     $"api/events/{eventId}/categories"
                 );
 
+
+                //check which event the participant selected
+                System.Diagnostics.Debug.WriteLine(
+                    $"Participant selected EventID: {eventId}"
+                );
+
+                //check how many categories the API returned
+                System.Diagnostics.Debug.WriteLine(
+                    $"Categories returned: {categories?.Count ?? 0}"
+                );
+
+                //display categories returned by the API
+                foreach (var category in categories ?? new List<RaceCategory>())
+                {
+                    //start of foreach
+
+                    System.Diagnostics.Debug.WriteLine(
+                        $"CategoryID: {category.CategoryID}, " +
+                        $"EventID: {category.EventID}, " +
+                        $"Name: {category.CategoryName}"
+                    );
+
+                    //end of foreach
+                }
+
+                found_event.Categories = categories;
+
                 //confirm selected category belongs to the event
                 bool valid_category = categories?.Any(c =>
                     c.CategoryID == categoryId) == true;

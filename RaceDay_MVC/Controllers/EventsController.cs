@@ -140,6 +140,33 @@ namespace RaceDay_MVC.Controllers
                 $"api/events/{id}/categories"
             );
 
+
+            //display category information for debugging
+            System.Diagnostics.Debug.WriteLine(
+                $"Selected Event ID: {id}"
+            );
+
+            System.Diagnostics.Debug.WriteLine(
+                $"Categories returned: {categories?.Count ?? 0}"
+            );
+
+            //display each category
+            foreach (var category in categories ?? new List<RaceCategory>())
+            {
+                //start of foreach
+
+                System.Diagnostics.Debug.WriteLine(
+                    $"Category ID: {category.CategoryID}, " +
+                    $"Event ID: {category.EventID}, " +
+                    $"Category Name: {category.CategoryName}"
+                );
+
+                found_event.Categories = categories;
+
+                //end of foreach
+            }
+
+
             //check if categories could be loaded
             if (categories == null)
             {

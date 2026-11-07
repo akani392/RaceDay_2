@@ -1,7 +1,263 @@
-﻿<!-- start of manage events button-->
+﻿@model RaceDay_MVC.Models.OrganiserDashboardViewModel
 
-<a asp-controller="Organiser" asp-action="Events" class="btn btn-warning">
-    Manage Events 📋
-</a>
+@{
+    //start of view configuration
 
-<!--end of manage events button -->
+    ViewData["Title"] = "Organiser Dashboard";
+
+    //end of view configuration
+}
+
+<!-- start of organiser dashboard -->
+<div class="container py-4">
+
+    <!-- start of page header -->
+    <div class="mb-4">
+
+        <h1>Organiser Dashboard 🌤️</h1>
+
+        <p class="lead">
+            Welcome to your RaceDay dashboard!
+            Manage your events and track your race activity.
+        </p>
+
+    </div>
+    <!-- end of page header -->
+    <!-- start of dashboard statistics -->
+    <div class="row g-4 mb-4">
+
+        <!-- total events -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 shadow-sm"
+                 style="background-color: #78C9EB;">
+
+                <div class="card-body text-center">
+
+                    <h5>Total Events 📅</h5>
+
+                    <h2>@Model.TotalEvents</h2>
+
+                </div>
+
+            </div>
+        </div>
+
+        <!-- total categories -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 shadow-sm"
+                 style="background-color: #B8E6CB;">
+
+                <div class="card-body text-center">
+
+                    <h5>Race Categories 🏁</h5>
+
+                    <h2>@Model.TotalCategories</h2>
+
+                </div>
+
+            </div>
+        </div>
+
+        <!-- confirmed registrations -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 shadow-sm"
+                 style="background-color: #F6B7D2;">
+
+                <div class="card-body text-center">
+
+                    <h5>Confirmed Entries 🏃</h5>
+
+                    <h2>@Model.TotalEnrolments</h2>
+
+                </div>
+
+            </div>
+        </div>
+
+        <!-- captured results -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card h-100 shadow-sm"
+                 style="background-color: #B9ACDF;">
+
+                <div class="card-body text-center">
+
+                    <h5>Results Captured 🏆</h5>
+
+                    <h2>@Model.TotalResults</h2>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+    <!-- end of dashboard statistics -->
+    <!-- start of quick actions -->
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-body">
+
+            <h3 class="mb-3">Quick Actions ⚡</h3>
+
+            <div class="d-flex gap-3 flex-wrap">
+
+                <a asp-controller="Organiser"
+                   asp-action="CreateEvent"
+                   class="btn btn-warning">
+
+                    ➕ Create Event
+
+                </a>
+
+                <a asp-controller="Organiser"
+                   asp-action="Events"
+                   class="btn btn-primary">
+
+                    📋 Manage Events
+
+                </a>
+
+                <a asp-controller="Organiser"
+                   asp-action="Events"
+                   class="btn btn-secondary">
+
+                    🏆 Manage Results
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+    <!-- end of quick actions -->
+    <!-- start of upcoming events -->
+    <div class="card shadow-sm">
+
+        <div class="card-body">
+
+            <h3 class="mb-3">Upcoming Events 🌿</h3>
+
+            @if (Model.UpcomingEvents.Count == 0)
+            {
+                @* start of if *@
+
+                <div class="text-center py-4">
+
+                    <h4>No Upcoming Events</h4>
+
+                    <p>
+                        Create your next event and encourage
+                        participants to get outdoors!
+                    </p>
+
+                    <a asp-controller="Organiser"
+                       asp-action="CreateEvent"
+                       class="btn btn-primary">
+
+                        Create Event
+
+                    </a>
+
+                </div>
+
+                @* end of if *@
+            }
+            else
+            {
+                @* start of else *@
+
+                <div class="table-responsive">
+
+                    <table class="table table-striped align-middle">
+
+                        <thead>
+                            <tr>
+                                <th>Event Name</th>
+                                <th>Event Type</th>
+                                <th>Date</th>
+                                <th>Location</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var item in Model.UpcomingEvents)
+                            {
+                                @* start of foreach *@
+
+                                <tr>
+
+                                    <td>
+                                        @item.EventName
+                                    </td>
+
+                                    <td>
+                                        @item.EventType
+                                    </td>
+
+                                    <td>
+                                        @item.EventDate.ToString("dd MMM yyyy")
+                                    </td>
+
+                                    <td>
+                                        @item.Location
+                                    </td>
+
+                                    <td>
+
+                                        <div class="d-flex gap-2 flex-wrap">
+
+                                            <a asp-controller="Organiser"
+                                               asp-action="Categories"
+                                               asp-route-id="@item.EventID"
+                                               class="btn btn-primary btn-sm">
+
+                                                Categories
+
+                                            </a>
+
+                                            <a asp-controller="Organiser"
+                                               asp-action="Enrolments"
+                                               asp-route-id="@item.EventID"
+                                               class="btn btn-secondary btn-sm">
+
+                                                Enrolments
+
+                                            </a>
+
+                                            <a asp-controller="Organiser"
+                                               asp-action="Results"
+                                               asp-route-id="@item.EventID"
+                                               class="btn btn-primary btn-sm">
+
+                                                Results
+
+                                            </a>
+
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+
+                                @* end of foreach *@
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+                @* end of else *@
+            }
+
+        </div>
+
+    </div>
+    <!-- end of upcoming events -->
+
+</div>
+<!-- end of organiser dashboard -->

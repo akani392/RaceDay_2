@@ -249,6 +249,40 @@ namespace RaceDay_MVC.Controllers
             //end of method
         }
 
+
+        //temporarily check the current login session
+        [HttpGet]
+        public IActionResult DebugSession()
+        {
+            //start of method
+
+            //get information stored in the MVC session
+            string? user_role =
+                HttpContext.Session.GetString("Role");
+
+            string? user_name =
+                HttpContext.Session.GetString("Name");
+
+            string? auth_cookie =
+                HttpContext.Session.GetString("ApiCookie");
+
+            int? user_id =
+                HttpContext.Session.GetInt32("UserID");
+
+            //return safe debugging information
+            return Json(new
+            {
+                Role = user_role,
+                Name = user_name,
+                UserID = user_id,
+                HasApiCookie = !string.IsNullOrWhiteSpace(auth_cookie),
+                SessionID = HttpContext.Session.Id
+            });
+
+            //end of method
+        }
+
+
         //end of class
     }
 
