@@ -40,95 +40,247 @@ namespace RaceDay_2.Controllers
         }
 
         //post
-        //gwts a finish time and position for a certain enrolmet when the race is done
+
+        //capture a result for a participant after a race
         [HttpPost("/api/enrolments/{enrolmentId}/result")]
-        [Authorize (Roles = "Organiser")]
-        public IActionResult Create (int enrolmentId, TimeSpan finishTime, int position)
+        [Authorize(Roles = "Organiser")]
+        public IActionResult Create(
+            int enrolmentId,
+            [FromQuery] TimeSpan finishTime,
+            [FromQuery] int position)
         {
-            //start of meyhod
+            //start of method
+
+            //check finishing time and position
+            if (finishTime <= TimeSpan.Zero || position <= 0)
+            {
+                //start of if
+
+                return BadRequest(new
+                {
+                    message = "Finish time and position must be greater than zero"
+                });
+
+                //end of if
+            }
+
+            //get the authenticated organiser
+            int current_user_id;
+
             try
             {
                 //start of try
 
-                if (position <= 0)
-                {
-                    return BadRequest("Position has to be greater than 0");
-                }
-
-                int current_user_id = get_current_user_id();
-
-                //find the enrollment and the organiser who owns the event
-                var enrolment = _context.Enrolments.Include(en => en.Category).ThenInclude(c => c!.Event).SingleOrDefault(en => en.EnrolmentID == enrolmentId);
-
-                if (enrolment == null || enrolment.Category == null || enrolment.Category.Event == null)
-                {
-                    return NotFound(new { message = "Enrolment not found" });
-                }
-
-                // Check that the logged-in organiser owns the event
-                if (enrolment.Category.Event.OrganiserID != current_user_id)
-                {
-                    return StatusCode(403, new { message = "You do not own this event" });
-                }
-
-                //check a result has not been already put in
-                bool already_captured = _context.Results.Any(r => r.EnrolmentID == enrolmentId);
-
-                if (already_captured)
-                {
-                    return Conflict(new { message = "A result already exists for this enrolment" });
-                }
-
-                var new_result = new Result
-                {
-                    EnrolmentID = enrolmentId,
-                    CapturedByID = current_user_id,
-                    FinishTime = finishTime,
-                    Position = position
-                };
-
-                _context.Results.Add(new_result);
-                _context.SaveChanges();
-
-                //return the new captured result
-                return StatusCode(201, new
-                {
-                    new_result.ResultID,
-                    new_result.EnrolmentID,
-                    new_result.CapturedByID,
-                    new_result.FinishTime,
-                    new_result.Position,
-                    new_result.DateCaptured
-                });
-
+                current_user_id = get_current_user_id();
 
                 //end of try
             }
-
-            catch (Exception e)
+            catch (UnauthorizedAccessException)
             {
                 //start of catch
 
-                return BadRequest(e.Message);
+                return Unauthorized();
 
                 //end of catch
             }
+
+            //find the enrolment and its event
+            var enrolment = _context.Enrolments
+                .Include(en => en.Category)
+                .ThenInclude(c => c!.Event)
+                .SingleOrDefault(en => en.EnrolmentID == enrolmentId);
+
+            //check enrolment exists
+            if (enrolment?.Category?.Event == null)
+            {
+                //start of if
+
+                return NotFound(new
+                {
+                    message = "Enrolment not found"
+                });
+
+                //end of if
+            }
+
+            //check that the organiser owns the event
+            if (enrolment.Category.Event.OrganiserID != current_user_id)
+            {
+                //start of if
+
+                return StatusCode(403, new
+                {
+                    message = "You do not own this event"
+                });
+
+                //end of if
+            }
+
+            //only confirmed participants can receive results
+            if (enrolment.Status != "Confirmed")
+            {
+                //start of if
+
+                return BadRequest(new
+                {
+                    message = "Enrolment must be confirmed"
+                });
+
+                //end of if
+            }
+
+            //check if the event has taken place
+            if (enrolment.Category.Event.EventDate > DateTime.Now)
+            {
+                //start of if
+
+                return BadRequest(new
+                {
+                    message = "Results cannot be captured before the event date"
+                });
+
+                //end of if
+            }
+
+            //prevent duplicate results
+            bool already_captured = _context.Results
+                .Any(r => r.EnrolmentID == enrolmentId);
+
+            if (already_captured)
+            {
+                //start of if
+
+                return Conflict(new
+                {
+                    message = "A result already exists for this enrolment"
+                });
+
+                //end of if
+            }
+
+            //prevent duplicate positions in one category
+            bool position_taken = _context.Results
+                .Any(r =>
+                    r.Enrolment!.CategoryID == enrolment.CategoryID
+                    && r.Position == position);
+
+            if (position_taken)
+            {
+                //start of if
+
+                return Conflict(new
+                {
+                    message = "Position already assigned in this category"
+                });
+
+                //end of if
+            }
+
+            //create the result
+            var new_result = new Result
+            {
+                EnrolmentID = enrolmentId,
+                CapturedByID = current_user_id,
+                FinishTime = finishTime,
+                Position = position
+            };
+
+            //save the result
+            _context.Results.Add(new_result);
+            _context.SaveChanges();
+
+            //return the captured result
+            return StatusCode(201, new
+            {
+                new_result.ResultID,
+                new_result.EnrolmentID,
+                new_result.CapturedByID,
+                new_result.FinishTime,
+                new_result.Position,
+                new_result.DateCaptured
+            });
+
             //end of method
         }
 
+
         //get
-        //gwt the reuslt for a certain enrolment
+
+        //get a result for a selected enrolment
         [HttpGet("/api/enrolments/{enrolmentId}/result")]
         [Authorize]
         public IActionResult GetByEnrolemt(int enrolmentId)
         {
             //start of method
 
+            //get the authenticated user
+            int current_user_id;
+
             try
             {
                 //start of try
 
-                var result = _context.Results.Where(r => r.EnrolmentID == enrolmentId).Select(r => new
+                current_user_id = get_current_user_id();
+
+                //end of try
+            }
+            catch (UnauthorizedAccessException)
+            {
+                //start of catch
+
+                return Unauthorized();
+
+                //end of catch
+            }
+
+            //get enrolment and the event it belongs to
+            var enrolment = _context.Enrolments
+                .Include(en => en.Category)
+                .ThenInclude(c => c!.Event)
+                .SingleOrDefault(en => en.EnrolmentID == enrolmentId);
+
+            //check if enrolment exists
+            if (enrolment?.Category?.Event == null)
+            {
+                //start of if
+
+                return NotFound(new
+                {
+                    message = "Enrolment not found"
+                });
+
+                //end of if
+            }
+
+            //get the current user's role
+            bool is_organiser = User.IsInRole("Organiser");
+            bool is_participant = User.IsInRole("Participant");
+
+            //check if the organiser owns the event
+            bool owns_event = is_organiser
+                && enrolment.Category.Event.OrganiserID == current_user_id;
+
+            //check if the participant owns this enrolment
+            bool owns_enrolment = is_participant
+                && enrolment.ParticipantID == current_user_id;
+
+            //reject unauthorised access
+            if (!owns_event && !owns_enrolment)
+            {
+                //start of if
+
+                return StatusCode(403, new
+                {
+                    message = "You cannot view this result"
+                });
+
+                //end of if
+            }
+
+            //find the captured result
+            var result = _context.Results
+                .Where(r => r.EnrolmentID == enrolmentId)
+                .Select(r => new
                 {
                     r.ResultID,
                     r.EnrolmentID,
@@ -136,30 +288,28 @@ namespace RaceDay_2.Controllers
                     r.FinishTime,
                     r.Position,
                     r.DateCaptured
-                }).SingleOrDefault();
+                })
+                .SingleOrDefault();
 
-                // check if a result has been put in
-                if (result == null)
-                {
-                    return NotFound(new { message = "No result has been captured yet" });
-                }
-
-                return Ok(result);
-
-                //end of try
-            }
-
-            catch (Exception e)
+            //check if a result has been captured
+            if (result == null)
             {
-                //start of catch
+                //start of if
 
-                return BadRequest(e.Message);
+                return NotFound(new
+                {
+                    message = "No result has been captured yet"
+                });
 
-                //end of catch
+                //end of if
             }
+
+            //return the result
+            return Ok(result);
 
             //end of method
         }
+
 
         //put
         //corrects previosly captured result restricted to the organiser who got it

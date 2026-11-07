@@ -9,16 +9,21 @@ namespace RaceDay_MVC.Models
     {
         //start of class
 
-        //id of the participant enrolment
-        [Range(1, int.MaxValue,ErrorMessage = "Select an enrolment")]
+        //event that the enrolment belongs to
+        public int EventID { get; set; }
+
+        //enrolment selected for result capture
+        [Range(1, int.MaxValue,
+            ErrorMessage = "Select a valid enrolment")]
         public int EnrolmentID { get; set; }
 
-        //finishing time entered by organiser
-        [Required(ErrorMessage = "Finishing time is required")]
+        //participant finishing time
+        [Required(ErrorMessage = "Finish time is required")]
         public TimeSpan? FinishTime { get; set; }
 
-        //finishing position
-        [Range(1, int.MaxValue,ErrorMessage = "Position must be greater than zero")]
+        //participant finishing position
+        [Range(1, int.MaxValue,
+            ErrorMessage = "Position must be greater than zero")]
         public int Position { get; set; }
 
         //end of class
