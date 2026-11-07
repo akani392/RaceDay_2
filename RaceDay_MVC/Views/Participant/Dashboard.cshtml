@@ -1,0 +1,338 @@
+﻿@model RaceDay_MVC.Models.ParticipantDashboardViewModel
+
+@{
+    //start of view configuration
+
+    ViewData["Title"] = "Participant Dashboard";
+
+    //end of view configuration
+}
+
+<!-- start of participant dashboard -->
+<div class="container py-4">
+
+    <!-- start of dashboard heading -->
+    <div class="mb-4">
+
+        <h1>
+            Welcome @Model.FirstName 🌤️
+        </h1>
+
+        <p class="lead">
+            Ready for your next adventure?
+            Discover races, track your registrations
+            and celebrate your achievements.
+        </p>
+
+    </div>
+    <!-- end of dashboard heading -->
+    <!-- start of dashboard statistics -->
+    <div class="row g-4 mb-4">
+
+        <!-- upcoming races -->
+        <div class="col-md-6 col-lg-3">
+
+            <div class="card h-100 shadow-sm"
+                 style="background-color: #78C9EB;">
+
+                <div class="card-body text-center">
+
+                    <h5>Upcoming Races 🏃</h5>
+
+                    <h2>@Model.UpcomingRaces</h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- confirmed registrations -->
+        <div class="col-md-6 col-lg-3">
+
+            <div class="card h-100 shadow-sm"
+                 style="background-color: #B8E6CB;">
+
+                <div class="card-body text-center">
+
+                    <h5>Confirmed Entries 📋</h5>
+
+                    <h2>@Model.ConfirmedRegistrations</h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- completed races -->
+        <div class="col-md-6 col-lg-3">
+
+            <div class="card h-100 shadow-sm"
+                 style="background-color: #B9ACDF;">
+
+                <div class="card-body text-center">
+
+                    <h5>Completed Races 🏆</h5>
+
+                    <h2>@Model.CompletedRaces</h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- best finishing position -->
+        <div class="col-md-6 col-lg-3">
+
+            <div class="card h-100 shadow-sm"
+                 style="background-color: #F6B7D2;">
+
+                <div class="card-body text-center">
+
+                    <h5>Best Position 🥇</h5>
+
+                    <h2>
+                        @(Model.BestPosition?.ToString() ?? "-")
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+    <!-- end of dashboard statistics -->
+    <!-- start of quick actions -->
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-body">
+
+            <h3>Quick Actions ⚡</h3>
+
+            <div class="d-flex gap-3 flex-wrap mt-3">
+
+                <a asp-controller="Participant"
+                   asp-action="Index"
+                   class="btn btn-primary">
+
+                    Explore Events 🌿
+
+                </a>
+
+                <a asp-controller="Participant"
+                   asp-action="Enrolments"
+                   class="btn btn-success">
+
+                    My Enrolments 📋
+
+                </a>
+
+                <a asp-controller="Participant"
+                   asp-action="Results"
+                   class="btn btn-secondary">
+
+                    My Results 🏆
+
+                </a>
+
+                <a asp-controller="Participant"
+                   asp-action="Profile"
+                   class="btn btn-primary">
+
+                    My Profile 👤
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+    <!-- end of quick actions -->
+    <!-- start of upcoming races -->
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-body">
+
+            <h3 class="mb-3">My Upcoming Races 🌳</h3>
+
+            @if (Model.UpcomingEnrolments.Count == 0)
+            {
+                @* start of if *@
+
+                <div class="text-center py-4">
+
+                    <h4>No Upcoming Races Yet</h4>
+
+                    <p>
+                        Find an event that interests you
+                        and register for a race category.
+                    </p>
+
+                    <a asp-controller="Participant"
+                       asp-action="Index"
+                       class="btn btn-primary">
+
+                        Find a Race
+
+                    </a>
+
+                </div>
+
+                @* end of if *@
+            }
+            else
+            {
+                @* start of else *@
+
+                <div class="table-responsive">
+
+                    <table class="table table-striped align-middle">
+
+                        <thead>
+                            <tr>
+                                <th>Event</th>
+                                <th>Category</th>
+                                <th>Date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var item in Model.UpcomingEnrolments)
+                            {
+                                @* start of foreach *@
+
+                                <tr>
+
+                                    <td>@item.EventName</td>
+
+                                    <td>@item.CategoryName</td>
+
+                                    <td>
+                                        @item.EventDate.ToString("dd MMM yyyy")
+                                    </td>
+
+                                    <td>
+
+                                        <a asp-controller="Participant"
+                                           asp-action="Details"
+                                           asp-route-id="@item.EventID"
+                                           class="btn btn-primary btn-sm">
+
+                                            View Event
+
+                                        </a>
+
+                                    </td>
+
+                                </tr>
+
+                                @* end of foreach *@
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+                @* end of else *@
+            }
+
+        </div>
+
+    </div>
+    <!-- end of upcoming races -->
+    <!-- start of recent race results -->
+    <div class="card shadow-sm">
+
+        <div class="card-body">
+
+            <h3 class="mb-3">Recent Race Results 🏆</h3>
+
+            @if (Model.RecentResults.Count == 0)
+            {
+                @* start of if *@
+
+                <div class="text-center py-4">
+
+                    <h4>No Race Results Yet</h4>
+
+                    <p>
+                        Once your race results are captured,
+                        your recent achievements will appear here.
+                    </p>
+
+                </div>
+
+                @* end of if *@
+            }
+            else
+            {
+                @* start of else *@
+
+                <div class="table-responsive">
+
+                    <table class="table table-striped align-middle">
+
+                        <thead>
+                            <tr>
+                                <th>Event</th>
+                                <th>Category</th>
+                                <th>Finish Time</th>
+                                <th>Position</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var item in Model.RecentResults)
+                            {
+                                @* start of foreach *@
+
+                                <tr>
+
+                                    <td>@item.EventName</td>
+
+                                    <td>@item.CategoryName</td>
+
+                                    <td>
+                                        @item.FinishTime.ToString(@"hh\:mm\:ss")
+                                    </td>
+
+                                    <td>@item.Position</td>
+
+                                </tr>
+
+                                @* end of foreach *@
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+                <a asp-controller="Participant"
+                   asp-action="Results"
+                   class="btn btn-secondary mt-3">
+
+                    View All Results
+
+                </a>
+
+                @* end of else *@
+            }
+
+        </div>
+
+    </div>
+    <!-- end of recent results -->
+
+</div>
+<!-- end of participant dashboard -->

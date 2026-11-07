@@ -125,7 +125,8 @@ namespace RaceDay_MVC.Controllers
             {
                 //start of if
 
-                return RedirectToAction("Index", "Participant");
+                //redirect participant to their personal dashboard
+                return RedirectToAction("Dashboard", "Participant");
 
                 //end of if
             }

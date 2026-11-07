@@ -892,6 +892,195 @@ namespace RaceDay_MVC.Controllers
         }
 
 
+        //display the participant dashboard
+        [HttpGet]
+        public async Task<IActionResult> Dashboard()
+        {
+            //start of method
+
+            //check participant permission
+            var check = RequireRole("Participant");
+
+            if (check != null)
+            {
+                //start of if
+
+                return check;
+
+                //end of if
+            }
+
+            try
+            {
+                //start of try
+
+                //get participant enrolments from the API
+                using var enrolment_response = await Api.Send(
+                    HttpContext,
+                    HttpMethod.Get,
+                    "api/enrolments/me"
+                );
+
+                //check if the participant session has expired
+                if (enrolment_response.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    //start of if
+
+                    HttpContext.Session.Clear();
+
+                    return RedirectToAction("Login", "Account");
+
+                    //end of if
+                }
+
+                //check enrolment access
+                if (enrolment_response.StatusCode == HttpStatusCode.Forbidden)
+                {
+                    //start of if
+
+                    return Forbid();
+
+                    //end of if
+                }
+
+                //check that enrolments loaded
+                if (!enrolment_response.IsSuccessStatusCode)
+                {
+                    //start of if
+
+                    TempData["Error"] =
+                        "Unable to load your dashboard enrolments.";
+
+                    return RedirectToAction("Index");
+
+                    //end of if
+                }
+
+                //convert enrolments into objects
+                var enrolments = await enrolment_response.Content
+                    .ReadFromJsonAsync<List<RaceEnrolment>>()
+                    ?? new List<RaceEnrolment>();
+
+                //get participant results from the API
+                using var result_response = await Api.Send(
+                    HttpContext,
+                    HttpMethod.Get,
+                    "api/users/me/results"
+                );
+
+                //check if the participant session has expired
+                if (result_response.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    //start of if
+
+                    HttpContext.Session.Clear();
+
+                    return RedirectToAction("Login", "Account");
+
+                    //end of if
+                }
+
+                //check results access
+                if (result_response.StatusCode == HttpStatusCode.Forbidden)
+                {
+                    //start of if
+
+                    return Forbid();
+
+                    //end of if
+                }
+
+                //check that results loaded
+                if (!result_response.IsSuccessStatusCode)
+                {
+                    //start of if
+
+                    TempData["Error"] =
+                        "Unable to load your race results.";
+
+                    return RedirectToAction("Index");
+
+                    //end of if
+                }
+
+                //convert results into objects
+                var results = await result_response.Content
+                    .ReadFromJsonAsync<List<RaceResult>>()
+                    ?? new List<RaceResult>();
+
+                //get confirmed registrations
+                var confirmed = enrolments
+                    .Where(e => string.Equals(
+                        e.Status,
+                        "Confirmed",
+                        StringComparison.OrdinalIgnoreCase
+                    ))
+                    .ToList();
+
+                //get upcoming confirmed races
+                var upcoming = confirmed
+                    .Where(e => e.EventDate >= DateTime.Now)
+                    .OrderBy(e => e.EventDate)
+                    .ToList();
+
+                //prepare dashboard information
+                var model = new ParticipantDashboardViewModel
+                {
+                    FirstName = HttpContext.Session.GetString("Name") ?? "",
+
+                    ConfirmedRegistrations = confirmed.Count,
+
+                    UpcomingRaces = upcoming.Count,
+
+                    CompletedRaces = results.Count,
+
+                    BestPosition = results.Count > 0
+                        ? results.Min(r => r.Position)
+                        : null,
+
+                    UpcomingEnrolments = upcoming
+                        .Take(5)
+                        .ToList(),
+
+                    RecentResults = results
+                        .OrderByDescending(r => r.DateCaptured)
+                        .Take(5)
+                        .ToList()
+                };
+
+                //display participant dashboard
+                return View(model);
+
+                //end of try
+            }
+            catch (HttpRequestException)
+            {
+                //start of catch
+
+                TempData["Error"] =
+                    "Unable to connect to the RaceDay API.";
+
+                return RedirectToAction("Index");
+
+                //end of catch
+            }
+            catch (System.Text.Json.JsonException)
+            {
+                //start of catch
+
+                TempData["Error"] =
+                    "The RaceDay API returned invalid dashboard data.";
+
+                return RedirectToAction("Index");
+
+                //end of catch
+            }
+
+            //end of method
+        }
+
+
+
         //end of class
     }
 
