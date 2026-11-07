@@ -1,0 +1,138 @@
+﻿@model RaceDay_MVC.Models.RaceEvent
+@using Microsoft.AspNetCore.Http
+
+@{
+    //start of view configuration
+
+    ViewData["Title"] = "Event Details";
+
+    bool is_participant = string.Equals(
+        Context.Session.GetString("Role"),
+        "Participant",
+        StringComparison.OrdinalIgnoreCase
+    );
+
+    //end of view configuration
+}
+
+<!-- start of event details page -->
+<div class="container py-4">
+
+    <!-- start of event heading -->
+    <div class="mb-4">
+
+        <h1>@Model.EventName 🏁</h1>
+
+        <p>@Model.Description</p>
+
+        <p>
+            <strong>Type:</strong> @Model.EventType
+        </p>
+
+        <p>
+            <strong>Date:</strong>
+            @Model.EventDate.ToString("dd MMM yyyy")
+        </p>
+
+        <p>
+            <strong>Location:</strong> @Model.Location
+        </p>
+
+        <a asp-controller="Events"
+           asp-action="Index"
+           class="btn btn-secondary">
+            Back to Events
+        </a>
+
+    </div>
+    <!-- end of event heading -->
+
+    <h2 class="mb-3">Available Race Categories</h2>
+
+    <!-- start of categories -->
+    <div class="row g-4">
+
+        @foreach (var category in Model.Categories)
+        {
+            @* start of foreach *@
+
+            <div class="col-md-6">
+
+                <div class="card shadow-sm h-100">
+
+                    <div class="card-body">
+
+                        <h3>@category.CategoryName</h3>
+
+                        <p>
+                            <strong>Distance:</strong>
+                            @category.DistanceKM km
+                        </p>
+
+                        <p>
+                            <strong>Maximum Participants:</strong>
+                            @category.MaxParticipants
+                        </p>
+
+                        @if (is_participant &&
+                            Model.EventDate > DateTime.Now)
+                        {
+                            @* start of if *@
+
+                            <form asp-controller="Participant"
+                                  asp-action="Enrol"
+                                  method="post"
+                                  onsubmit="return confirm('Register for this race category?');">
+
+                                @Html.AntiForgeryToken()
+
+                                <input type="hidden"
+                                       name="categoryId"
+                                       value="@category.CategoryID" />
+
+                                <input type="hidden"
+                                       name="eventId"
+                                       value="@Model.EventID" />
+
+                                <button type="submit"
+                                        class="btn btn-primary">
+
+                                    Enrol Now 🏃
+
+                                </button>
+
+                            </form>
+
+                            @* end of if *@
+                        }
+                        else
+                        {
+                            <p class="text-muted">
+                                Registration is unavailable.
+                            </p>
+                        }
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            @* end of foreach *@
+        }
+
+    </div>
+    <!-- end of categories -->
+    @if (Model.Categories.Count == 0)
+    {
+        @* start of if *@
+
+        <p>
+            No race categories have been created yet.
+        </p>
+
+        @* end of if *@
+    }
+
+</div>
+<!-- end of event details page -->

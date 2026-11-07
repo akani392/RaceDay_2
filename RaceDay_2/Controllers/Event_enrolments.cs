@@ -162,7 +162,8 @@ namespace RaceDay_2.Controllers
 
 
         //get
-        //gets all the enrolments belonging to the authenticated participant
+
+        //get all enrolments belonging to the authenticated participant
         [HttpGet("/api/enrolments/me")]
         [Authorize(Roles = "Participant")]
         public IActionResult GetMine()
@@ -173,32 +174,62 @@ namespace RaceDay_2.Controllers
             {
                 //start of try
 
+                //get the currently logged in participant
                 int participant_id = get_current_user_id();
 
-                var enrolments = _context.Enrolments.Where(en => en.ParticipantID == participant_id).OrderByDescending(en => en.EnrolmentDate).Select(en => new
-                {
-                    en.EnrolmentID,
-                    en.CategoryID,
-                    en.EnrolmentDate,
-                    en.Status
-                }).ToList();
+                //get the participant's enrolments and race information
+                var enrolments = _context.Enrolments
+                    .Where(en => en.ParticipantID == participant_id)
+                    .OrderByDescending(en => en.EnrolmentDate)
+                    .Select(en => new
+                    {
+                        en.EnrolmentID,
+                        en.ParticipantID,
+                        en.CategoryID,
+                        en.EnrolmentDate,
+                        en.Status,
 
+                        CategoryName = en.Category != null
+                            ? en.Category.CategoryName
+                            : "",
+
+                        DistanceKM = en.Category != null
+                            ? en.Category.DistanceKM
+                            : 0m,
+
+                        EventID = en.Category != null
+                            ? en.Category.EventID
+                            : 0,
+
+                        EventName = en.Category != null
+                            && en.Category.Event != null
+                            ? en.Category.Event.EventName
+                            : "",
+
+                        EventDate = en.Category != null
+                            && en.Category.Event != null
+                            ? en.Category.Event.EventDate
+                            : DateTime.MinValue
+                    })
+                    .ToList();
+
+                //return the enrolments
                 return Ok(enrolments);
 
                 //end of try
             }
-
-            catch (Exception e)
+            catch (UnauthorizedAccessException)
             {
                 //start of catch
 
-                return BadRequest(e.Message);
+                return Unauthorized();
 
                 //end of catch
             }
 
             //end of method
         }
+
 
         //get
 
@@ -290,10 +321,11 @@ namespace RaceDay_2.Controllers
 
 
         //delete
-        //cancels an enrolment, restricted to the participant who owns it
+
+        //cancel an enrolment belonging to the participant
         [HttpDelete("/api/enrolments/{id}")]
         [Authorize(Roles = "Participant")]
-        public IActionResult Delete (int id)
+        public IActionResult Delete(int id)
         {
             //start of method
 
@@ -301,42 +333,113 @@ namespace RaceDay_2.Controllers
             {
                 //start of try
 
+                //get the currently logged in participant
                 int current_user_id = get_current_user_id();
 
-                //find who owns the enrolments
-                var enrolment = _context.Enrolments.Find(id);
+                //find the enrolment and associated event
+                var enrolment = _context.Enrolments
+                    .Where(en => en.EnrolmentID == id)
+                    .Select(en => new
+                    {
+                        Enrolment = en,
+                        EventDate = en.Category != null
+                            && en.Category.Event != null
+                            ? en.Category.Event.EventDate
+                            : DateTime.MinValue
+                    })
+                    .SingleOrDefault();
 
+                //check if enrolment exists
                 if (enrolment == null)
                 {
-                    return NotFound(new { message = "Enrolment not found" });
+                    //start of if
+
+                    return NotFound(new
+                    {
+                        message = "Enrolment not found"
+                    });
+
+                    //end of if
                 }
 
-                //only the participant who owns the enrolemt is able to cancel
-                if (enrolment.ParticipantID != current_user_id)
+                //check that the participant owns the enrolment
+                if (enrolment.Enrolment.ParticipantID != current_user_id)
                 {
-                    return StatusCode(403, new { message = "This is not your enrolment." });
+                    //start of if
+
+                    return StatusCode(403, new
+                    {
+                        message = "This is not your enrolment"
+                    });
+
+                    //end of if
                 }
 
-                _context.Enrolments.Remove(enrolment);
+                //check whether enrolment is already cancelled
+                if (enrolment.Enrolment.Status == "Cancelled")
+                {
+                    //start of if
+
+                    return Conflict(new
+                    {
+                        message = "This enrolment is already cancelled"
+                    });
+
+                    //end of if
+                }
+
+                //do not allow cancellation after the event starts
+                if (enrolment.EventDate <= DateTime.Now)
+                {
+                    //start of if
+
+                    return Conflict(new
+                    {
+                        message = "Cannot cancel an enrolment after the event has started"
+                    });
+
+                    //end of if
+                }
+
+                //check whether a race result exists
+                bool has_result = _context.Results
+                    .Any(r => r.EnrolmentID == id);
+
+                if (has_result)
+                {
+                    //start of if
+
+                    return Conflict(new
+                    {
+                        message = "Cannot cancel an enrolment with a captured result"
+                    });
+
+                    //end of if
+                }
+
+                //update registration status instead of deleting
+                enrolment.Enrolment.Status = "Cancelled";
+
+                //save changes to database
                 _context.SaveChanges();
 
+                //return successful cancellation
                 return NoContent();
-
 
                 //end of try
             }
-
-            catch (Exception e)
+            catch (UnauthorizedAccessException)
             {
                 //start of catch
 
-                return BadRequest(e.Message);
+                return Unauthorized();
 
                 //end of catch
             }
 
             //end of method
         }
+
 
         //end of class
     }
