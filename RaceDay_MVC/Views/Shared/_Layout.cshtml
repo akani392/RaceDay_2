@@ -8,7 +8,12 @@
     string? api_cookie = Context.Session.GetString("ApiCookie");
 
     bool logged_in = !string.IsNullOrEmpty(api_cookie);
-    bool is_organiser = logged_in && user_role == "Organiser";
+    bool is_organiser = logged_in &&
+    string.Equals(
+        user_role?.Trim(),
+        "Organiser",
+        StringComparison.OrdinalIgnoreCase
+    );
     bool is_participant = logged_in && string.Equals(user_role,"Participant",StringComparison.OrdinalIgnoreCase);
 
     //wnd of view configuration
@@ -20,7 +25,7 @@
     <head>
         <!-- start of head-->
         <meta charset="utf-8"/>
-        <meta name="viewport" content="width= device width, initial-scale=1.0"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
         <title>@ViewData["Title"] - RaceDay</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
@@ -67,39 +72,61 @@
                                 //end of if
                             }
 
-                            <!--Task bar for Organiser-->
-                            @if (is_organiser)
-                            {
-                                //start of if
+                           
+                        <!-- start of organiser navigation -->
+                        @if (is_organiser)
+                        {
+                            @* start of if *@
 
-                                <li class="nav-item">
-                                    <a class="nav-link" asp-controller="Organiser" asp-action="Index">
-                                        Dashboard
-                                    </a>
-                                </li>
+                            <!-- organiser dashboard -->
+                            <li class="nav-item">
+                                <a class="nav-link"
+                                   asp-controller="Organiser"
+                                   asp-action="Index">
 
-                                <li class="nav-item">
-                                    <a class="nav-link" asp-controller="Organiser" asp-action="Events">
-                                        My Events
-                                    </a>
-                                </li>
+                                    Dashboard
 
-                                <li class="nav-item">
-                                    <a class="nav-link" asp-controller="Organiser" asp-action="Enrolments">
-                                        Enrolments
-                                    </a>
-                                </li>
+                                </a>
+                            </li>
 
-                                <li class="nav-item">
-                                    <a class="nav-link" asp-controller="Organiser" asp-action="Results">
-                                        Results
-                                    </a>
-                                </li>
+                            <!-- manage events -->
+                            <li class="nav-item">
+                                <a class="nav-link"
+                                   asp-controller="Organiser"
+                                   asp-action="Events">
 
-                                //end of if
-                            }
+                                    My Events
 
-                            <!--Task bar for participant-->
+                                </a>
+                            </li>
+
+                            <!-- view enrolments through event selection -->
+                            <li class="nav-item">
+                                <a class="nav-link"
+                                   asp-controller="Organiser"
+                                   asp-action="Events">
+
+                                    Enrolments
+
+                                </a>
+                            </li>
+
+                            <!-- view results through event selection -->
+                            <li class="nav-item">
+                                <a class="nav-link"
+                                   asp-controller="Organiser"
+                                   asp-action="Events">
+
+                                    Results
+
+                                </a>
+                            </li>
+
+                            @* end of if *@
+                        }
+
+                        <!-- end of organiser navigation -->
+                          <!--Task bar for participant-->
                             @if (is_participant)
                             {
                                 //start of if

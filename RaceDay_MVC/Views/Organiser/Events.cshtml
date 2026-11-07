@@ -139,6 +139,18 @@
 
                                             </a>
                                             <!-- end of enrolments button -->
+                                            <!-- start of results button -->
+
+                                            <a asp-controller="Organiser"
+                                               asp-action="Results"
+                                               asp-route-id="@item.EventID"
+                                               class="btn btn-primary btn-sm">
+
+                                                Race Results 🏆
+
+                                            </a>
+
+                                            <!-- end of results button -->
                                             <!-- start of delete event form -->
                                             <form asp-controller="Organiser"
                                                   asp-action="DeleteEvent"
