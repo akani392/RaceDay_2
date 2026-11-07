@@ -88,10 +88,13 @@ namespace RaceDay_2.Controllers
                     //end of if
                 }
 
-                //prevent the same participant from registering twice
-                bool already_enrolled = _context.Enrolments.Any(en =>
-                    en.ParticipantID == participant_id &&
-                    en.CategoryID == categoryId);
+
+                //check if participant already has a confirmed enrolment
+                bool already_enrolled = _context.Enrolments
+                    .Any(en =>
+                        en.ParticipantID == participant_id
+                        && en.CategoryID == categoryId
+                        && en.Status == "Confirmed");
 
                 if (already_enrolled)
                 {
@@ -104,6 +107,35 @@ namespace RaceDay_2.Controllers
 
                     //end of if
                 }
+
+                //check that the selected event has not started
+                var selected_event = _context.Events
+                    .Find(category.EventID);
+
+                if (selected_event == null)
+                {
+                    //start of if
+
+                    return NotFound(new
+                    {
+                        message = "Event not found"
+                    });
+
+                    //end of if
+                }
+
+                if (selected_event.EventDate <= DateTime.Now)
+                {
+                    //start of if
+
+                    return Conflict(new
+                    {
+                        message = "Registration for this event has closed"
+                    });
+
+                    //end of if
+                }
+
 
                 //count confirmed enrolments
                 int current_enrolments = _context.Enrolments

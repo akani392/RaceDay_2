@@ -1,31 +1,49 @@
-﻿namespace RaceDay_MVC.Models
+﻿
+namespace RaceDay_MVC.Models
 {
     //start of namespace
+
     public class RaceEnrolment
     {
         //start of class
 
-        //unique id for the enrolment
+        //unique enrolment id
         public int EnrolmentID { get; set; }
 
-        //id for the particpant
-        public int ParticipantID { get; set; } 
+        //participant id
+        public int ParticipantID { get; set; }
 
-        //id of fthe category
+        //selected category id
         public int CategoryID { get; set; }
 
-        //date when the particpant enrolled
-        public DateTime EnrolmentDate { get; set;  }
+        //registration date
+        public DateTime EnrolmentDate { get; set; }
 
-        //current enrolment status
+        //registration status
         public string Status { get; set; } = "";
 
-
-        //full name of the participant
+        //participant name for organiser pages
         public string ParticipantName { get; set; } = "";
 
-        //name of the selected category
+        //race category information
         public string CategoryName { get; set; } = "";
+
+        public decimal DistanceKM { get; set; }
+
+        //event information
+        public int EventID { get; set; }
+
+        public string EventName { get; set; } = "";
+
+        public DateTime EventDate { get; set; }
+
+        //check whether cancellation is available
+        public bool CanCancel =>
+            string.Equals(
+                Status,
+                "Confirmed",
+                StringComparison.OrdinalIgnoreCase
+            ) && EventDate > DateTime.Now;
 
         //end of class
     }

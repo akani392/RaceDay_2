@@ -1,7 +1,8 @@
-﻿
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using RaceDay_MVC.Models;
 using RaceDay_MVC.Services;
+using System.Net;
+using System.Net.Http.Json;
 
 namespace RaceDay_MVC.Controllers
 {
@@ -301,6 +302,209 @@ namespace RaceDay_MVC.Controllers
                     "Details",
                     new { id = eventId }
                 );
+
+                //end of catch
+            }
+
+            //end of method
+        }
+
+
+        //display the participant's race enrolments
+        [HttpGet]
+        public async Task<IActionResult> Enrolments()
+        {
+            //start of method
+
+            //check participant permission
+            var check = RequireRole("Participant");
+
+            if (check != null)
+            {
+                //start of if
+
+                return check;
+
+                //end of if
+            }
+
+            try
+            {
+                //start of try
+
+                //get participant enrolments from the API
+                using var response = await Api.Send(
+                    HttpContext,
+                    HttpMethod.Get,
+                    "api/enrolments/me"
+                );
+
+                //check if login session is no longer valid
+                if (response.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    //start of if
+
+                    HttpContext.Session.Clear();
+
+                    return RedirectToAction("Login", "Account");
+
+                    //end of if
+                }
+
+                //check API permissions
+                if (response.StatusCode == HttpStatusCode.Forbidden)
+                {
+                    //start of if
+
+                    return Forbid();
+
+                    //end of if
+                }
+
+                //check if the request failed
+                if (!response.IsSuccessStatusCode)
+                {
+                    //start of if
+
+                    TempData["Error"] =
+                        "Unable to load your race enrolments.";
+
+                    return View(new List<RaceEnrolment>());
+
+                    //end of if
+                }
+
+                //convert API response into a list
+                var enrolments = await response.Content
+                    .ReadFromJsonAsync<List<RaceEnrolment>>();
+
+                //send enrolments to the Razor view
+                return View(
+                    enrolments ?? new List<RaceEnrolment>()
+                );
+
+                //end of try
+            }
+            catch (HttpRequestException)
+            {
+                //start of catch
+
+                TempData["Error"] =
+                    "Unable to connect to the RaceDay API.";
+
+                return View(new List<RaceEnrolment>());
+
+                //end of catch
+            }
+
+            //end of method
+        }
+
+
+        //cancel the participant's selected enrolment
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Cancel(int id)
+        {
+            //start of method
+
+            //check participant permission
+            var check = RequireRole("Participant");
+
+            if (check != null)
+            {
+                //start of if
+
+                return check;
+
+                //end of if
+            }
+
+            //check enrolment id
+            if (id <= 0)
+            {
+                //start of if
+
+                TempData["Error"] = "Invalid enrolment selected.";
+
+                return RedirectToAction(nameof(Enrolments));
+
+                //end of if
+            }
+
+            try
+            {
+                //start of try
+
+                //request enrolment cancellation through the API
+                using var response = await Api.Send(
+                    HttpContext,
+                    HttpMethod.Delete,
+                    $"api/enrolments/{id}"
+                );
+
+                //check if cancellation succeeded
+                if (response.IsSuccessStatusCode)
+                {
+                    //start of if
+
+                    TempData["Success"] =
+                        "Your race registration has been cancelled.";
+
+                    //end of if
+                }
+                else if (response.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    //start of else if
+
+                    HttpContext.Session.Clear();
+
+                    return RedirectToAction("Login", "Account");
+
+                    //end of else if
+                }
+                else if (response.StatusCode == HttpStatusCode.Forbidden)
+                {
+                    //start of else if
+
+                    TempData["Error"] =
+                        "You cannot cancel this registration.";
+
+                    //end of else if
+                }
+                else if (response.StatusCode == HttpStatusCode.NotFound)
+                {
+                    //start of else if
+
+                    TempData["Error"] =
+                        "The selected enrolment could not be found.";
+
+                    //end of else if
+                }
+                else
+                {
+                    //start of else
+
+                    TempData["Error"] =
+                        "Cancellation failed. The event may have started, " +
+                        "or the registration may already be cancelled.";
+
+                    //end of else
+                }
+
+                //return to participant enrolments
+                return RedirectToAction(nameof(Enrolments));
+
+                //end of try
+            }
+            catch (HttpRequestException)
+            {
+                //start of catch
+
+                TempData["Error"] =
+                    "Unable to connect to the RaceDay API.";
+
+                return RedirectToAction(nameof(Enrolments));
 
                 //end of catch
             }
