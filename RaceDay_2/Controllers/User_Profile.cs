@@ -8,10 +8,12 @@ namespace RaceDay_2.Controllers
 {
     //start of namespace
 
+
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
     public class User_Profile : ControllerBase
+
     {
         //start of class
 
