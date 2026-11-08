@@ -32,6 +32,13 @@ builder.Services
         options.ExpireTimeSpan = TimeSpan.FromHours(8);
         options.SlidingExpiration = true;
 
+
+        //protect the authentication cookie
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        options.Cookie.SameSite = SameSiteMode.Lax;
+
+
         // this is an API, so return status codes instead of
         // redirecting to a login page like a normal website would
         options.Events.OnRedirectToLogin = context =>

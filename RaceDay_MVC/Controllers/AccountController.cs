@@ -34,11 +34,19 @@ namespace RaceDay_MVC.Controllers
                 //end of if
             }
 
-            // prepare login parameters for the api
-            string route = "api/Authentication/login?" + RaceDayApi.Query (("email", form.Email), ("password", form.Password));
 
-            //swnd login request
-            using var response = await Api.Send(HttpContext, HttpMethod.Post, route);
+            //send login information securely in the request body
+            using var response = await Api.Send(
+                HttpContext,
+                HttpMethod.Post,
+                "api/Authentication/login",
+                new
+                {
+                    email = form.Email,
+                    password = form.Password
+                }
+            );
+
 
             //check if login failed
             if (!response.IsSuccessStatusCode)
@@ -182,17 +190,22 @@ namespace RaceDay_MVC.Controllers
                 //end of if
             }
 
-            //get the registration parameters
-            string route = "api/Authentication/register?" + RaceDayApi.Query(
-                ("firstName", form.FirstName),
-                ("lastName", form.LastName),
-                ("email", form.Email),
-                ("password", form.Password),
-                ("roleId", form.RoleID.ToString())
-                );
 
-            //send registraction request
-            var result = await Api.Write(HttpContext, HttpMethod.Post, route);
+            //send registration details in the request body
+            var result = await Api.Write(
+                HttpContext,
+                HttpMethod.Post,
+                "api/Authentication/register",
+                new
+                {
+                    firstName = form.FirstName,
+                    lastName = form.LastName,
+                    email = form.Email,
+                    password = form.Password,
+                    roleID = form.RoleID
+                }
+            );
+
             Feedback(result);
 
             //send successful registration to login

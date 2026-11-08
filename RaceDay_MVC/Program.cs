@@ -17,6 +17,9 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
     options.Cookie.SameSite = SameSiteMode.Lax;
 
+    //only send the MVC session cookie over HTTPS
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+
     //session expires after 2 hours of inactivity
     options.IdleTimeout = TimeSpan.FromHours(2);
 

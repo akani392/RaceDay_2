@@ -26,9 +26,28 @@ namespace RaceDay_2.Controllers
 
         //register a new user in the database
         [HttpPost("register")]
-        public IActionResult Register ( string firstName, string lastName, string email, string password, int roleId)
+        //register using information from the request body
+        public IActionResult Register([FromBody] RegisterRequest form)
         {
             // start of method
+
+            //prepare validated registration values
+            string firstName = form.FirstName.Trim();
+            string lastName = form.LastName.Trim();
+            string email = form.Email.Trim();
+            string password = form.Password;
+            int roleId = form.RoleID;
+
+            //check that names are not empty spaces
+            if (string.IsNullOrWhiteSpace(firstName) ||
+                string.IsNullOrWhiteSpace(lastName))
+            {
+                return BadRequest(new
+                {
+                    message = "First name and last name are required."
+                });
+            }
+
 
             try
             {
@@ -92,9 +111,13 @@ namespace RaceDay_2.Controllers
         //log a user into the system and signs them into a cookie
         //later request know and what roles they have
         [HttpPost("login")]
-        public IActionResult Login (string email, string password)
+        public IActionResult Login([FromBody] LoginRequest form)
         {
             //start of method
+
+            //get login values from the request body
+            string email = form.Email.Trim();
+            string password = form.Password;
 
             try
             {

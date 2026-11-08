@@ -1,6 +1,10 @@
-/* start of race day outdoor theme css */
+
+/* start of raceday outdoor theme css */
+
 
 /* start of main website styling */
+
+
 html {
     min-height: 100%;
 }
@@ -13,21 +17,12 @@ body {
     display: flex;
     flex-direction: column;
     margin: 0;
-    font-family: Arial, sans-serif;
+    font-family: 'Outfit', Arial, sans-serif;
     line-height: 1.6;
 }
 
 main {
     flex: 1;
-}
-
-h1, h2, h3, h4, h5, h6 {
-    color: #24495D;
-    font-weight: 700;
-}
-
-h1 {
-    letter-spacing: -0.025em;
 }
 
 p {
@@ -42,55 +37,137 @@ a {
     a:hover {
         color: #6B4D95;
     }
-/* end of main website styling */
+
+/* end of  main website styling */
+
+
+/* start of sporty typography */
+
+
+/* headings */
+h1, h2, h3, h4, h5, h6 {
+    color: #24495D;
+    font-family: 'Outfit', Arial, sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+/* page titles */
+h1 {
+    font-size: clamp(2.2rem, 4vw, 3.5rem);
+    letter-spacing: 0.2px;
+}
+
+
+/* start of navigation and button typography */
+
+.navbar .nav-link,
+.navbar .navbar-text,
+.btn {
+    font-family: 'Outfit', Arial, sans-serif;
+    font-weight: 600;
+}
+
+/* end of navigation and button typography */
+
+
+/* end of sporty typography */
+
 
 /* start of navigation styling */
-.navbar, .navbar.bg-dark {
-    background: #24495D !important;
+
+
+/* main navigation bar */
+.navbar,
+.navbar.bg-dark,
+.raceday-navbar {
+    background-color: #24495D !important;
     border: 0;
     border-bottom: 4px solid #B8E6CB;
     border-radius: 0 0 24px 24px;
-    padding: 14px 20px;
     box-shadow: 0 8px 22px rgba(36, 73, 93, 0.14);
+    padding: 12px 8px;
 }
 
+/* raceday logo */
 .navbar-brand {
     color: #FFFFFF !important;
-    font-size: 1.6rem;
+    font-family: 'Outfit', Arial, sans-serif;
+    font-size: 2rem;
     font-weight: 800;
+    letter-spacing: 1px;
+    white-space: nowrap;
 }
 
     .navbar-brand:hover {
         color: #B8E6CB !important;
     }
 
+/* navigation links */
 .navbar .nav-link {
     color: #F0FBFF !important;
-    padding: 10px 14px !important;
-    border-radius: 14px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    padding: 10px 11px !important;
+    border-radius: 12px;
+    white-space: nowrap;
     transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-    .navbar .nav-link:hover, .navbar .nav-link.active {
+    /* navigation hover and active links */
+    .navbar .nav-link:hover,
+    .navbar .nav-link:focus,
+    .navbar .nav-link.active {
         background-color: #B8E6CB;
         color: #24495D !important;
     }
 
-.navbar .navbar-text {
-    color: #EAF8FD !important;
+/* logged in user name */
+.navbar .navbar-text,
+.raceday-user-label {
+    color: #D9F1FB !important;
+    font-size: 0.9rem;
+    white-space: nowrap;
 }
 
+/* navbar account buttons */
+.navbar .btn {
+    white-space: nowrap;
+    border-radius: 12px !important;
+    padding: 8px 16px;
+}
+
+/* mobile navigation button */
 .navbar-toggler {
     border: 2px solid #B8E6CB;
     border-radius: 12px;
 }
 
     .navbar-toggler:focus {
-        box-shadow: 0 0 0 3px rgba(120, 201, 235, 0.4);
+        box-shadow: 0 0 0 3px rgba(120, 201, 235, 0.40);
     }
+
+/* responsive navigation */
+@media (max-width: 1399.98px) {
+
+    .raceday-navbar .navbar-collapse {
+        padding-top: 15px;
+    }
+
+    .raceday-navbar .nav-link,
+    .raceday-navbar .raceday-user-label {
+        white-space: normal;
+    }
+}
+
 /* end of navigation styling */
 
-/* start of button styling */
+
+
+/* start of  button styling */
+
+
+/* general buttons */
 .btn {
     border-radius: 16px !important;
     padding: 10px 19px;
@@ -101,9 +178,10 @@ a {
 
     .btn:hover {
         transform: translateY(-2px);
-        box-shadow: 0 5px 12px rgba(36,73,93,.12);
+        box-shadow: 0 5px 12px rgba(36, 73, 93, 0.12);
     }
 
+/* sky blue buttons */
 .btn-primary {
     background-color: #78C9EB !important;
     border-color: #78C9EB !important;
@@ -116,6 +194,7 @@ a {
         color: #163A4E !important;
     }
 
+/* mint green buttons */
 .btn-success {
     background-color: #B8E6CB !important;
     border-color: #B8E6CB !important;
@@ -128,6 +207,7 @@ a {
         color: #24495D !important;
     }
 
+/* pastel pink buttons */
 .btn-warning {
     background-color: #F6B7D2 !important;
     border-color: #F6B7D2 !important;
@@ -140,6 +220,7 @@ a {
         color: #24495D !important;
     }
 
+/* lavender buttons */
 .btn-secondary {
     background-color: #B9ACDF !important;
     border-color: #B9ACDF !important;
@@ -152,6 +233,7 @@ a {
         color: #24495D !important;
     }
 
+/* danger buttons */
 .btn-danger {
     background-color: #A63B57 !important;
     border-color: #A63B57 !important;
@@ -164,6 +246,7 @@ a {
         color: #FFFFFF !important;
     }
 
+/* outlined navbar buttons */
 .btn-outline-light {
     background-color: transparent;
     border-color: #DDF4FC !important;
@@ -175,175 +258,168 @@ a {
         border-color: #F6B7D2 !important;
         color: #24495D !important;
     }
+
 /* end of button styling */
 
 
 
-/* start of login and registration design */
-
-.raceday-auth-card {
-    background-color: #FFFFFF;
-    border: 2px solid #78C9EB !important;
-    border-radius: 28px !important;
-    box-shadow: 0 12px 35px rgba(36, 73, 93, 0.13) !important;
-    overflow: hidden;
-}
-
-    /* registration and login headings */
-    .raceday-auth-card h2 {
-        color: #24495D;
-        font-weight: 700;
-    }
-
-    /* input labels */
-    .raceday-auth-card .form-label {
-        color: #24495D;
-        font-weight: 600;
-    }
-
-    /* text boxes and dropdowns */
-    .raceday-auth-card .form-control,
-    .raceday-auth-card .form-select {
-        background-color: #F7FCFF;
-        border: 2px solid #D0E4EF;
-        border-radius: 14px;
-        padding: 12px 15px;
-        color: #24495D;
-    }
-
-        /* input focus effects */
-        .raceday-auth-card .form-control:focus,
-        .raceday-auth-card .form-select:focus {
-            background-color: #FFFFFF;
-            border-color: #78C9EB;
-            box-shadow: 0 0 0 4px rgba(120, 201, 235, 0.22);
-            outline: none;
-        }
-
-    /* button styling */
-    .raceday-auth-card .btn {
-        border-radius: 14px !important;
-        padding: 12px 20px;
-        font-weight: 600;
-    }
-
-    /* links inside authentication forms */
-    .raceday-auth-card a {
-        color: #226E95;
-        font-weight: 600;
-        text-decoration: none;
-    }
-
-        .raceday-auth-card a:hover {
-            color: #24495D;
-            text-decoration: underline;
-        }
-
-/* end of login and registration design */
+/* start of  shared card styling */
 
 
-/* start of organiser enrolment styling */
-
-/* rounded enrolment cards */
-.raceday-enrolment-card {
+/* shared rounded cards */
+.raceday-auth-card,
+.raceday-enrolment-card,
+.raceday-result-card,
+.raceday-achievement-panel,
+.raceday-profile-card,
+.raceday-dashboard-panel {
     background-color: #FFFFFF;
     border: 2px solid #D0E4EF !important;
-    border-radius: 22px !important;
+    border-radius: 24px !important;
     box-shadow: 0 8px 24px rgba(36, 73, 93, 0.08);
     overflow: hidden;
 }
 
-    /* enrolment card headings */
-    .raceday-enrolment-card h3 {
-        color: #24495D;
-        font-weight: 700;
-    }
-
-    /* filter labels */
-    .raceday-enrolment-card .form-label {
-        color: #24495D;
-        font-weight: 600;
-    }
-
-    /* filter dropdowns */
-    .raceday-enrolment-card .form-select {
-        border: 2px solid #D0E4EF;
-        border-radius: 12px;
-        background-color: #F7FCFF;
-        padding: 11px;
-    }
-
-        /* highlight selected filter */
-        .raceday-enrolment-card .form-select:focus {
-            border-color: #78C9EB;
-            box-shadow: 0 0 0 4px rgba(120, 201, 235, 0.20);
-        }
-
-    /* rounded buttons */
-    .raceday-enrolment-card .btn {
-        border-radius: 12px;
-    }
-
-/* end of organiser enrolment styling */
-
-
-/* start of race results design */
-
-/* results table and form cards */
-.raceday-result-card {
-    background-color: #FFFFFF;
-    border: 2px solid #78C9EB !important;
-    border-radius: 24px !important;
-    box-shadow: 0 10px 30px rgba(36, 73, 93, 0.10) !important;
-    overflow: hidden;
+/* cards with sky blue borders */
+.raceday-auth-card,
+.raceday-result-card,
+.raceday-profile-card {
+    border-color: #78C9EB !important;
 }
 
-    /* card headings */
-    .raceday-result-card h2,
-    .raceday-result-card h3 {
+/* login and registration cards */
+.raceday-auth-card {
+    border-radius: 28px !important;
+    box-shadow: 0 12px 35px rgba(36, 73, 93, 0.13) !important;
+}
+
+/* organiser enrolment cards */
+.raceday-enrolment-card {
+    border-radius: 22px !important;
+}
+
+/* race results cards */
+.raceday-result-card {
+    box-shadow: 0 10px 30px rgba(36, 73, 93, 0.10) !important;
+}
+
+/* profile cards */
+.raceday-profile-card {
+    border-radius: 26px !important;
+    box-shadow: 0 10px 30px rgba(36, 73, 93, 0.10) !important;
+}
+
+/* dashboard panels */
+.raceday-dashboard-panel {
+    border-radius: 22px !important;
+}
+
+/* common card headings */
+.raceday-auth-card h2,
+.raceday-enrolment-card h3,
+.raceday-result-card h2,
+.raceday-result-card h3,
+.raceday-achievement-panel h3,
+.raceday-profile-card h3 {
+    color: #24495D;
+    font-weight: 700;
+}
+
+/* end of shared card styling */
+
+
+/* start of  form styling */
+
+
+/* labels */
+.raceday-auth-card .form-label,
+.raceday-enrolment-card .form-label,
+.raceday-result-card .form-label,
+.raceday-profile-card .form-label {
+    color: #24495D;
+    font-weight: 600;
+}
+
+/* text boxes and dropdowns */
+.raceday-auth-card .form-control,
+.raceday-auth-card .form-select,
+.raceday-enrolment-card .form-select,
+.raceday-result-card .form-control,
+.raceday-profile-card .form-control {
+    background-color: #F7FCFF;
+    border: 2px solid #D0E4EF;
+    border-radius: 14px;
+    padding: 12px 15px;
+    color: #24495D;
+}
+
+    /* focused fields */
+    .raceday-auth-card .form-control:focus,
+    .raceday-auth-card .form-select:focus,
+    .raceday-enrolment-card .form-select:focus,
+    .raceday-result-card .form-control:focus,
+    .raceday-profile-card .form-control:focus {
+        background-color: #FFFFFF;
+        border-color: #78C9EB;
+        box-shadow: 0 0 0 4px rgba(120, 201, 235, 0.22);
+        outline: none;
+    }
+
+/* buttons inside form cards */
+.raceday-auth-card .btn,
+.raceday-enrolment-card .btn,
+.raceday-result-card .btn,
+.raceday-profile-card .btn {
+    border-radius: 12px !important;
+}
+
+/* authentication form buttons */
+.raceday-auth-card .btn {
+    padding: 12px 20px;
+}
+
+/* authentication links */
+.raceday-auth-card a {
+    color: #226E95;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+    .raceday-auth-card a:hover {
         color: #24495D;
+        text-decoration: underline;
+    }
+
+/* end of 6. form styling */
+
+/* start of 7. dashboard styling */
+
+
+
+/* start of dashboard statistics typography */
+
+.raceday-dashboard-card h2 {
+    font-family: 'Outfit', Arial, sans-serif;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+/* end of dashboard statistics typography */
+
+
+    /* dashboard statistics */
+    .raceday-dashboard-card h2 {
+        font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif;
         font-weight: 700;
     }
 
-    /* result field labels */
-    .raceday-result-card .form-label {
-        color: #24495D;
-        font-weight: 600;
-    }
-
-    /* finish time and position fields */
-    .raceday-result-card .form-control {
-        border: 2px solid #D0E4EF;
-        border-radius: 14px;
-        background-color: #F7FCFF;
-        padding: 12px 15px;
-    }
-
-        /* focused inputs */
-        .raceday-result-card .form-control:focus {
-            border-color: #78C9EB;
-            box-shadow: 0 0 0 4px rgba(120, 201, 235, 0.22);
-        }
-
-    /* results buttons */
-    .raceday-result-card .btn {
-        border-radius: 12px;
-        padding: 10px 18px;
-    }
-
-    /* table headings */
-    .raceday-result-card .table thead th {
-        background-color: #D9F1FB;
-        color: #24495D;
-    }
-
-/* end of race results design */
+/* end of dashboard styling */
 
 
+/* start of  achievement styling */
 
-/* start of participant achievements styling */
 
-/* achievement statistics */
+/* achievement statistics cards */
 .raceday-achievement-card {
     border: 2px solid rgba(36, 73, 93, 0.12) !important;
     border-radius: 22px !important;
@@ -351,21 +427,12 @@ a {
     overflow: hidden;
 }
 
-    /* achievement statistics headings */
+    /* achievement card headings */
     .raceday-achievement-card h2,
     .raceday-achievement-card h5 {
         color: #24495D;
         font-weight: 700;
     }
-
-/* main achievements panel */
-.raceday-achievement-panel {
-    background-color: #FFFFFF;
-    border: 2px solid #D0E4EF !important;
-    border-radius: 24px !important;
-    box-shadow: 0 8px 24px rgba(36, 73, 93, 0.08);
-    overflow: hidden;
-}
 
 /* individual achievement badges */
 .raceday-achievement-badge {
@@ -376,17 +443,98 @@ a {
     height: 100%;
 }
 
-    /* achievement headings */
-    .raceday-achievement-badge h5,
-    .raceday-achievement-panel h3 {
+    /* achievement badge headings */
+    .raceday-achievement-badge h5 {
         color: #24495D;
         font-weight: 700;
     }
 
-    /* achievement status badges */
+    /* achievement status labels */
     .raceday-achievement-badge .badge {
         border-radius: 12px;
         padding: 8px 12px;
     }
 
-/* end of participant achievements styling */
+/* end of achievement styling */
+
+
+
+/* start of profile styling */
+
+
+/* profile page heading */
+.raceday-profile-header {
+    background: linear-gradient(120deg, #D9F1FB, #B8E6CB);
+    border: 2px solid #C9E8DA;
+    border-radius: 24px;
+    padding: 28px;
+    color: #24495D;
+}
+
+/* end of  profile styling */
+
+
+
+/* start of results table styling */
+
+
+/* results table heading */
+.raceday-result-card .table thead th {
+    background-color: #D9F1FB;
+    color: #24495D;
+}
+
+/* end of 10. results table styling */
+
+
+
+/* start of 11. notification styling */
+
+
+/* general notifications */
+.raceday-alert {
+    border: 2px solid;
+    border-radius: 18px;
+    padding: 18px 55px 18px 20px;
+    margin-bottom: 24px;
+    box-shadow: 0 8px 22px rgba(36, 73, 93, 0.08);
+}
+
+    /* success messages */
+    .raceday-alert.alert-success {
+        background-color: #E5F6ED;
+        border-color: #9DD7B9;
+        color: #205D43;
+    }
+
+    /* error messages */
+    .raceday-alert.alert-danger {
+        background-color: #FFF0F3;
+        border-color: #F2B4C4;
+        color: #8A3550;
+    }
+
+    /* information messages */
+    .raceday-alert.alert-info {
+        background-color: #EAF3FE;
+        border-color: #B4CFF1;
+        color: #315D91;
+    }
+
+    /* notification headings */
+    .raceday-alert strong {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 700;
+    }
+
+    /* close button */
+    .raceday-alert .btn-close {
+        margin: 4px;
+        border-radius: 50%;
+    }
+
+/* end of notification styling */
+
+
+/* end of raceday outdoor theme css */

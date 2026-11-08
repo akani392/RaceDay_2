@@ -3,58 +3,106 @@
 @{
     //start of view configuration
 
+    //get the current user information from the session
     string? user_role = Context.Session.GetString("Role");
     string? user_name = Context.Session.GetString("Name");
     string? api_cookie = Context.Session.GetString("ApiCookie");
 
-    bool logged_in = !string.IsNullOrEmpty(api_cookie);
-    bool is_organiser = logged_in &&
-    string.Equals(
-        user_role?.Trim(),
-        "Organiser",
-        StringComparison.OrdinalIgnoreCase
-    );
-    bool is_participant = logged_in && string.Equals(user_role,"Participant",StringComparison.OrdinalIgnoreCase);
+    //check if the user is logged in
+    bool logged_in = !string.IsNullOrWhiteSpace(api_cookie);
 
-    //wnd of view configuration
+    //check if the user is an organiser
+    bool is_organiser = logged_in &&
+        string.Equals(
+            user_role?.Trim(),
+            "Organiser",
+            StringComparison.OrdinalIgnoreCase
+        );
+
+    //check if the user is a participant
+    bool is_participant = logged_in &&
+        string.Equals(
+            user_role?.Trim(),
+            "Participant",
+            StringComparison.OrdinalIgnoreCase
+        );
+
+    //end of view configuration
 }
 
 <!DOCTYPE html>
 <html lang="en">
 
-    <head>
-        <!-- start of head-->
-        <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
 
-        <title>@ViewData["Title"] - RaceDay</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
+    <meta charset="utf-8" />
 
-        <!-- end of head-->
-    </head>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
 
-    <body>
-        <!--start of navigation-->
+    <title>@ViewData["Title"] - RaceDay</title>
 
-        <header>
-            <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-                <div class="container">
-                    <a class="navbar-brand fw-bold" asp-controller="Home" asp-action="Index">
-                        RaceDay🏃
-                    </a>
+    <!-- start of bootstrap styling -->
+    <link rel="stylesheet"
+          href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <!-- end of bootstrap styling -->
+    <!-- start of raceday fonts -->
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com" />
 
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
-                        <span class="navbar-toggler-icon">
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin />
 
-                        </span>
-                    </button>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&amp;display=swap"
+          rel="stylesheet" />
+    <!-- end of raceday fonts -->
+    <!-- start of raceday styling -->
+    <link rel="stylesheet"
+          href="~/css/site.css"
+          asp-append-version="true" />
+    <!-- end of raceday styling -->
 
-                    <div class="collapse navbar-collapse" id="mainNavbar">
-                        <ul class="navbar-nav me-auto">
+</head>
 
-                        
-                        <!-- start of public navigation -->
+<body>
+
+    <!-- start of navigation -->
+    <header>
+
+        <nav class="navbar navbar-expand-xxl navbar-dark raceday-navbar">
+
+            <div class="container-fluid px-3 px-lg-4">
+
+                <!-- start of raceday logo -->
+                <a class="navbar-brand"
+                   asp-controller="Home"
+                   asp-action="Index">
+
+                    RaceDay 🏃
+
+                </a>
+                <!-- end of raceday logo -->
+                <!-- start of mobile menu button -->
+                <button class="navbar-toggler"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#mainNavbar"
+                        aria-controls="mainNavbar"
+                        aria-expanded="false"
+                        aria-label="Toggle navigation">
+
+                    <span class="navbar-toggler-icon"></span>
+
+                </button>
+                <!-- end of mobile menu button -->
+                <!-- start of navigation links -->
+                <div class="collapse navbar-collapse"
+                     id="mainNavbar">
+
+                    <ul class="navbar-nav mx-auto gap-1">
+
+                        <!-- start of guest navigation -->
                         @if (!logged_in)
                         {
                             @* start of if *@
@@ -64,7 +112,7 @@
                                    asp-controller="Home"
                                    asp-action="Index">
 
-                                    Home 🌤️
+                                    Home 🏠
 
                                 </a>
                             </li>
@@ -81,73 +129,71 @@
 
                             @* end of if *@
                         }
-                        <!-- end of public navigation -->
-                
+                        <!-- end of guest navigation -->
                         <!-- start of organiser navigation -->
                         @if (is_organiser)
                         {
                             @* start of if *@
 
-                            <!-- organiser dashboard -->
                             <li class="nav-item">
                                 <a class="nav-link"
                                    asp-controller="Organiser"
                                    asp-action="Index">
 
-                                    Dashboard
-
-                                </a>
-                            </li>
-
-                            <!-- manage events -->
-                            <li class="nav-item">
-                                <a class="nav-link"
-                                   asp-controller="Organiser"
-                                   asp-action="Events">
-
-                                    My Events
+                                    Dashboard 🌤️
 
                                 </a>
                             </li>
 
                             <li class="nav-item">
-
                                 <a class="nav-link"
                                    asp-controller="Organiser"
                                    asp-action="Events">
 
-                                    Select Event for Enrolments 📋
+                                    My Events 📅
 
                                 </a>
-
                             </li>
-                           
-                            <li class="nav-item">
 
+                            <li class="nav-item">
                                 <a class="nav-link"
                                    asp-controller="Organiser"
                                    asp-action="Events">
 
-                                    Select Event for Results 🏆
+                                    Enrolments 📋
 
                                 </a>
+                            </li>
 
+                            <li class="nav-item">
+                                <a class="nav-link"
+                                   asp-controller="Organiser"
+                                   asp-action="Events">
+
+                                    Results 🏆
+
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link"
+                                   asp-controller="Organiser"
+                                   asp-action="Profile">
+
+                                    My Profile 👤
+
+                                </a>
                             </li>
 
                             @* end of if *@
                         }
-
                         <!-- end of organiser navigation -->
                         <!-- start of participant navigation -->
                         @if (is_participant)
                         {
                             @* start of if *@
 
-                            
-                            <!-- start of participant dashboard navigation -->
-
                             <li class="nav-item">
-
                                 <a class="nav-link"
                                    asp-controller="Participant"
                                    asp-action="Dashboard">
@@ -155,20 +201,19 @@
                                     Dashboard 🌤️
 
                                 </a>
-
                             </li>
-
 
                             <li class="nav-item">
                                 <a class="nav-link"
                                    asp-controller="Events"
                                    asp-action="Index">
+
                                     Events 🏃
+
                                 </a>
                             </li>
 
                             <li class="nav-item">
-
                                 <a class="nav-link"
                                    asp-controller="Participant"
                                    asp-action="Enrolments">
@@ -176,11 +221,9 @@
                                     My Enrolments 📋
 
                                 </a>
-
                             </li>
 
                             <li class="nav-item">
-
                                 <a class="nav-link"
                                    asp-controller="Participant"
                                    asp-action="Results">
@@ -188,132 +231,192 @@
                                     My Results 🏆
 
                                 </a>
-
                             </li>
 
                             <li class="nav-item">
                                 <a class="nav-link"
                                    asp-controller="Participant"
                                    asp-action="Profile">
+
                                     Profile 👤
+
                                 </a>
                             </li>
-
-                            
 
                             @* end of if *@
                         }
                         <!-- end of participant navigation -->
 
-                        </ul>
+                    </ul>
 
-                        <!--start of accont navigation-->
 
-                        <ul class="navbar-nav">
+                    <!-- start of account navigation -->
+                    <div class="d-flex flex-column flex-xxl-row align-items-xxl-center gap-2">
 
-                            @if (logged_in)
-                            {
-                                //start of if
+                        @if (logged_in)
+                        {
+                            @* start of if *@
 
-                                <li class="nav-item">
-                                    <span class="navbar-text me-3">
-                                        Welcome👋 @user_name you are an @user_role
-                                    </span>
-                                </li>
+                            <!-- start of welcome message -->
+                            <span class="navbar-text raceday-user-label">
 
-                                <li class="nav-item">
+                                Welcome 👋 @user_name • @user_role
 
-                                    <form asp-controller="Account" asp-action="Logout" method="post">
+                            </span>
+                            <!-- end of welcome message -->
+                            <!-- start of logout button -->
+                            <form asp-controller="Account"
+                                  asp-action="Logout"
+                                  method="post">
 
-                                        @Html.AntiForgeryToken()
-                                        <button type="submit" class="btn btn-outline-light">
-                                            Logout
-                                        </button>
-                                    </form>
-                                </li>
+                                @Html.AntiForgeryToken()
 
-                                //end of if
-                            }
+                                <button type="submit"
+                                        class="btn btn-outline-light">
 
-                            else
-                            {
-                                //start of else
+                                    Logout 🚪
 
-                                <li class="nav-item me-2">
-                                    <a class="btn btn-outline-light" asp-controller="Account" asp-action="Login">
-                                        Login
-                                    </a>
-                                </li>
+                                </button>
 
-                                <li class="nav-item">
-                                    <a class="btn btn-warning" asp-controller="Account" asp-action="Register">
-                                        Register
-                                    </a>
-                                </li>
+                            </form>
+                            <!-- end of logout button -->
+                            @* end of if *@
+                        }
+                        else
+                        {
+                            @* start of else *@
 
-                                //end of else
-                            }
-                        </ul>
+                            <!-- start of login button -->
+                            <a class="btn btn-outline-light"
+                               asp-controller="Account"
+                               asp-action="Login">
 
-                        <!--end of account navigation-->
+                                Login 🔐
+
+                            </a>
+                            <!-- end of login button -->
+                            <!-- start of register button -->
+                            <a class="btn btn-warning"
+                               asp-controller="Account"
+                               asp-action="Register">
+
+                                Register ✨
+
+                            </a>
+                            <!-- end of register button -->
+                            @* end of else *@
+                        }
+
                     </div>
+                    <!-- end of account navigation -->
+
                 </div>
+                <!-- end of navigation links -->
 
-            </nav>
-        </header>
-
-        <!--end of navigation-->
-
-        <!--start of the main content-->
-        <main class="container py-4">
-            @if (TempData["Success"]!= null)
-            {
-                //start of if
-                <div class="alert alert-success">
-                    @TempData["Success"]
-                </div>
-                //end of if
-            }
-
-            @if(TempData["Error"] != null)
-            {
-                //start of if
-
-                <div class="alert alert-danger">
-                    @TempData["Error"]
-                </div>
-
-                //end of if
-
-                
-            }
-
-        <!--display content of the current razor view-->
-         @RenderBody()
-
-        </main>
-        <!--end of main content-->
-
-        <!--start of footer-->
-
-        <footer class="bg-dark text-white py-3 mt-5">
-
-            <div class="container text-center">
-
-                <p class="mb-0">
-                    <!--date and time of the events-->
-                    &copy;@DateTime.Now.Year RaceDay.
-                    Made for racers and organisers
-                    ST10481917
-                </p>
             </div>
-        </footer>
 
-        <!--end of footer-->
+        </nav>
 
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js">
-        </script>
+    </header>
+    <!-- end of navigation -->
+    <!-- start of main content -->
+    <main class="container py-4">
 
-        @await RenderSectionAsync("Scripts", required: false)
-    </body>
+        <!-- start of notification messages -->
+        @if (TempData["Success"] is string success_message)
+        {
+            @* start of success message *@
+
+            <div class="alert alert-success alert-dismissible fade show raceday-alert"
+                 role="alert">
+
+                <strong>Success! ✅</strong>
+
+                <span>@success_message</span>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="alert"
+                        aria-label="Close">
+                </button>
+
+            </div>
+
+            @* end of success message *@
+        }
+
+        @if (TempData["Error"] is string error_message)
+        {
+            @* start of error message *@
+
+            <div class="alert alert-danger alert-dismissible fade show raceday-alert"
+                 role="alert">
+
+                <strong>Something went wrong ⚠️</strong>
+
+                <span>@error_message</span>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="alert"
+                        aria-label="Close">
+                </button>
+
+            </div>
+
+            @* end of error message *@
+        }
+
+        @if (TempData["Info"] is string info_message)
+        {
+            @* start of information message *@
+
+            <div class="alert alert-info alert-dismissible fade show raceday-alert"
+                 role="status">
+
+                <strong>Information ℹ️</strong>
+
+                <span>@info_message</span>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="alert"
+                        aria-label="Close">
+                </button>
+
+            </div>
+
+            @* end of information message *@
+        }
+
+        <!-- end of notification messages -->
+        <!-- display current page -->
+        @RenderBody()
+
+    </main>
+    <!-- end of main content -->
+    <!-- start of footer -->
+    <footer class="bg-dark text-white py-3 mt-5">
+
+        <div class="container text-center">
+
+            <p class="mb-0">
+
+                &copy; @DateTime.Now.Year RaceDay.
+                Made for racers and organisers.
+
+            </p>
+
+        </div>
+
+    </footer>
+    <!-- end of footer -->
+    <!-- start of javascript -->
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+    <!-- end of javascript -->
+
+</body>
+
 </html>

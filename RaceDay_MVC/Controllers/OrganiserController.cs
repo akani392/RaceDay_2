@@ -2005,6 +2005,276 @@ namespace RaceDay_MVC.Controllers
 
 
 
+        //display the organiser's personal profile
+        [HttpGet]
+        public async Task<IActionResult> Profile()
+        {
+            //start of method
+
+            //check organiser permission
+            var check = RequireRole("Organiser");
+
+            if (check != null)
+            {
+                //start of if
+
+                return check;
+
+                //end of if
+            }
+
+            try
+            {
+                //start of try
+
+                //get the logged in user's profile from the API
+                using var response = await Api.Send(
+                    HttpContext,
+                    HttpMethod.Get,
+                    "api/User_Profile/GetUser"
+                );
+
+                //check expired login
+                if (response.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    //start of if
+
+                    HttpContext.Session.Clear();
+
+                    return RedirectToAction("Login", "Account");
+
+                    //end of if
+                }
+
+                //check access permission
+                if (response.StatusCode == HttpStatusCode.Forbidden)
+                {
+                    //start of if
+
+                    return Forbid();
+
+                    //end of if
+                }
+
+                //check whether the profile loaded
+                if (!response.IsSuccessStatusCode)
+                {
+                    //start of if
+
+                    TempData["Error"] =
+                        "Unable to retrieve your profile.";
+
+                    return RedirectToAction("Index");
+
+                    //end of if
+                }
+
+                //convert the API response into an object
+                var user = await response.Content
+                    .ReadFromJsonAsync<UserProfile>();
+
+                //check the user exists
+                if (user == null)
+                {
+                    //start of if
+
+                    return NotFound();
+
+                    //end of if
+                }
+
+                //prepare the profile form
+                var form = new ProfileForm
+                {
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Email = user.Email
+                };
+
+                //display account information
+                ViewBag.DateRegistered = user.DateRegistered;
+
+                //display profile page
+                return View(form);
+
+                //end of try
+            }
+            catch (HttpRequestException)
+            {
+                //start of catch
+
+                TempData["Error"] =
+                    "Unable to connect to the RaceDay API.";
+
+                return RedirectToAction("Index");
+
+                //end of catch
+            }
+            catch (System.Text.Json.JsonException)
+            {
+                //start of catch
+
+                TempData["Error"] =
+                    "The API returned invalid profile information.";
+
+                return RedirectToAction("Index");
+
+                //end of catch
+            }
+
+            //end of method
+        }
+
+
+
+        //update the organiser's personal profile
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Profile(ProfileForm form)
+        {
+            //start of method
+
+            //check organiser permission
+            var check = RequireRole("Organiser");
+
+            if (check != null)
+            {
+                //start of if
+
+                return check;
+
+                //end of if
+            }
+
+            //check form validation
+            if (!ModelState.IsValid)
+            {
+                //start of if
+
+                return View(form);
+
+                //end of if
+            }
+
+            //remove unnecessary spaces
+            form.FirstName = form.FirstName.Trim();
+            form.LastName = form.LastName.Trim();
+            form.Email = form.Email.Trim();
+
+            //check trimmed values
+            if (string.IsNullOrWhiteSpace(form.FirstName) ||
+                string.IsNullOrWhiteSpace(form.LastName))
+            {
+                //start of if
+
+                ModelState.AddModelError(
+                    "",
+                    "First name and last name cannot be empty."
+                );
+
+                return View(form);
+
+                //end of if
+            }
+
+            try
+            {
+                //start of try
+
+                //send the updated profile to the API
+                using var response = await Api.Send(
+                    HttpContext,
+                    HttpMethod.Put,
+                    "api/User_Profile/UpdateUser",
+                    form
+                );
+
+                //check expired login
+                if (response.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    //start of if
+
+                    HttpContext.Session.Clear();
+
+                    return RedirectToAction("Login", "Account");
+
+                    //end of if
+                }
+
+                //check access permission
+                if (response.StatusCode == HttpStatusCode.Forbidden)
+                {
+                    //start of if
+
+                    return Forbid();
+
+                    //end of if
+                }
+
+                //check successful update
+                if (response.IsSuccessStatusCode)
+                {
+                    //start of if
+
+                    //update the first name stored in session
+                    HttpContext.Session.SetString(
+                        "Name",
+                        form.FirstName
+                    );
+
+                    //show confirmation
+                    TempData["Success"] =
+                        "Your profile has been updated successfully.";
+
+                    //reload the saved details
+                    return RedirectToAction(nameof(Profile));
+
+                    //end of if
+                }
+
+                //check for duplicate email or invalid values
+                if (response.StatusCode == HttpStatusCode.BadRequest)
+                {
+                    //start of if
+
+                    ModelState.AddModelError(
+                        "",
+                        "Unable to save these details. The email may " +
+                        "already be registered, or an input may be invalid."
+                    );
+
+                    return View(form);
+
+                    //end of if
+                }
+
+                //handle other API errors
+                ModelState.AddModelError(
+                    "",
+                    "Unable to update your profile. Please try again."
+                );
+
+                return View(form);
+
+                //end of try
+            }
+            catch (HttpRequestException)
+            {
+                //start of catch
+
+                ModelState.AddModelError(
+                    "",
+                    "Unable to connect to the RaceDay API."
+                );
+
+                return View(form);
+
+                //end of catch
+            }
+
+            //end of method
+        }
+
 
 
 

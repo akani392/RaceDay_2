@@ -153,11 +153,65 @@ namespace RaceDay_2.Controllers
             try
             {
                 //start of try
-                //running walikng cycling are allowed by the database
-                
+
+
+                //remove unnecessary spaces from event details
+                eventName = eventName?.Trim() ?? "";
+                location = location?.Trim() ?? "";
+                eventType = eventType?.Trim() ?? "";
+                description = description?.Trim() ?? "";
+
+                //check that the event name is provided
+                if (string.IsNullOrWhiteSpace(eventName))
+                {
+                    //start of if
+
+                    return BadRequest(new
+                    {
+                        message = "Event name cannot be empty."
+                    });
+
+                    //end of if
+                }
+
+                //check that the event location is provided
+                if (string.IsNullOrWhiteSpace(location))
+                {
+                    //start of if
+
+                    return BadRequest(new
+                    {
+                        message = "Event location cannot be empty."
+                    });
+
+                    //end of if
+                }
+
+                //prevent creating an event in the past
+                if (eventDate <= DateTime.Now)
+                {
+                    //start of if
+
+                    return BadRequest(new
+                    {
+                        message = "Event date must be in the future."
+                    });
+
+                    //end of if
+                }
+
+
+                //check that the event type is supported
                 if (!valid_event_types.Contains(eventType))
                 {
-                    return BadRequest("Event name has to be running walking or cycling");
+                    //start of if
+
+                    return BadRequest(new
+                    {
+                        message = "Event type must be Running, Walking or Cycling."
+                    });
+
+                    //end of if
                 }
 
                 //get the current logged in organiser user id
@@ -214,7 +268,42 @@ namespace RaceDay_2.Controllers
             try
             {
                 //start of try
-                
+
+
+                //remove unnecessary spaces
+                eventName = eventName?.Trim() ?? "";
+                location = location?.Trim() ?? "";
+                eventType = eventType?.Trim() ?? "";
+                description = description?.Trim() ?? "";
+
+                //check required information
+                if (string.IsNullOrWhiteSpace(eventName) ||
+                    string.IsNullOrWhiteSpace(location))
+                {
+                    //start of if
+
+                    return BadRequest(new
+                    {
+                        message = "Event name and location are required."
+                    });
+
+                    //end of if
+                }
+
+                //prevent rescheduling an event into the past
+                if (eventDate <= DateTime.Now)
+                {
+                    //start of if
+
+                    return BadRequest(new
+                    {
+                        message = "Updated event date must be in the future."
+                    });
+
+                    //end of if
+                }
+
+
                 //only running, walkking or cycling allowed here
                 if (!valid_event_types.Contains(eventType))
                 {
@@ -236,6 +325,8 @@ namespace RaceDay_2.Controllers
                 {
                     return StatusCode(403, new { message = "You do not own this event" });
                 }
+
+
 
                 found_event.EventName = eventName;
                 found_event.EventDate = eventDate;
