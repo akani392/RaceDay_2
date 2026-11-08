@@ -23,11 +23,81 @@
     </div>
     <!-- end of page heading -->
 
+
     <div class="row justify-content-center">
 
         <div class="col-lg-7">
 
-            <!-- start of profile form card -->
+            <!-- start of profile picture card -->
+            <div class="card raceday-profile-card mb-4">
+
+                <div class="card-body text-center p-4">
+
+                    <!-- start of profile image -->
+                    <div class="raceday-avatar mx-auto mb-3">
+
+                        <span class="raceday-avatar-placeholder">
+                            👤
+                        </span>
+
+                        <img src="@Url.Action("Current", "ProfilePictures")"
+                             alt="Participant profile picture"
+                             class="raceday-avatar-image"
+                             onerror="this.style.display='none'" />
+
+                    </div>
+                    <!-- end of profile image -->
+
+                    <h3 class="mb-3">
+                        My Profile Picture 📸
+                    </h3>
+
+                    <p>
+                        Upload a JPG, PNG or WebP image (maximum 2 MB).
+                    </p>
+
+
+                    <!-- start of image upload form -->
+                    <form asp-controller="ProfilePictures"
+                          asp-action="Upload"
+                          method="post"
+                          enctype="multipart/form-data">
+
+                        @Html.AntiForgeryToken()
+
+                        <div class="mb-3">
+
+                            <label for="participantImage"
+                                   class="form-label">
+
+                                Select Profile Picture
+
+                            </label>
+
+                            <input type="file"
+                                   id="participantImage"
+                                   name="image"
+                                   class="form-control"
+                                   accept=".jpg,.jpeg,.png,.webp"
+                                   required />
+
+                        </div>
+
+                        <button type="submit"
+                                class="btn btn-primary">
+
+                            Upload Picture 📸
+
+                        </button>
+
+                    </form>
+                    <!-- end of image upload form -->
+
+                </div>
+
+            </div>
+            <!-- end of profile picture card -->
+            <!-- start of personal information card -->
             <div class="card shadow-sm raceday-profile-card">
 
                 <div class="card-body p-4">
@@ -36,7 +106,7 @@
                         Personal Information
                     </h3>
 
-                    <!-- start of profile form -->
+                    <!-- start of personal information form -->
                     <form asp-controller="Participant"
                           asp-action="Profile"
                           method="post">
@@ -48,12 +118,15 @@
                              class="text-danger mb-3">
                         </div>
 
+
                         <!-- start of first name -->
                         <div class="mb-3">
 
                             <label asp-for="FirstName"
                                    class="form-label">
+
                                 First Name
+
                             </label>
 
                             <input asp-for="FirstName"
@@ -72,7 +145,9 @@
 
                             <label asp-for="LastName"
                                    class="form-label">
+
                                 Last Name
+
                             </label>
 
                             <input asp-for="LastName"
@@ -91,7 +166,9 @@
 
                             <label asp-for="Email"
                                    class="form-label">
+
                                 Email Address
+
                             </label>
 
                             <input asp-for="Email"
@@ -116,7 +193,6 @@
 
                             </button>
 
-                            <!-- return to participant dashboard -->
                             <a asp-controller="Participant"
                                asp-action="Dashboard"
                                class="btn btn-secondary">
@@ -129,12 +205,12 @@
                         <!-- end of form buttons -->
 
                     </form>
-                    <!-- end of profile form -->
+                    <!-- end of personal information form -->
 
                 </div>
 
             </div>
-            <!-- end of profile form card -->
+            <!-- end of personal information card -->
 
         </div>
 

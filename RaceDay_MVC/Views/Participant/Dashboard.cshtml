@@ -26,6 +26,51 @@
 
     </div>
     <!-- end of dashboard heading -->
+    <!-- start of participant dashboard profile header -->
+    <div class="raceday-profile-header mb-4">
+
+        <div class="d-flex align-items-center gap-4 flex-wrap">
+
+            <!-- start of profile picture -->
+            <div class="raceday-avatar raceday-dashboard-avatar">
+
+                <span class="raceday-avatar-placeholder">
+                    👤
+                </span>
+
+                <img src="@Url.Action("Current", "ProfilePictures")"
+                     alt="Participant profile picture"
+                     class="raceday-avatar-image"
+                     onerror="this.style.display='none'" />
+
+            </div>
+            <!-- end of profile picture -->
+            <!-- start of welcome information -->
+            <div>
+
+                <h1 class="mb-2">
+                    Welcome, @Model.FirstName! 🌤️
+                </h1>
+
+                <p class="mb-3">
+                    Track your races, registrations and achievements.
+                </p>
+
+                <a asp-controller="Participant"
+                   asp-action="Profile"
+                   class="btn btn-primary">
+
+                    My Profile 👤
+
+                </a>
+
+            </div>
+            <!-- end of welcome information -->
+
+        </div>
+
+    </div>
+    <!-- end of participant dashboard profile header -->
     <!-- start of dashboard statistics -->
     <div class="row g-4 mb-4">
 

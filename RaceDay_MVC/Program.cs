@@ -5,6 +5,10 @@ var builder = WebApplication.CreateBuilder(args);
 //add MVC controllers and views
 builder.Services.AddControllersWithViews();
 
+//start of profile picture service
+builder.Services.AddScoped<ProfileImageStore>();
+//end of profile picture service
+
 //add memory cache for session storage
 builder.Services.AddDistributedMemoryCache();
 

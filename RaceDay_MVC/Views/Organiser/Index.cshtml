@@ -23,6 +23,51 @@
 
     </div>
     <!-- end of page header -->
+    <!-- start of organiser dashboard profile header -->
+    <div class="raceday-profile-header mb-4">
+
+        <div class="d-flex align-items-center gap-4 flex-wrap">
+
+            <!-- start of profile picture -->
+            <div class="raceday-avatar raceday-dashboard-avatar">
+
+                <span class="raceday-avatar-placeholder">
+                    👤
+                </span>
+
+                <img src="@Url.Action("Current", "ProfilePictures")"
+                     alt="Organiser profile picture"
+                     class="raceday-avatar-image"
+                     onerror="this.style.display='none'" />
+
+            </div>
+            <!-- end of profile picture -->
+            <!-- start of welcome information -->
+            <div>
+
+                <h1 class="mb-2">
+                    Organiser Dashboard 🏃
+                </h1>
+
+                <p class="mb-3">
+                    Manage your events, participants and race results.
+                </p>
+
+                <a asp-controller="Organiser"
+                   asp-action="Profile"
+                   class="btn btn-primary">
+
+                    My Profile 👤
+
+                </a>
+
+            </div>
+            <!-- end of welcome information -->
+
+        </div>
+
+    </div>
+    <!-- end of organiser dashboard profile header -->
     <!-- start of dashboard statistics -->
     <div class="row g-4 mb-4">
 
