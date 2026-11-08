@@ -131,52 +131,62 @@
                                         @item.Enrolment.CategoryName
                                     </td>
 
+                                    
                                     <td>
 
-                                       
-                                        <!-- start of result actions -->
-                                        @if (item.Result != null)
+                                        @if (item.Result == null)
                                         {
                                             @* start of if *@
 
-                                            <span class="badge text-bg-success">
-                                                Captured ✅
-                                            </span>
+                                            @if (ViewBag.EventDate != null &&
+                                                 (DateTime)ViewBag.EventDate <= DateTime.Now)
+                                            {
+                                                <a asp-controller="Organiser"
+                                                   asp-action="CaptureResult"
+                                                   asp-route-eventId="@Model.EventID"
+                                                   asp-route-enrolmentId="@item.Enrolment.EnrolmentID"
+                                                   class="btn btn-primary btn-sm">
+
+                                                    Capture Result 🏁
+
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge text-bg-secondary">
+                                                    Awaiting Race Date
+                                                </span>
+                                            }
 
                                             @* end of if *@
-                                        }
-                                        else if (ViewBag.EventDate != null &&
-                                                 (DateTime)ViewBag.EventDate <= DateTime.Now)
-                                        {
-                                            @* start of else if *@
-
-                                            <a asp-controller="Organiser"
-                                               asp-action="CaptureResult"
-                                               asp-route-eventId="@Model.EventID"
-                                               asp-route-enrolmentId="@item.Enrolment.EnrolmentID"
-                                               class="btn btn-primary btn-sm">
-
-                                                Capture Result 🏁
-
-                                            </a>
-
-                                            @* end of else if *@
                                         }
                                         else
                                         {
                                             @* start of else *@
 
-                                            <span class="badge text-bg-secondary">
-                                                Awaiting Race Date
-                                            </span>
+                                            <div class="d-flex align-items-center gap-2 flex-wrap">
+
+                                                @if (item.Result.CapturedByID == Context.Session.GetInt32("UserID"))
+                                                {
+                                                    <a asp-controller="Organiser"
+                                                       asp-action="EditResult"
+                                                       asp-route-eventId="@Model.EventID"
+                                                       asp-route-enrolmentId="@item.Enrolment.EnrolmentID"
+                                                       asp-route-resultId="@item.Result.ResultID"
+                                                       class="btn btn-outline-primary btn-sm">
+
+                                                        Edit ✏️
+
+                                                    </a>
+                                                }
+
+                                            </div>
 
                                             @* end of else *@
                                         }
 
-                                        <!-- end of result actions -->
-
-
                                     </td>
+
 
                                     <td>
 

@@ -1591,6 +1591,418 @@ namespace RaceDay_MVC.Controllers
         }
 
 
+        //display the edit result form
+        [HttpGet]
+        public async Task<IActionResult> EditResult(
+            int eventId,
+            int enrolmentId,
+            int resultId)
+        {
+            //start of method
+
+            //check organiser permission
+            var check = RequireRole("Organiser");
+
+            if (check != null)
+            {
+                //start of if
+
+                return check;
+
+                //end of if
+            }
+
+            //check supplied identifiers
+            if (eventId <= 0 || enrolmentId <= 0 || resultId <= 0)
+            {
+                //start of if
+
+                return BadRequest();
+
+                //end of if
+            }
+
+            try
+            {
+                //start of try
+
+                //get the event information
+                var found_event = await Api.Get<RaceEvent>(
+                    HttpContext,
+                    $"api/Events/{eventId}"
+                );
+
+                if (found_event == null)
+                {
+                    //start of if
+
+                    return NotFound();
+
+                    //end of if
+                }
+
+                //check event ownership
+                int? organiser_id =
+                    HttpContext.Session.GetInt32("UserID");
+
+                if (found_event.OrganiserID != organiser_id)
+                {
+                    //start of if
+
+                    return Forbid();
+
+                    //end of if
+                }
+
+                //get enrolments for the selected event
+                var enrolments = await Api.Get<List<RaceEnrolment>>(
+                    HttpContext,
+                    $"api/events/{eventId}/enrolments"
+                );
+
+                //check enrolment belongs to this event
+                bool valid_enrolment = enrolments?.Any(e =>
+                    e.EnrolmentID == enrolmentId &&
+                    e.Status == "Confirmed") == true;
+
+                if (!valid_enrolment)
+                {
+                    //start of if
+
+                    return NotFound();
+
+                    //end of if
+                }
+
+                //get the existing result
+                using var response = await Api.Send(
+                    HttpContext,
+                    HttpMethod.Get,
+                    $"api/enrolments/{enrolmentId}/result"
+                );
+
+                //check for missing result
+                if (response.StatusCode == HttpStatusCode.NotFound)
+                {
+                    //start of if
+
+                    return NotFound();
+
+                    //end of if
+                }
+
+                //check request permission
+                if (response.StatusCode == HttpStatusCode.Forbidden)
+                {
+                    //start of if
+
+                    return Forbid();
+
+                    //end of if
+                }
+
+                //check if request succeeded
+                response.EnsureSuccessStatusCode();
+
+                //read captured result
+                var result = await response.Content
+                    .ReadFromJsonAsync<CapturedResult>();
+
+                //verify the result belongs to the enrolment
+                if (result == null ||
+                    result.ResultID != resultId ||
+                    result.EnrolmentID != enrolmentId)
+                {
+                    //start of if
+
+                    return NotFound();
+
+                    //end of if
+                }
+
+                //prepare edit form with existing values
+                var form = new EditResultForm
+                {
+                    ResultID = result.ResultID,
+                    EventID = eventId,
+                    EnrolmentID = enrolmentId,
+                    FinishTime = result.FinishTime,
+                    Position = result.Position
+                };
+
+                //display edit result page
+                return View(form);
+
+                //end of try
+            }
+            catch (HttpRequestException)
+            {
+                //start of catch
+
+                TempData["Error"] =
+                    "Unable to retrieve the race result from the API.";
+
+                return RedirectToAction(
+                    "Results",
+                    new { id = eventId }
+                );
+
+                //end of catch
+            }
+            catch (System.Text.Json.JsonException)
+            {
+                //start of catch
+
+                TempData["Error"] =
+                    "The API returned invalid result information.";
+
+                return RedirectToAction(
+                    "Results",
+                    new { id = eventId }
+                );
+
+                //end of catch
+            }
+
+            //end of method
+        }
+
+
+
+        //save corrections to a captured race result
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditResult(EditResultForm form)
+        {
+            //start of method
+
+            //check organiser permission
+            var check = RequireRole("Organiser");
+
+            if (check != null)
+            {
+                //start of if
+
+                return check;
+
+                //end of if
+            }
+
+            //check finishing time
+            if (form.FinishTime == null ||
+                form.FinishTime <= TimeSpan.Zero)
+            {
+                //start of if
+
+                ModelState.AddModelError(
+                    "FinishTime",
+                    "Finish time must be greater than zero."
+                );
+
+                //end of if
+            }
+
+            //validate the form
+            if (!ModelState.IsValid)
+            {
+                //start of if
+
+                return View(form);
+
+                //end of if
+            }
+
+            try
+            {
+                //start of try
+
+                //get selected event
+                var found_event = await Api.Get<RaceEvent>(
+                    HttpContext,
+                    $"api/Events/{form.EventID}"
+                );
+
+                if (found_event == null)
+                {
+                    //start of if
+
+                    return NotFound();
+
+                    //end of if
+                }
+
+                //verify event ownership
+                int? organiser_id =
+                    HttpContext.Session.GetInt32("UserID");
+
+                if (found_event.OrganiserID != organiser_id)
+                {
+                    //start of if
+
+                    return Forbid();
+
+                    //end of if
+                }
+
+                //verify the selected enrolment
+                var enrolments = await Api.Get<List<RaceEnrolment>>(
+                    HttpContext,
+                    $"api/events/{form.EventID}/enrolments"
+                );
+
+                bool valid_enrolment = enrolments?.Any(e =>
+                    e.EnrolmentID == form.EnrolmentID &&
+                    e.Status == "Confirmed") == true;
+
+                if (!valid_enrolment)
+                {
+                    //start of if
+
+                    return NotFound();
+
+                    //end of if
+                }
+
+                //verify the existing result belongs to the enrolment
+                using var existing_response = await Api.Send(
+                    HttpContext,
+                    HttpMethod.Get,
+                    $"api/enrolments/{form.EnrolmentID}/result"
+                );
+
+                if (existing_response.StatusCode == HttpStatusCode.NotFound)
+                {
+                    //start of if
+
+                    return NotFound();
+
+                    //end of if
+                }
+
+                if (existing_response.StatusCode == HttpStatusCode.Forbidden)
+                {
+                    //start of if
+
+                    return Forbid();
+
+                    //end of if
+                }
+
+                existing_response.EnsureSuccessStatusCode();
+
+                var existing_result = await existing_response.Content
+                    .ReadFromJsonAsync<CapturedResult>();
+
+                if (existing_result == null ||
+                    existing_result.ResultID != form.ResultID ||
+                    existing_result.EnrolmentID != form.EnrolmentID)
+                {
+                    //start of if
+
+                    return NotFound();
+
+                    //end of if
+                }
+
+                //prepare the API query parameters
+                string route =
+                    $"api/results/{form.ResultID}?"
+                    + RaceDayApi.Query(
+                        ("finishTime", form.FinishTime.Value.ToString("c")),
+                        ("position", form.Position.ToString(
+                            CultureInfo.InvariantCulture))
+                    );
+
+                //update existing result using the API
+                using var response = await Api.Send(
+                    HttpContext,
+                    HttpMethod.Put,
+                    route
+                );
+
+                //check whether update succeeded
+                if (response.IsSuccessStatusCode)
+                {
+                    //start of if
+
+                    TempData["Success"] =
+                        "Race result updated successfully.";
+
+                    return RedirectToAction(
+                        "Results",
+                        new { id = form.EventID }
+                    );
+
+                    //end of if
+                }
+
+                //show conflict message for taken position
+                if (response.StatusCode == HttpStatusCode.Conflict)
+                {
+                    //start of if
+
+                    ModelState.AddModelError(
+                        "Position",
+                        "This finishing position is already taken in the category."
+                    );
+
+                    //end of if
+                }
+                else if (response.StatusCode == HttpStatusCode.Forbidden)
+                {
+                    //start of else if
+
+                    return Forbid();
+
+                    //end of else if
+                }
+                else
+                {
+                    //start of else
+
+                    ModelState.AddModelError(
+                        "",
+                        "The result could not be updated. Please check your values."
+                    );
+
+                    //end of else
+                }
+
+                //display errors without losing the form values
+                return View(form);
+
+                //end of try
+            }
+            catch (HttpRequestException)
+            {
+                //start of catch
+
+                ModelState.AddModelError(
+                    "",
+                    "Unable to connect to the RaceDay API."
+                );
+
+                return View(form);
+
+                //end of catch
+            }
+            catch (System.Text.Json.JsonException)
+            {
+                //start of catch
+
+                ModelState.AddModelError(
+                    "",
+                    "The API returned invalid result information."
+                );
+
+                return View(form);
+
+                //end of catch
+            }
+
+            //end of method
+        }
+
 
 
 

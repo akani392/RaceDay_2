@@ -312,68 +312,118 @@ namespace RaceDay_2.Controllers
 
 
         //put
-        //corrects previosly captured result restricted to the organiser who got it
-
+        //correct a previously captured race result
         [HttpPut("/api/results/{id}")]
         [Authorize(Roles = "Organiser")]
-        public IActionResult Update (int id, TimeSpan finishTime, int position)
+        public IActionResult Update(
+            int id,
+            [FromQuery] TimeSpan finishTime,
+            [FromQuery] int position)
         {
             //start of method
+
+            //check finishing time and position
+            if (finishTime <= TimeSpan.Zero || position <= 0)
+            {
+                //start of if
+
+                return BadRequest(new
+                {
+                    message = "Finish time and position must be greater than zero."
+                });
+
+                //end of if
+            }
+
+            //get the logged in organiser
+            int current_user_id;
 
             try
             {
                 //start of try
 
-                if (position <= 0)
-                {
-                    return BadRequest("Position has to be greater than 0");
-                }
-
-                int current_user_id = get_current_user_id();
-
-                //fnd who got the result
-                var result = _context.Results.Find(id);
-
-                if(result == null)
-                {
-                    return NotFound(new { message = "Result not gound" });
-                }
-
-
-                //only the organiser who got the result can correct it
-                if (result.CapturedByID != current_user_id)
-                {
-                    return StatusCode(403, new { message = "You did not capture this result" });
-                }
-
-                result.FinishTime = finishTime;
-                result.Position = position;
-
-                _context.SaveChanges();
-
-                //return the updated result
-
-                return Ok(new
-                {
-                    result.ResultID,
-                    result.FinishTime,
-                    result.Position
-                });
+                current_user_id = get_current_user_id();
 
                 //end of try
             }
-
-            catch (Exception e)
+            catch (UnauthorizedAccessException)
             {
                 //start of catch
 
-                return BadRequest(e.Message);
+                return Unauthorized();
 
                 //end of catch
             }
 
+            //find the existing result and its race category
+            var result = _context.Results
+                .Include(r => r.Enrolment)
+                .SingleOrDefault(r => r.ResultID == id);
+
+            //check result exists
+            if (result?.Enrolment == null)
+            {
+                //start of if
+
+                return NotFound(new
+                {
+                    message = "Result not found."
+                });
+
+                //end of if
+            }
+
+            //only the organiser who captured it can edit it
+            if (result.CapturedByID != current_user_id)
+            {
+                //start of if
+
+                return StatusCode(403, new
+                {
+                    message = "You did not capture this result."
+                });
+
+                //end of if
+            }
+
+            //check if another result has the selected position
+            bool position_taken = _context.Results.Any(r =>
+                r.ResultID != id &&
+                r.Enrolment!.CategoryID == result.Enrolment.CategoryID &&
+                r.Position == position
+            );
+
+            if (position_taken)
+            {
+                //start of if
+
+                return Conflict(new
+                {
+                    message = "This position is already assigned in the category."
+                });
+
+                //end of if
+            }
+
+            //update the existing result
+            result.FinishTime = finishTime;
+            result.Position = position;
+
+            //save changes to the database
+            _context.SaveChanges();
+
+            //return the updated result
+            return Ok(new
+            {
+                result.ResultID,
+                result.EnrolmentID,
+                result.FinishTime,
+                result.Position
+            });
+
             //end of method
         }
+
 
         //get
         //list the authenticated participants full personal results history
