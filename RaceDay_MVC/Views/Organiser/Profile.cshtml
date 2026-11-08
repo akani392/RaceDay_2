@@ -34,7 +34,10 @@
 
         <div class="col-lg-7">
 
-            <!-- start of profile form card -->
+            <!-- start of profile picture editor -->
+            <partial name="_ProfilePictureUpload" />
+            <!-- end of profile picture editor -->
+            <!-- start of personal information card -->
             <div class="card shadow-sm raceday-profile-card">
 
                 <div class="card-body p-4 p-md-5">
@@ -43,81 +46,22 @@
                         Personal Information
                     </h3>
 
-                    
-                    <!-- start of profile picture section -->
-                    <div class="text-center mb-4">
 
-                        <!-- start of current profile picture -->
-                        <div class="raceday-avatar mx-auto mb-3">
-
-                            <span class="raceday-avatar-placeholder">
-                                👤
-                            </span>
-
-                            <img src="@Url.Action("Current", "ProfilePictures")"
-                                 alt="Your profile picture"
-                                 class="raceday-avatar-image"
-                                 onerror="this.style.display='none'" />
-
-                        </div>
-                        <!-- end of current profile picture -->
-
-
-                        <h4>
-                            My Profile Picture 📸
-                        </h4>
-
-                        <p class="text-muted">
-                            Upload a JPG, PNG or WebP image (maximum 2 MB).
-                        </p>
-
-
-                        <!-- start of upload form -->
-                        <form asp-controller="ProfilePictures"
-                              asp-action="Upload"
-                              method="post"
-                              enctype="multipart/form-data">
-
-                            @Html.AntiForgeryToken()
-
-                            <div class="mb-3">
-
-                                <label for="profileImage"
-                                       class="form-label">
-
-                                    Select an Image
-
-                                </label>
-
-                                <input id="profileImage"
-                                       name="image"
-                                       type="file"
-                                       accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
-                                       class="form-control"
-                                       required />
-
-                            </div>
-
-                            <button type="submit"
-                                    class="btn btn-primary">
-
-                                Upload Picture 📸
-
-                            </button>
-
-                        </form>
-                        <!-- end of upload form -->
-
-                    </div>
-                    <!-- end of profile picture section -->
+                    <!-- start of registration date -->
                     @if (ViewBag.DateRegistered != null)
                     {
+                        @* start of if *@
+
                         <p class="text-muted small">
+
                             Member since
                             @(((DateTime)ViewBag.DateRegistered).ToString("dd MMM yyyy"))
-                        </p>
-                    }
 
+                        </p>
+
+                        @* end of if *@
+                    }
+                    <!-- end of registration date -->
                     <!-- start of profile form -->
                     <form asp-controller="Organiser"
                           asp-action="Profile"
@@ -136,7 +80,9 @@
 
                             <label asp-for="FirstName"
                                    class="form-label">
+
                                 First Name
+
                             </label>
 
                             <input asp-for="FirstName"
@@ -155,7 +101,9 @@
 
                             <label asp-for="LastName"
                                    class="form-label">
+
                                 Last Name
+
                             </label>
 
                             <input asp-for="LastName"
@@ -174,7 +122,9 @@
 
                             <label asp-for="Email"
                                    class="form-label">
+
                                 Email Address
+
                             </label>
 
                             <input asp-for="Email"
@@ -216,7 +166,7 @@
                 </div>
 
             </div>
-            <!-- end of profile form card -->
+            <!-- end of personal information card -->
 
         </div>
 

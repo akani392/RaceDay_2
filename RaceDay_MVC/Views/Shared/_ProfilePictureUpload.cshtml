@@ -1,0 +1,124 @@
+﻿<!-- start of profile picture editor -->
+<div class="card raceday-profile-card mb-4">
+
+    <div class="card-body text-center p-4">
+
+        <h3 class="mb-3">
+            My Profile Picture 📸
+        </h3>
+
+        <p class="text-muted">
+            Choose a picture, drag to position it,
+            and zoom to select your favourite part.
+        </p>
+
+        <!-- start of current profile image -->
+        <div id="currentPicture"
+             class="raceday-avatar mx-auto mb-3">
+
+            <span class="raceday-avatar-placeholder">
+                👤
+            </span>
+
+            <img src="@Url.Action("Current", "ProfilePictures")"
+                 alt="Current profile picture"
+                 class="raceday-avatar-image"
+                 onerror="this.style.display='none'" />
+
+        </div>
+        <!-- end of current profile image -->
+        <!-- start of image cropping area -->
+        <div id="cropEditor"
+             class="raceday-crop-editor d-none">
+
+            <canvas id="cropCanvas"
+                    width="512"
+                    height="512"
+                    aria-label="Profile picture crop preview">
+            </canvas>
+
+            <p class="text-muted mt-2">
+                Drag the picture to adjust its position.
+            </p>
+
+            <!-- start of zoom control -->
+            <div class="mb-3">
+
+                <label for="imageZoom"
+                       class="form-label">
+
+                    Zoom 🔍
+
+                </label>
+
+                <input type="range"
+                       id="imageZoom"
+                       class="form-range"
+                       min="1"
+                       max="3"
+                       step="0.05"
+                       value="1" />
+
+            </div>
+            <!-- end of zoom control -->
+
+        </div>
+        <!-- end of image cropping area -->
+        <!-- start of upload form -->
+        <form id="profilePictureForm"
+              asp-controller="ProfilePictures"
+              asp-action="Upload"
+              method="post"
+              enctype="multipart/form-data">
+
+            @Html.AntiForgeryToken()
+
+            <div class="mb-3">
+
+                <label for="picturePicker"
+                       class="form-label">
+
+                    Select Picture
+
+                </label>
+
+                <input id="picturePicker"
+                       type="file"
+                       class="form-control"
+                       accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                       required />
+
+            </div>
+
+            <!-- cropped image sent to the controller -->
+            <input id="croppedPicture"
+                   type="file"
+                   name="image"
+                   hidden />
+
+            <button id="savePictureButton"
+                    type="submit"
+                    class="btn btn-primary"
+                    disabled>
+
+                Save Profile Picture 📸
+
+            </button>
+
+            <p id="pictureStatus"
+               class="text-muted mt-3"
+               role="status">
+            </p>
+
+        </form>
+        <!-- end of upload form -->
+
+    </div>
+
+</div>
+<!-- end of profile picture editor -->
+<!-- start of cropping javascript -->
+<script src="~/js/profile-picture-crop.js"
+        asp-append-version="true">
+</script>
+<!-- end of cropping javascript -->

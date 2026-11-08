@@ -1429,8 +1429,8 @@ namespace RaceDay_MVC.Controllers
                 EnrolmentID = enrolmentId
             };
 
-            //display capture page
-            return View(form);
+            //display capture result form
+            return View("CapturedResults", form);
 
             //end of method
         }
@@ -1474,7 +1474,7 @@ namespace RaceDay_MVC.Controllers
             {
                 //start of if
 
-                return View(form);
+                return View("CapturedResults", form);
 
                 //end of if
             }
@@ -1563,13 +1563,16 @@ namespace RaceDay_MVC.Controllers
                     //end of if
                 }
 
-                //show error on the capture page
+
+                //show the actual API error on the capture page
                 ModelState.AddModelError(
                     "",
-                    "The result could not be saved. It may already exist or the position may be taken."
+                    result.message
                 );
 
-                return View(form);
+                //display the result form again
+                return View("CapturedResults", form);
+
 
                 //end of try
             }
@@ -1582,7 +1585,7 @@ namespace RaceDay_MVC.Controllers
                     "Unable to connect to the RaceDay API."
                 );
 
-                return View(form);
+                return View("CapturedResults", form);
 
                 //end of catch
             }

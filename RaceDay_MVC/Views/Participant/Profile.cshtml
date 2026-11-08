@@ -29,74 +29,9 @@
         <div class="col-lg-7">
 
             <!-- start of profile picture card -->
-            <div class="card raceday-profile-card mb-4">
-
-                <div class="card-body text-center p-4">
-
-                    <!-- start of profile image -->
-                    <div class="raceday-avatar mx-auto mb-3">
-
-                        <span class="raceday-avatar-placeholder">
-                            👤
-                        </span>
-
-                        <img src="@Url.Action("Current", "ProfilePictures")"
-                             alt="Participant profile picture"
-                             class="raceday-avatar-image"
-                             onerror="this.style.display='none'" />
-
-                    </div>
-                    <!-- end of profile image -->
-
-                    <h3 class="mb-3">
-                        My Profile Picture 📸
-                    </h3>
-
-                    <p>
-                        Upload a JPG, PNG or WebP image (maximum 2 MB).
-                    </p>
-
-
-                    <!-- start of image upload form -->
-                    <form asp-controller="ProfilePictures"
-                          asp-action="Upload"
-                          method="post"
-                          enctype="multipart/form-data">
-
-                        @Html.AntiForgeryToken()
-
-                        <div class="mb-3">
-
-                            <label for="participantImage"
-                                   class="form-label">
-
-                                Select Profile Picture
-
-                            </label>
-
-                            <input type="file"
-                                   id="participantImage"
-                                   name="image"
-                                   class="form-control"
-                                   accept=".jpg,.jpeg,.png,.webp"
-                                   required />
-
-                        </div>
-
-                        <button type="submit"
-                                class="btn btn-primary">
-
-                            Upload Picture 📸
-
-                        </button>
-
-                    </form>
-                    <!-- end of image upload form -->
-
-                </div>
-
-            </div>
+            <partial name="_ProfilePictureUpload" />
             <!-- end of profile picture card -->
+
             <!-- start of personal information card -->
             <div class="card shadow-sm raceday-profile-card">
 

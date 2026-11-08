@@ -713,3 +713,59 @@ img {
 }
 
 /* end of dashboard profile picture styling */
+
+
+/* start of profile picture cropping styling */
+
+/* cropping editor */
+.raceday-crop-editor {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+/* circular crop preview */
+#cropCanvas {
+    display: block;
+    width: 240px;
+    height: 240px;
+    max-width: 100%;
+    border-radius: 50%;
+    border: 4px solid #78C9EB;
+    box-shadow: 0 8px 24px rgba(36, 73, 93, 0.15);
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+}
+
+    /* dragging effect */
+    #cropCanvas:active {
+        cursor: grabbing;
+    }
+
+/* zoom slider */
+.raceday-crop-editor .form-range {
+    max-width: 280px;
+    margin: 0 auto;
+}
+
+    /* slider highlight */
+    .raceday-crop-editor .form-range::-webkit-slider-thumb {
+        background-color: #78C9EB;
+    }
+
+    .raceday-crop-editor .form-range::-moz-range-thumb {
+        background-color: #78C9EB;
+    }
+
+/* mobile crop preview */
+@media (max-width: 575.98px) {
+
+    #cropCanvas {
+        width: 200px;
+        height: 200px;
+    }
+}
+
+/* end of profile picture cropping styling */
