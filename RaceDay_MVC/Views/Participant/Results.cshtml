@@ -1,20 +1,43 @@
 ﻿@model List<RaceDay_MVC.Models.RaceResult>
 
+
 @{
     //start of view configuration
 
     ViewData["Title"] = "My Race Results";
 
-    //calculate total completed races
+    //calculate completed races
     int total_results = Model.Count;
 
-    //get best finishing position
+    //find the best finishing position
     int? best_position = Model.Count > 0
         ? Model.Min(r => r.Position)
         : null;
 
+    //count podium finishes
+    int podium_finishes = Model.Count(r =>
+        r.Position >= 1 && r.Position <= 3);
+
+    //count first place victories
+    int race_victories = Model.Count(r =>
+        r.Position == 1);
+
+    //count second place finishes
+    int second_places = Model.Count(r =>
+        r.Position == 2);
+
+    //count third place finishes
+    int third_places = Model.Count(r =>
+        r.Position == 3);
+
+    //get the most recently captured result
+    var latest_result = Model
+        .OrderByDescending(r => r.DateCaptured)
+        .FirstOrDefault();
+
     //end of view configuration
 }
+
 
 <!-- start of my results page -->
 <div class="container py-4">
@@ -47,13 +70,14 @@
     <div class="row g-4 mb-4">
 
         <!-- completed races -->
-        <div class="col-md-6">
+        <div class="col-md-6 col-lg-3">
 
-            <div class="card shadow-sm h-100">
+            <div class="card h-100 raceday-achievement-card"
+                 style="background-color: #78C9EB;">
 
                 <div class="card-body text-center">
 
-                    <h4>Completed Races</h4>
+                    <h5>Completed Races 🏁</h5>
 
                     <h2>@total_results</h2>
 
@@ -64,19 +88,54 @@
         </div>
 
         <!-- best position -->
-        <div class="col-md-6">
+        <div class="col-md-6 col-lg-3">
 
-            <div class="card shadow-sm h-100">
+            <div class="card h-100 raceday-achievement-card"
+                 style="background-color: #B8E6CB;">
 
                 <div class="card-body text-center">
 
-                    <h4>Best Position</h4>
+                    <h5>Best Position 🥇</h5>
 
                     <h2>
-                        @(best_position.HasValue
-                            ? best_position.Value.ToString()
-                            : "-")
+                        @(best_position?.ToString() ?? "-")
                     </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- podium finishes -->
+        <div class="col-md-6 col-lg-3">
+
+            <div class="card h-100 raceday-achievement-card"
+                 style="background-color: #B9ACDF;">
+
+                <div class="card-body text-center">
+
+                    <h5>Podium Finishes 🏆</h5>
+
+                    <h2>@podium_finishes</h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- race victories -->
+        <div class="col-md-6 col-lg-3">
+
+            <div class="card h-100 raceday-achievement-card"
+                 style="background-color: #F6B7D2;">
+
+                <div class="card-body text-center">
+
+                    <h5>Race Victories 🌟</h5>
+
+                    <h2>@race_victories</h2>
 
                 </div>
 
@@ -86,8 +145,195 @@
 
     </div>
     <!-- end of results statistics -->
+    <!-- start of participant achievements -->
+    <div class="card raceday-achievement-panel mb-4">
+
+        <div class="card-body p-4">
+
+            <h3 class="mb-3">
+                My Achievements 🏆
+            </h3>
+
+            <p class="text-muted">
+                Earn achievements as you complete races
+                and reach new milestones.
+            </p>
+
+            <div class="row g-3">
+
+                <!-- first race achievement -->
+                <div class="col-md-6 col-lg-3">
+
+                    <div class="raceday-achievement-badge text-center">
+
+                        <div class="display-5">
+                            @(total_results >= 1 ? "🏁" : "🔒")
+                        </div>
+
+                        <h5 class="mt-2">
+                            First Finish
+                        </h5>
+
+                        <p class="small">
+                            Complete your first race.
+                        </p>
+
+                        <span class="badge @(total_results >= 1
+                              ? "text-bg-success"
+                              : "text-bg-secondary")">
+
+                            @(total_results >= 1
+                                ? "Unlocked"
+                                : "Locked")
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <!-- podium achievement -->
+                <div class="col-md-6 col-lg-3">
+
+                    <div class="raceday-achievement-badge text-center">
+
+                        <div class="display-5">
+                            @(podium_finishes >= 1 ? "🥉" : "🔒")
+                        </div>
+
+                        <h5 class="mt-2">
+                            Podium Club
+                        </h5>
+
+                        <p class="small">
+                            Finish in the top three.
+                        </p>
+
+                        <span class="badge @(podium_finishes >= 1
+                              ? "text-bg-success"
+                              : "text-bg-secondary")">
+
+                            @(podium_finishes >= 1
+                                ? "Unlocked"
+                                : "Locked")
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <!-- race winner achievement -->
+                <div class="col-md-6 col-lg-3">
+
+                    <div class="raceday-achievement-badge text-center">
+
+                        <div class="display-5">
+                            @(race_victories >= 1 ? "🥇" : "🔒")
+                        </div>
+
+                        <h5 class="mt-2">
+                            Race Winner
+                        </h5>
+
+                        <p class="small">
+                            Achieve first place.
+                        </p>
+
+                        <span class="badge @(race_victories >= 1
+                              ? "text-bg-success"
+                              : "text-bg-secondary")">
+
+                            @(race_victories >= 1
+                                ? "Unlocked"
+                                : "Locked")
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <!-- five race achievement -->
+                <div class="col-md-6 col-lg-3">
+
+                    <div class="raceday-achievement-badge text-center">
+
+                        <div class="display-5">
+                            @(total_results >= 5 ? "🌟" : "🔒")
+                        </div>
+
+                        <h5 class="mt-2">
+                            Race Explorer
+                        </h5>
+
+                        <p class="small">
+                            Complete five races.
+                        </p>
+
+                        <span class="badge @(total_results >= 5
+                              ? "text-bg-success"
+                              : "text-bg-secondary")">
+
+                            @(total_results >= 5
+                                ? "Unlocked"
+                                : "Locked")
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+    <!-- end of participant achievements -->
+    <!-- start of latest race result -->
+    @if (latest_result != null)
+    {
+        <div class="card raceday-achievement-panel mb-4">
+
+            <div class="card-body p-4">
+
+                <h3 class="mb-3">
+                    Latest Race Achievement 🎉
+                </h3>
+
+                <h4>
+                    @latest_result.EventName
+                </h4>
+
+                <p>
+                    <strong>Category:</strong>
+                    @latest_result.CategoryName
+                </p>
+
+                <p>
+                    <strong>Finish Time:</strong>
+                    @latest_result.FinishTime.ToString(@"hh\:mm\:ss")
+                </p>
+
+                <p>
+                    <strong>Finishing Position:</strong>
+                    @latest_result.Position
+                </p>
+
+                <p class="text-muted mb-0">
+                    Recorded on
+                    @latest_result.DateCaptured.ToString("dd MMM yyyy")
+                </p>
+
+            </div>
+
+        </div>
+    }
+    <!-- end of latest race result -->
+
     <!-- start of race results -->
-    <div class="card shadow-sm">
+    <div class="card shadow-sm raceday-achievement-panel">
 
         <div class="card-body">
 

@@ -338,3 +338,55 @@ a {
     }
 
 /* end of race results design */
+
+
+
+/* start of participant achievements styling */
+
+/* achievement statistics */
+.raceday-achievement-card {
+    border: 2px solid rgba(36, 73, 93, 0.12) !important;
+    border-radius: 22px !important;
+    box-shadow: 0 8px 24px rgba(36, 73, 93, 0.09);
+    overflow: hidden;
+}
+
+    /* achievement statistics headings */
+    .raceday-achievement-card h2,
+    .raceday-achievement-card h5 {
+        color: #24495D;
+        font-weight: 700;
+    }
+
+/* main achievements panel */
+.raceday-achievement-panel {
+    background-color: #FFFFFF;
+    border: 2px solid #D0E4EF !important;
+    border-radius: 24px !important;
+    box-shadow: 0 8px 24px rgba(36, 73, 93, 0.08);
+    overflow: hidden;
+}
+
+/* individual achievement badges */
+.raceday-achievement-badge {
+    background-color: #F3FAF8;
+    border: 2px solid #B8E6CB;
+    border-radius: 18px;
+    padding: 22px 14px;
+    height: 100%;
+}
+
+    /* achievement headings */
+    .raceday-achievement-badge h5,
+    .raceday-achievement-panel h3 {
+        color: #24495D;
+        font-weight: 700;
+    }
+
+    /* achievement status badges */
+    .raceday-achievement-badge .badge {
+        border-radius: 12px;
+        padding: 8px 12px;
+    }
+
+/* end of participant achievements styling */
