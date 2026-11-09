@@ -159,38 +159,18 @@
                                     </td>
 
                                     <td>
-
                                         @if (item.Status == "Confirmed")
                                         {
-                                            @* start of if *@
-
-                                            <span class="badge text-bg-success">
+                                            <span class="raceday-status-badge raceday-status-confirmed">
                                                 Confirmed
                                             </span>
-
-                                            @* end of if *@
-                                        }
-                                        else if (item.Status == "Cancelled")
-                                        {
-                                            @* start of else if *@
-
-                                            <span class="badge text-bg-secondary">
-                                                Cancelled
-                                            </span>
-
-                                            @* end of else if *@
                                         }
                                         else
                                         {
-                                            @* start of else *@
-
-                                            <span class="badge text-bg-warning">
+                                            <span class="raceday-status-badge">
                                                 @item.Status
                                             </span>
-
-                                            @* end of else *@
                                         }
-
                                     </td>
 
                                     <td>

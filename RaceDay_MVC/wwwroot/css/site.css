@@ -769,3 +769,40 @@ img {
 }
 
 /* end of profile picture cropping styling */
+
+/* start of status badge styling */
+
+.raceday-status-badge {
+    display: inline-block;
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    line-height: 1;
+}
+
+.raceday-status-confirmed {
+    background-color: #d9c2ff;
+    color: #5b2c91;
+    border: 2px solid #b38cff;
+}
+
+/* end of status badge styling */
+
+
+/* start of captured result badge styling */
+
+.raceday-status-captured {
+    display: inline-block;
+    background-color: #B8E6CB;
+    color: #24495D;
+    border: 2px solid #96D8B3;
+    border-radius: 999px;
+    padding: 8px 14px;
+    font-family: 'Outfit', Arial, sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+/* end of captured result badge styling */

@@ -127,9 +127,30 @@
                                         @item.Enrolment.ParticipantName
                                     </td>
 
+                                    
+                                    <!-- start of finish time -->
                                     <td>
-                                        @item.Enrolment.CategoryName
+                                        @if (item.Result != null)
+                                        {
+                                            @* start of if *@
+
+                                            @item.Result.FinishTime.ToString(@"hh\:mm\:ss")
+
+                                            @* end of if *@
+                                        }
+                                        else
+                                        {
+                                            @* start of else *@
+
+                                            <span class="text-muted">
+                                                -
+                                            </span>
+
+                                            @* end of else *@
+                                        }
                                     </td>
+                                    <!-- end of finish time -->
+
 
                                     
                                     <td>
@@ -160,27 +181,12 @@
 
                                             @* end of if *@
                                         }
+                                        
                                         else
                                         {
                                             @* start of else *@
 
-                                            <div class="d-flex align-items-center gap-2 flex-wrap">
-
-                                                @if (item.Result.CapturedByID == Context.Session.GetInt32("UserID"))
-                                                {
-                                                    <a asp-controller="Organiser"
-                                                       asp-action="EditResult"
-                                                       asp-route-eventId="@Model.EventID"
-                                                       asp-route-enrolmentId="@item.Enrolment.EnrolmentID"
-                                                       asp-route-resultId="@item.Result.ResultID"
-                                                       class="btn btn-outline-primary btn-sm">
-
-                                                        Edit ✏️
-
-                                                    </a>
-                                                }
-
-                                            </div>
+                                            @item.Result.FinishTime.ToString(@"hh\:mm\:ss")
 
                                             @* end of else *@
                                         }
@@ -201,21 +207,42 @@
 
                                     </td>
 
+                                    
+                                   
+                                    <!-- start of result action buttons -->
                                     <td>
-
                                         @if (item.Result == null)
                                         {
                                             @* start of if *@
 
-                                            <a asp-controller="Organiser"
-                                               asp-action="CaptureResult"
-                                               asp-route-eventId="@Model.EventID"
-                                               asp-route-enrolmentId="@item.Enrolment.EnrolmentID"
-                                               class="btn btn-primary btn-sm">
+                                            //check that the race date has passed
+                                            @if (ViewBag.EventDate != null &&
+                                                 (DateTime)ViewBag.EventDate <= DateTime.Now)
+                                            {
+                                                @* start of if *@
 
-                                                Capture Result 🏁
+                                                <a asp-controller="Organiser"
+                                                   asp-action="CaptureResult"
+                                                   asp-route-eventId="@Model.EventID"
+                                                   asp-route-enrolmentId="@item.Enrolment.EnrolmentID"
+                                                   class="btn btn-primary btn-sm">
 
-                                            </a>
+                                                    Capture Result 🏁
+
+                                                </a>
+
+                                                @* end of if *@
+                                            }
+                                            else
+                                            {
+                                                @* start of else *@
+
+                                                <span class="badge text-bg-secondary">
+                                                    Awaiting Race Date 📅
+                                                </span>
+
+                                                @* end of else *@
+                                            }
 
                                             @* end of if *@
                                         }
@@ -223,14 +250,42 @@
                                         {
                                             @* start of else *@
 
-                                            <span class="badge text-bg-success">
-                                                Captured
-                                            </span>
+                                            <div class="d-flex align-items-center gap-2 flex-wrap">
+
+                                                <!-- start of captured status -->
+                                                <span class="raceday-status-badge raceday-status-captured">
+                                                    Captured 🏆
+                                                </span>
+                                                <!-- end of captured status -->
+                                                <!-- start of edit result -->
+                                                @if (item.Result.CapturedByID ==
+                                                     Context.Session.GetInt32("UserID"))
+                                                {
+                                                    @* start of if *@
+
+                                                    <a asp-controller="Organiser"
+                                                       asp-action="EditResult"
+                                                       asp-route-eventId="@Model.EventID"
+                                                       asp-route-enrolmentId="@item.Enrolment.EnrolmentID"
+                                                       asp-route-resultId="@item.Result.ResultID"
+                                                       class="btn btn-outline-primary btn-sm">
+
+                                                        Edit ✏️
+
+                                                    </a>
+
+                                                    @* end of if *@
+                                                }
+                                                <!-- end of edit result -->
+
+                                            </div>
 
                                             @* end of else *@
                                         }
-
                                     </td>
+                                    <!-- end of result action buttons -->
+
+
 
                                 </tr>
 
